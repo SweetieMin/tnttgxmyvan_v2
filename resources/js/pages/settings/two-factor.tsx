@@ -19,7 +19,7 @@ interface TwoFactorProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Two-Factor Authentication',
+        title: 'Xác thực hai yếu tố',
         href: show.url(),
     },
 ];
@@ -42,21 +42,23 @@ export default function TwoFactor({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Two-Factor Authentication" />
+            <Head title="Xác thực hai yếu tố" />
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
-                        title="Two-Factor Authentication"
-                        description="Manage your two-factor authentication settings"
+                        title="Xác thực hai yếu tố"
+                        description="Quản lý và bảo vệ tài khoản của bạn bằng xác thực hai yếu tố (2FA)."
                     />
+
                     {twoFactorEnabled ? (
+                        // --- Khi đã bật 2FA ---
                         <div className="flex flex-col items-start justify-start space-y-4">
-                            <Badge variant="default">Enabled</Badge>
+                            <Badge variant="default">Đã bật</Badge>
                             <p className="text-muted-foreground">
-                                With two-factor authentication enabled, you will
-                                be prompted for a secure, random pin during
-                                login, which you can retrieve from the
-                                TOTP-supported application on your phone.
+                                Khi xác thực hai yếu tố được bật, mỗi lần đăng
+                                nhập bạn sẽ cần nhập mã PIN an toàn được tạo
+                                ngẫu nhiên trong ứng dụng Authenticator trên
+                                điện thoại của bạn.
                             </p>
 
                             <TwoFactorRecoveryCodes
@@ -73,20 +75,22 @@ export default function TwoFactor({
                                             type="submit"
                                             disabled={processing}
                                         >
-                                            <ShieldBan /> Disable 2FA
+                                            <ShieldBan />
+                                            Tắt xác thực 2 yếu tố
                                         </Button>
                                     )}
                                 </Form>
                             </div>
                         </div>
                     ) : (
+                        // --- Khi chưa bật 2FA ---
                         <div className="flex flex-col items-start justify-start space-y-4">
-                            <Badge variant="destructive">Disabled</Badge>
+                            <Badge variant="destructive">Đang tắt</Badge>
                             <p className="text-muted-foreground">
-                                When you enable two-factor authentication, you
-                                will be prompted for a secure pin during login.
-                                This pin can be retrieved from a TOTP-supported
-                                application on your phone.
+                                Khi bạn bật xác thực hai yếu tố, hệ thống sẽ yêu
+                                cầu bạn nhập mã bảo mật mỗi khi đăng nhập. Mã
+                                này được lấy từ ứng dụng xác thực (Authenticator)
+                                trên điện thoại của bạn.
                             </p>
 
                             <div>
@@ -95,7 +99,7 @@ export default function TwoFactor({
                                         onClick={() => setShowSetupModal(true)}
                                     >
                                         <ShieldCheck />
-                                        Continue Setup
+                                        Tiếp tục cài đặt
                                     </Button>
                                 ) : (
                                     <Form
@@ -110,7 +114,7 @@ export default function TwoFactor({
                                                 disabled={processing}
                                             >
                                                 <ShieldCheck />
-                                                Enable 2FA
+                                                Bật xác thực 2 yếu tố
                                             </Button>
                                         )}
                                     </Form>

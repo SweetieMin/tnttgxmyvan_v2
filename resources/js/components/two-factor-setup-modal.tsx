@@ -93,8 +93,8 @@ function TwoFactorSetupStep({
 
                     <div className="relative flex w-full items-center justify-center">
                         <div className="absolute inset-0 top-1/2 h-px w-full bg-border" />
-                        <span className="relative bg-card px-2 py-1">
-                            or, enter the code manually
+                        <span className="relative bg-card px-2 py-1 text-sm text-muted-foreground">
+                            hoặc nhập mã thủ công
                         </span>
                     </div>
 
@@ -199,7 +199,7 @@ function TwoFactorVerificationStep({
                                 onClick={onBack}
                                 disabled={processing}
                             >
-                                Back
+                                Quay lại
                             </Button>
                             <Button
                                 type="submit"
@@ -208,7 +208,7 @@ function TwoFactorVerificationStep({
                                     processing || code.length < OTP_MAX_LENGTH
                                 }
                             >
-                                Confirm
+                                Xác nhận
                             </Button>
                         </div>
                     </div>
@@ -251,34 +251,33 @@ export default function TwoFactorSetupModal({
     }>(() => {
         if (twoFactorEnabled) {
             return {
-                title: 'Two-Factor Authentication Enabled',
+                title: 'Đã bật xác thực hai yếu tố',
                 description:
-                    'Two-factor authentication is now enabled. Scan the QR code or enter the setup key in your authenticator app.',
-                buttonText: 'Close',
+                    'Xác thực hai yếu tố đã được bật. Quét mã QR hoặc nhập mã thiết lập vào ứng dụng xác thực (Authenticator) của bạn.',
+                buttonText: 'Đóng',
             };
         }
 
         if (showVerificationStep) {
             return {
-                title: 'Verify Authentication Code',
+                title: 'Xác minh mã bảo mật',
                 description:
-                    'Enter the 6-digit code from your authenticator app',
-                buttonText: 'Continue',
+                    'Nhập mã gồm 6 chữ số từ ứng dụng xác thực (Authenticator) trên điện thoại của bạn.',
+                buttonText: 'Tiếp tục',
             };
         }
 
         return {
-            title: 'Enable Two-Factor Authentication',
+            title: 'Bật xác thực hai yếu tố',
             description:
-                'To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app',
-            buttonText: 'Continue',
+                'Để hoàn tất việc bật xác thực hai yếu tố, hãy quét mã QR hoặc nhập mã thiết lập vào ứng dụng xác thực trên điện thoại của bạn.',
+            buttonText: 'Tiếp tục',
         };
     }, [twoFactorEnabled, showVerificationStep]);
 
     const handleModalNextStep = useCallback(() => {
         if (requiresConfirmation) {
             setShowVerificationStep(true);
-
             return;
         }
 
@@ -296,7 +295,6 @@ export default function TwoFactorSetupModal({
     useEffect(() => {
         if (!isOpen) {
             resetModalState();
-
             return;
         }
 

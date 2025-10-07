@@ -41,8 +41,7 @@ class AuthenticatedSessionController extends Controller
             return to_route('two-factor.login');
         }
 
-        Auth::login($user, $request->boolean('remember'));
-
+        // Auth::attempt() đã đăng nhập user rồi, chỉ cần regenerate session
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));

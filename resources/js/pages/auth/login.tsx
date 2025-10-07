@@ -9,6 +9,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface LoginProps {
     status?: string;
@@ -16,16 +17,38 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
+    const [cooldown, setCooldown] = useState<number | null>(null);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+
+        if (cooldown !== null && cooldown > 0) {
+            timer = setInterval(() => {
+                setCooldown((prev) => {
+                    if (prev === null || prev <= 0) {
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+
+        return () => clearInterval(timer);
+    }, [cooldown]);
+
     return (
-        <AuthLayout
-            title="Đăng nhập vào tài khoản"
-            description=""
-        >
+        <AuthLayout title="Đăng nhập vào tài khoản" description="">
             <Head title="Đăng nhập" />
 
             <Form
                 {...AuthenticatedSessionController.store.form()}
                 resetOnSuccess={['password']}
+                onError={(errors) => {
+                    // ✅ Bắt lỗi "Too many login attempts"
+                    if (errors.login_id && errors.login_id.includes('quá nhiều lần')) {
+                        setCooldown(60); // 60 giây cooldown
+                    }
+                }}
                 className="flex flex-col gap-6"
             >
                 {({ processing, errors }) => (
@@ -37,12 +60,12 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     id="login_id"
                                     type="text"
                                     name="login_id"
-                                    required
                                     autoFocus
                                     tabIndex={1}
                                     placeholder="Username / Email"
+                                    disabled={cooldown !== null && cooldown > 0}
                                 />
-                                <InputError message={errors.email} />
+                                <InputError message={errors.login_id} />
                             </div>
 
                             <div className="grid gap-2">
@@ -54,7 +77,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                             className="ml-auto text-sm"
                                             tabIndex={5}
                                         >
-                                            Forgot password?
+                                            Quên mật khẩu?
                                         </TextLink>
                                     )}
                                 </div>
@@ -62,10 +85,10 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     id="password"
                                     type="password"
                                     name="password"
-                                    required
                                     tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="**********"
+                                    disabled={cooldown !== null && cooldown > 0}
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -75,24 +98,26 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
+                                    disabled={cooldown !== null && cooldown > 0}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember">Ghi nhớ đăng nhập</Label>
                             </div>
 
                             <Button
                                 type="submit"
                                 className="mt-4 w-full"
                                 tabIndex={4}
-                                disabled={processing}
+                                disabled={processing || (cooldown !== null && cooldown > 0)}
                                 data-test="login-button"
                             >
                                 {processing && (
                                     <LoaderCircle className="h-4 w-4 animate-spin" />
                                 )}
-                                Log in
+                                {cooldown !== null && cooldown > 0
+                                    ? `Vui lòng đợi ${cooldown} giây...`
+                                    : 'Đăng nhập'}
                             </Button>
                         </div>
-
                     </>
                 )}
             </Form>

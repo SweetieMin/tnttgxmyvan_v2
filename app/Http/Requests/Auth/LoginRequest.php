@@ -26,16 +26,31 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
+        $loginId = $this->input('login_id');
+        $fieldType = filter_var($loginId, FILTER_VALIDATE_EMAIL) ? 'email' : 'account_code';
+        
+        if ($fieldType === 'email') {
+            return [
+                'login_id' => ['required', 'email', 'exists:users,email'],
+                'password' => ['required', 'string', 'min:5', 'max:45'],
+            ];
+        }
+
         return [
-            'login_id' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
+            'login_id' => ['required', 'string', 'exists:users,account_code'],
+            'password' => ['required', 'string', 'min:5', 'max:45'],
         ];
     }
 
-    public  function  messages(): array
+    public function messages(): array
     {
         return [
-
+            'login_id.required' => 'Mã tài khoản/Email là bắt buộc',
+            'login_id.email' => 'Địa chỉ email không hợp lệ',
+            'login_id.exists' => 'Thông tin đăng nhập không hợp lệ',
+            'password.required' => 'Mật khẩu là bắt buộc',
+            'password.min' => 'Mật khẩu phải có trên 5 ký tự',
+            'password.max' => 'Mật khẩu tối đa 45 ký tự',
         ];
     }
 
@@ -48,20 +63,53 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        /** @var User|null $user */
-        $user = Auth::getProvider()->retrieveByCredentials($this->only('email', 'password'));
+        $loginId = $this->input('login_id');
+        $password = $this->input('password');
+        $remember = $this->boolean('remember');
+        $fieldType = filter_var($loginId, FILTER_VALIDATE_EMAIL) ? 'email' : 'account_code';
 
-        if (! $user || ! Auth::getProvider()->validateCredentials($user, $this->only('password'))) {
-            RateLimiter::hit($this->throttleKey());
+        // Chuẩn bị credentials cho Auth::attempt
+        $credentials = [
+            $fieldType => $loginId,
+            'password' => $password
+        ];
 
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
+        // Sử dụng Auth::attempt để xác thực
+        if (Auth::attempt($credentials, $remember)) {
+            $user = Auth::user();
+
+            // Kiểm tra trạng thái tài khoản
+            if ($user->status_login === 'inactive') {
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'login_id' => __('Tài khoản của bạn hiện đang bị khóa. Vui lòng liên hệ trang Thiếu Nhi để được xử lý.'),
+                ]);
+            }
+
+            if ($user->status_login === 'lock') {
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'login_id' => __('Tài khoản của bạn hiện đang bị khóa. Vui lòng liên hệ trang Thiếu Nhi để được xử lý.'),
+                ]);
+            }
+
+            // Nếu login bằng email và chưa xác minh
+            if ($fieldType === 'email' && $user->email_verified_at === null) {
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'login_id' => __('Email này chưa được xác minh để đăng nhập. Vui lòng sử dụng Mã tài khoản.'),
+                ]);
+            }
+
+            RateLimiter::clear($this->throttleKey());
+            return $user;
         }
 
-        RateLimiter::clear($this->throttleKey());
-
-        return $user;
+        // Nếu đăng nhập thất bại
+        RateLimiter::hit($this->throttleKey());
+        throw ValidationException::withMessages([
+            'login_id' => __('Thông tin đăng nhập không hợp lệ'),
+        ]);
     }
 
     /**
@@ -80,10 +128,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => __('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'login_id' => "Bạn đã đăng nhập sai quá nhiều lần.",
         ]);
     }
 
@@ -92,7 +137,7 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return $this->string('email')
+        return $this->string('login_id')
             ->lower()
             ->append('|'.$this->ip())
             ->transliterate()

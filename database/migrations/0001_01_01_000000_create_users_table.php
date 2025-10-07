@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('christian_name')->nullable();
             $table->string('last_name');
             $table->string('name');
+            $table->date('birthday');
             $table->string('account_code',10)->unique();
             $table->string('email')->unique()->nullable();
             $table->string('token')->unique();

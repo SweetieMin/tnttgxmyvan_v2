@@ -16,7 +16,6 @@ return new class extends Migration
                 ->primary()
                 ->constrained()
                 ->onDelete('cascade');
-            $table->date('birthday');
             $table->string('picture')->nullable();
             $table->string('bio')->nullable();
             $table->string('phone')->nullable();
