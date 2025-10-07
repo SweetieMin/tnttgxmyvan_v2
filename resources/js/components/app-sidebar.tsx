@@ -16,7 +16,15 @@ import { Link } from '@inertiajs/react';
 import { LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+const generalNavItems: NavItem[] = [
+    {
+        title: 'Dashboard',
+        href: dashboard(),
+        icon: LayoutGrid,
+    },
+];
+
+const managementNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -41,7 +49,8 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={generalNavItems} label="General" />
+                <NavMain items={managementNavItems} label="Management" />
             </SidebarContent>
 
             <SidebarFooter>
