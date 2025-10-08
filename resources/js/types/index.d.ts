@@ -44,6 +44,9 @@ export interface User {
     status_login: 'active' | 'inactive' | 'lock';
     created_at: string;
     updated_at: string;
+    christian_full_name: string;
+    full_name: string;
+    short_name: string;
     // Thông tin từ bảng details
     details?: {
         picture?: string;

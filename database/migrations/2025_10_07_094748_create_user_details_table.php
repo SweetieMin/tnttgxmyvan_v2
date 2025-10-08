@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('details', function (Blueprint $table) {
+        Schema::create('user_details', function (Blueprint $table) {
             $table->foreignId('user_id')
                 ->primary()
                 ->constrained()
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('bio')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
-            $table->enum('gender', ['male', 'female']);
+            $table->enum('gender', ['male', 'female'])->default('male');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('details');
+        Schema::dropIfExists('user_details');
     }
 };

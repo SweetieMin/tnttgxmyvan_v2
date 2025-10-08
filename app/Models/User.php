@@ -43,6 +43,17 @@ class User extends Authenticatable
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'full_name',
+        'christian_full_name',
+        'short_name',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -55,5 +66,42 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
             'birthday' => 'date',
         ];
+    }
+
+    /**
+     * Get the full name of the user.
+     * Example: "Nguyễn Văn A"
+     */
+    public function getFullNameAttribute(): string
+    {
+        return trim("{$this->last_name} {$this->name}");
+    }
+
+    /**
+     * Get the Christian full name of the user.
+     * Example: "Phêrô Nguyễn Văn A"
+     */
+    public function getChristianFullNameAttribute(): string
+    {
+        return trim("{$this->christian_name} {$this->last_name} {$this->name}");
+    }
+
+    /**
+     * Get the short name of the user.
+     * Example: "Văn A"
+     */
+    public function getShortNameAttribute(): string
+    {
+        return trim($this->name);
+    }
+
+    /** 
+     * Relationship with User Detail
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function details()
+    {
+        return $this->hasOne(UserDetail::class);
     }
 }
