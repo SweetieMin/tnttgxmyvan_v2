@@ -14,9 +14,21 @@ return new class extends Migration
         Schema::create('academic_years', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->enum('status_academic', ['upcoming','ongoing','finished']);
+            // 🔹 Thời gian cho chương trình Giáo lý
+            $table->date('catechism_start_date')->nullable();
+            $table->date('catechism_end_date')->nullable();
+
+            // 🔹 Cài đặt điểm chuẩn cần đạt được
+            $table->decimal('catechism_avg_score', 5, 2)->default(5.00);
+            $table->decimal('catechism_training_score', 5, 2)->default(5.00);
+
+            // 🔹 Thời gian cho Sinh hoạt - điểm danh TNTT
+            $table->date('activity_start_date')->nullable();
+            $table->date('activity_end_date')->nullable();
+
+            $table->unsignedSmallInteger('activity_score')->default(150);
+
+            $table->enum('status_academic', ['upcoming', 'ongoing', 'finished'])->default('upcoming');
             $table->timestamps();
         });
     }
