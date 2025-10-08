@@ -1,4 +1,3 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -11,9 +10,10 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as academic_years } from '@/routes/management/academic-years';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid } from 'lucide-react';
+import { LayoutGrid, SquareLibrary } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const generalNavItems: NavItem[] = [
@@ -26,9 +26,9 @@ const generalNavItems: NavItem[] = [
 
 const managementNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
+        title: 'Niên khoá',
+        href: academic_years(),
+        icon: SquareLibrary,
     },
 ];
 

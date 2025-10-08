@@ -6,6 +6,13 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\User;
 use App\Observers\UserObserver;
 
+/**
+ * 
+ * Register repository
+ */
+use App\Repositories\Interfaces\AcademicYearRepositoryInterface;
+use App\Repositories\Eloquent\AcademicYearRepository;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -13,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(AcademicYearRepositoryInterface::class, AcademicYearRepository::class);
     }
 
     /**
