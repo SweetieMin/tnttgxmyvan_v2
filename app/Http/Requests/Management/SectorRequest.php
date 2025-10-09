@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Management;
 
+use App\Models\Sector;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SectorRequest extends FormRequest
@@ -19,18 +21,23 @@ class SectorRequest extends FormRequest
      */
     public function rules(): array
     {
-        $sectorId = $this->route('sector');
-        
+        $sectorParam = $this->route('sector');
+        $sectorId = $sectorParam instanceof Sector ? $sectorParam->id : $sectorParam;
+
         return [
             'academic_year_id' => ['required', 'integer', 'exists:academic_years,id'],
+
             'name' => [
-                'required', 
-                'string', 
-                'min:5',
-                'max:255', 
-                'unique:sectors,name,' . $sectorId
+                'required',
+                'string',
+                'min:3',
+                'max:255',
+                Rule::unique('sectors', 'name')
+                    ->where(fn($q) => $q->where('academic_year_id', $this->input('academic_year_id')))
+                    ->ignore($sectorId), // bỏ qua khi update
             ],
-            'description' => ['nullable', 'string','min:10','max:255'],
+
+            'description' => ['nullable', 'string', 'min:10', 'max:255'],
         ];
     }
 
@@ -45,7 +52,7 @@ class SectorRequest extends FormRequest
             'academic_year_id.exists' => 'Niên khóa không tồn tại.',
             'name.required' => 'Tên ngành sinh hoạt là bắt buộc.',
             'name.string' => 'Tên ngành sinh hoạt phải là chuỗi.',
-            'name.min' => 'Tên ngành sinh hoạt phải có ít nhất 5 ký tự.',
+            'name.min' => 'Tên ngành sinh hoạt phải có ít nhất 3 ký tự.',
             'name.max' => 'Tên ngành sinh hoạt phải có ít hơn 255 ký tự.',
             'name.unique' => 'Tên ngành sinh hoạt đã tồn tại.',
             'description.string' => 'Mô tả phải là chuỗi.',

@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Management;
 
+use App\Models\Course;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CourseRequest extends FormRequest
@@ -19,16 +21,19 @@ class CourseRequest extends FormRequest
      */
     public function rules(): array
     {
-        $courseId = $this->route('course');
+        $courseParam = $this->route('course');
+        $courseId = $courseParam instanceof Course ? $courseParam->id : $courseParam;
         
         return [
             'academic_year_id' => ['required', 'integer', 'exists:academic_years,id'],
             'name' => [
-                'required', 
-                'string', 
-                'min:10',
-                'max:255', 
-                'unique:courses,name,' . $courseId
+                'required',
+                'string',
+                'min:3',
+                'max:255',
+                Rule::unique('sectors', 'name')
+                    ->where(fn($q) => $q->where('academic_year_id', $this->input('academic_year_id')))
+                    ->ignore($courseId), // bỏ qua khi update
             ],
             'description' => ['nullable', 'string','min:10','max:255'],
         ];

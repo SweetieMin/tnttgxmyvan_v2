@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 abstract class BaseRepository
 {
@@ -45,8 +46,24 @@ abstract class BaseRepository
 
     public function create(array $data)
     {
+        // ✅ Nếu model có cột ordering → auto tăng
+        if (Schema::hasColumn($this->model->getTable(), 'ordering') && !isset($data['ordering'])) {
+            // Nếu model có cột academic_year_id hoặc season_id thì group theo đó
+            $groupKey = collect(['academic_year_id', 'season_id', 'location_id'])
+                ->first(fn ($key) => array_key_exists($key, $data));
+
+            $query = $this->model->newQuery();
+
+            if ($groupKey) {
+                $query->where($groupKey, $data[$groupKey]);
+            }
+
+            $data['ordering'] = ($query->max('ordering') ?? 0) + 1;
+        }
+
         return $this->model->create($data);
     }
+
 
     public function update(int|string $id, array $data)
     {
