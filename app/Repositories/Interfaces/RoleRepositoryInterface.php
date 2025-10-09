@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Repositories\Interfaces;
+//use Illuminate\Interfaces\Pagination\LengthAwarePaginator;
 
-interface AcademicYearRepositoryInterface
+interface RoleRepositoryInterface
 {
     public function all();
-    public function paginate(int $perPage = 15);
     public function find(int|string $id);
     public function create(array $data);
     public function update(int|string $id, array $data);

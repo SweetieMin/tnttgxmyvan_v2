@@ -1,6 +1,7 @@
 'use client';
 
 import AppCardEmpty from '@/components/app-card-empty';
+import AppPagination from '@/components/app-pagination';
 import { Card } from '@/components/ui/card';
 import {
     Table,
@@ -27,6 +28,15 @@ interface AppTableProps<T> {
     renderCard?: (item: T, index: number) => React.ReactNode;
     emptyMessage?: string;
     emptyHint?: string;
+    /** 👇 Pagination props */
+    links?: {
+        url: string | null;
+        label: string;
+        active: boolean;
+    }[];
+    total?: number;
+    from?: number;
+    to?: number;
 }
 
 /**
@@ -45,6 +55,10 @@ export function AppTable<T>({
     renderCard,
     emptyMessage = 'Không có dữ liệu',
     emptyHint = 'Hãy thêm mới dữ liệu để bắt đầu quản lý.',
+    links,
+    total,
+    from,
+    to,
 }: AppTableProps<T>) {
     // 🌀 Loading
     if (isLoading) {
@@ -148,6 +162,9 @@ export function AppTable<T>({
                     </Card>
                 ))}
             </div>
+            {links && total && from && to && (
+                <AppPagination links={links} total={total} from={from} to={to} />
+            )}
         </>
     );
 }

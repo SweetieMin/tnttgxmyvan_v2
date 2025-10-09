@@ -11,9 +11,10 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as academic_years } from '@/routes/management/academic-years';
+import { index as roles } from '@/routes/management/roles';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, SquareLibrary } from 'lucide-react';
+import { LayoutGrid, SquareLibrary, ShieldUser } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const generalNavItems: NavItem[] = [
@@ -29,6 +30,11 @@ const managementNavItems: NavItem[] = [
         title: 'Niên khoá',
         href: academic_years(),
         icon: SquareLibrary,
+    },
+    {
+        title: 'Chức vụ',
+        href: roles(),
+        icon: ShieldUser,
     },
 ];
 

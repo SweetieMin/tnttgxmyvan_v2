@@ -1,6 +1,7 @@
 import AppHeaderAddButton from '@/components/app-header-add-button';
 import { AppPopoverCalendar } from '@/components/app-popover-calendar';
 import { AppTable } from '@/components/app-table';
+import AppPagination from '@/components/app-pagination';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -31,10 +32,10 @@ import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
-    SelectGroup,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
@@ -52,14 +53,23 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export interface Props {
-    years: AcademicYear[];
-    flash?: {
-        success?: string;
-        error?: string;
+    years: {
+        data: AcademicYear[];
+        links: {
+            url: string | null;
+            label: string;
+            active: boolean;
+        }[];
+        total: number;
+        from: number;
+        to: number;
+        current_page: number;
+        last_page: number;
+        per_page: number;
     };
 }
 
-export default function AcademicYearIndex({ years = [] }: Props) {
+export default function AcademicYearIndex({ years }: Props) {
     const [isOpen, setIsOpen] = useState(false);
     const [editingAcademicYear, setEditingAcademicYear] =
         useState<AcademicYear | null>(null);
@@ -280,18 +290,24 @@ export default function AcademicYearIndex({ years = [] }: Props) {
                             title: 'Điểm Giáo Lý',
                             className: 'text-center w-[120px]',
                             render: (item) => (
-                                <span className="font-bold">
-                                    {item.catechism_avg_score}/10
-                                </span>
+                                <>
+                                    <span className="font-bold">
+                                        {item.catechism_avg_score}
+                                    </span>
+                                    /10
+                                </>
                             ),
                         },
                         {
                             title: 'Điểm chuyên cần Giáo Lý',
                             className: 'text-center w-[120px]',
                             render: (item) => (
-                                <span className="font-bold">
-                                    {item.catechism_training_score}/10
-                                </span>
+                                <>
+                                    <span className="font-bold">
+                                        {item.catechism_training_score}
+                                    </span>
+                                    /10
+                                </>
                             ),
                         },
                         {
@@ -306,7 +322,7 @@ export default function AcademicYearIndex({ years = [] }: Props) {
                             render: (item) => item.activity_score,
                         },
                     ]}
-                    data={years}
+                    data={years.data}
                     emptyMessage="Chưa có niên khoá nào"
                     emptyHint="Hãy nhấn nút 'Thêm niên khoá' để tạo niên khoá đầu tiên."
                     renderActions={(item) => (
@@ -412,6 +428,14 @@ export default function AcademicYearIndex({ years = [] }: Props) {
                     )}
                 />
 
+                {/* Pagination */}
+                <AppPagination
+                    links={years.links}
+                    total={years.total}
+                    from={years.from}
+                    to={years.to}
+                />
+
                 {/* Academic Year Dialog */}
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogContent className="max-h-[90vh] overflow-y-auto">
@@ -429,7 +453,7 @@ export default function AcademicYearIndex({ years = [] }: Props) {
                         </DialogHeader>
                         <Separator />
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid  gap-4 grid-cols-2">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="status_academic">
                                         Niên khoá
@@ -471,16 +495,16 @@ export default function AcademicYearIndex({ years = [] }: Props) {
                                             <SelectValue placeholder="Chọn trạng thái" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                        <SelectGroup>
-                                            <SelectItem value="upcoming">
-                                                Sắp diễn ra
-                                            </SelectItem>
-                                            <SelectItem value="ongoing">
-                                                Đang diễn ra
-                                            </SelectItem>
-                                            <SelectItem value="finished">
-                                                Đã kết thúc
-                                            </SelectItem>
+                                            <SelectGroup>
+                                                <SelectItem value="upcoming">
+                                                    Sắp diễn ra
+                                                </SelectItem>
+                                                <SelectItem value="ongoing">
+                                                    Đang diễn ra
+                                                </SelectItem>
+                                                <SelectItem value="finished">
+                                                    Đã kết thúc
+                                                </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
@@ -495,7 +519,7 @@ export default function AcademicYearIndex({ years = [] }: Props) {
                                 <h3 className="text-lg font-semibold">
                                     Thời gian Giáo lý
                                 </h3>
-                                <div className="grid gap-4 grid-cols-2">
+                                <div className="grid grid-cols-2 gap-4">
                                     <AppPopoverCalendar
                                         id="catechism_start_date"
                                         label="Ngày bắt đầu"
@@ -540,7 +564,7 @@ export default function AcademicYearIndex({ years = [] }: Props) {
                                 <h3 className="text-lg font-semibold">
                                     Thời gian Sinh hoạt
                                 </h3>
-                                <div className="grid gap-4 grid-cols-2">
+                                <div className="grid grid-cols-2 gap-4">
                                     <AppPopoverCalendar
                                         id="activity_start_date"
                                         label="Ngày bắt đầu"

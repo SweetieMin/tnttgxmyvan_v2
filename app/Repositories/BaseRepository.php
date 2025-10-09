@@ -18,6 +18,11 @@ abstract class BaseRepository
         return $this->model->all();
     }
 
+    public function paginate(int $perPage = 15)
+    {
+        return $this->model->paginate($perPage);
+    }
+
     public function find(int|string $id)
     {
         return $this->model->findOrFail($id);

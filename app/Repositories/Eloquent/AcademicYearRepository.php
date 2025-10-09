@@ -12,15 +12,4 @@ class AcademicYearRepository extends BaseRepository implements AcademicYearRepos
     {
         parent::__construct($model);
     }
-
-    // ✅ Bạn có thể thêm các hàm riêng cho AcademicYear
-    public function getOngoingYears()
-    {
-        return $this->model->where('status_academic', 'ongoing')->get();
-    }
-
-    public function getUpcomingYears()
-    {
-        return $this->model->where('status_academic', 'upcoming')->get();
-    }
 }

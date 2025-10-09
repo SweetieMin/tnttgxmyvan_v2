@@ -19,9 +19,9 @@ class AcademicYearController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $years = $this->academicYearRepository->all();
+        $years = $this->academicYearRepository->paginate(10);
 
         return Inertia::render('management/academic-year/index', [
             'years' => $years,
@@ -43,7 +43,7 @@ class AcademicYearController extends Controller
     {
         $this->academicYearRepository->create($request->validated());
 
-        return redirect()->route('management.academic-years.index')->with('success', 'Niên khóa đã được tạo thành công');
+        return redirect()->route('management.academic-years.index')->with('success', 'Niên khóa ' . $request->name . ' đã được tạo thành công');
     }
 
     /**
@@ -69,7 +69,7 @@ class AcademicYearController extends Controller
     {
         $this->academicYearRepository->update($id, $request->validated());
 
-        return redirect()->route('management.academic-years.index')->with('success', 'Niên khóa đã được cập nhật thành công');
+        return redirect()->route('management.academic-years.index')->with('success', 'Niên khóa ' . $request->name . ' đã được cập nhật thành công');
     }
 
     /**
@@ -77,8 +77,10 @@ class AcademicYearController extends Controller
      */
     public function destroy(string $id)
     {
+
+        $name = $this->academicYearRepository->find($id)->name;
         $this->academicYearRepository->delete($id);
 
-        return redirect()->route('management.academic-years.index')->with('success', 'Niên khóa đã được xóa thành công');
+        return redirect()->route('management.academic-years.index')->with('success', 'Niên khóa ' . $name . ' đã được xóa thành công');
     }
 }
