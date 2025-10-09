@@ -14,6 +14,10 @@ use App\Repositories\Interfaces\AcademicYearRepositoryInterface;
 use App\Repositories\Eloquent\AcademicYearRepository;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Repositories\Eloquent\RoleRepository;
+use App\Repositories\Interfaces\SectorRepositoryInterface;
+use App\Repositories\Eloquent\SectorRepository;
+use App\Repositories\Interfaces\CourseRepositoryInterface;
+use App\Repositories\Eloquent\CourseRepository;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -25,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(AcademicYearRepositoryInterface::class, AcademicYearRepository::class);
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
+        $this->app->bind(SectorRepositoryInterface::class, SectorRepository::class);
+        $this->app->bind(CourseRepositoryInterface::class, CourseRepository::class);
     }
 
     /**

@@ -3,6 +3,8 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Management\RoleController;
+use App\Http\Controllers\Management\CourseController;
+use App\Http\Controllers\Management\SectorController;
 use App\Http\Controllers\Management\AcademicYearController;
 
 Route::get('/', function () {
@@ -17,6 +19,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('management')->name('management.')->group(function () {
         Route::resource('academic-years', AcademicYearController::class);
         Route::resource('roles', RoleController::class);
+        Route::resource('sectors', SectorController::class);
+        Route::resource('courses', CourseController::class);
     });
 
 });

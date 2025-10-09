@@ -10,3 +10,25 @@ export interface AcademicYear {
     activity_score: number;
     status_academic: string;
 }
+
+export interface Course {
+    id: number;
+    academic_year_id: number;
+    ordering: number;
+    name: string;
+    description: string | null;
+    academic_year?: AcademicYear;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Sector {
+    id: number;
+    academic_year_id: number;
+    ordering: number;
+    name: string;
+    description: string | null;
+    academic_year?: AcademicYear;
+    created_at: string;
+    updated_at: string;
+}

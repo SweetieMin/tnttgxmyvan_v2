@@ -39,7 +39,12 @@ class MakeRepository extends Command
 
                 interface {$name}RepositoryInterface
                 {
-
+                    public function all();
+                    public function find(int|string \$id);
+                    public function paginate(int \$perPage = 15);
+                    public function create(array \$data);
+                    public function update(int|string \$id, array \$data);
+                    public function delete(int|string \$id);
                 }
                 PHP);
             $this->info("✅ Interface: {$interfacePath}");
@@ -55,10 +60,15 @@ class MakeRepository extends Command
                 namespace App\Repositories\Eloquent;
 
                 use App\Repositories\Interfaces\\{$name}RepositoryInterface;
+                use App\Models\\{$name};
+                use App\Repositories\BaseRepository;
 
-                class {$name}Repository implements {$name}RepositoryInterface
+                class {$name}Repository extends BaseRepository implements {$name}RepositoryInterface
                 {
-                    // TODO: Thêm các phương thức xử lý logic ở đây
+                    public function __construct({$name} \$model)
+                    {
+                        parent::__construct(\$model);
+                    }
                 }
                 PHP);
             $this->info("✅ Eloquent: {$eloquentPath}");

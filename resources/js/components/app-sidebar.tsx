@@ -12,9 +12,12 @@ import {
 import { dashboard } from '@/routes';
 import { index as academic_years } from '@/routes/management/academic-years';
 import { index as roles } from '@/routes/management/roles';
+import { index as courses } from '@/routes/management/courses';
+import { index as sectors } from '@/routes/management/sectors';
+
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, SquareLibrary, ShieldUser } from 'lucide-react';
+import { LayoutGrid, SquareLibrary, ShieldUser,Church, FerrisWheel } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const generalNavItems: NavItem[] = [
@@ -30,6 +33,16 @@ const managementNavItems: NavItem[] = [
         title: 'Niên khoá',
         href: academic_years(),
         icon: SquareLibrary,
+    },
+    {
+        title: 'Lớp Giáo Lý',
+        href: courses(),
+        icon: Church,
+    },
+    {
+        title: 'Ngành Sinh Hoạt',
+        href: sectors(),
+        icon: FerrisWheel,
     },
     {
         title: 'Chức vụ',

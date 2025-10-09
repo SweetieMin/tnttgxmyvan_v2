@@ -23,6 +23,21 @@ abstract class BaseRepository
         return $this->model->paginate($perPage);
     }
 
+    public function with(array $relations)
+    {
+        return $this->model->with($relations);
+    }
+
+    public function allWith(array $relations = [])
+    {
+        return $this->model->with($relations)->get();
+    }
+
+    public function paginateWith(array $relations = [], int $perPage = 15)
+    {
+        return $this->model->with($relations)->paginate($perPage);
+    }
+
     public function find(int|string $id)
     {
         return $this->model->findOrFail($id);

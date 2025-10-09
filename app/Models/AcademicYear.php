@@ -31,4 +31,14 @@ class AcademicYear extends Model
             'status_academic' => 'string',
         ];
     }
+
+    public function sectors()
+    {
+        return $this->hasMany(Sector::class);
+    }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
 }
