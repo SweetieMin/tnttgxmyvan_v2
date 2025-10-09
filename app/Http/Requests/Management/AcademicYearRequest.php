@@ -33,9 +33,9 @@ class AcademicYearRequest extends FormRequest
             'activity_start_date' => ['required', 'date'],
             'activity_end_date' => ['required', 'date', 'after_or_equal:activity_start_date'],
             'status_academic' => ['nullable', 'in:upcoming,ongoing,finished'],
-            'catechism_avg_score' => ['required', 'numeric', 'min:0', 'max:10'],
-            'catechism_training_score' => ['required', 'numeric', 'min:0', 'max:10'],
-            'activity_score' => ['required', 'integer', 'min:0', 'max:1000'],
+            'catechism_avg_score' => ['required', 'numeric', 'min:1', 'max:10'],
+            'catechism_training_score' => ['required', 'numeric', 'min:1', 'max:10'],
+            'activity_score' => ['required', 'integer', 'min:1', 'max:1000'],
         ];
     }
 
@@ -75,19 +75,19 @@ class AcademicYearRequest extends FormRequest
             // Điểm trung bình Giáo lý
             'catechism_avg_score.required' => 'Điểm trung bình Giáo lý là bắt buộc.',
             'catechism_avg_score.numeric' => 'Điểm trung bình Giáo lý phải là số.',
-            'catechism_avg_score.min' => 'Điểm trung bình Giáo lý không được nhỏ hơn 0.',
+            'catechism_avg_score.min' => 'Điểm trung bình Giáo lý không được nhỏ hơn 1.',
             'catechism_avg_score.max' => 'Điểm trung bình Giáo lý không được lớn hơn 10.',
             
             // Điểm đào tạo Giáo lý
             'catechism_training_score.required' => 'Điểm đào tạo Giáo lý là bắt buộc.',
             'catechism_training_score.numeric' => 'Điểm đào tạo Giáo lý phải là số.',
-            'catechism_training_score.min' => 'Điểm đào tạo Giáo lý không được nhỏ hơn 0.',
+            'catechism_training_score.min' => 'Điểm đào tạo Giáo lý không được nhỏ hơn 1.',
             'catechism_training_score.max' => 'Điểm đào tạo Giáo lý không được lớn hơn 10.',
             
             // Điểm Sinh hoạt
             'activity_score.required' => 'Điểm Sinh hoạt là bắt buộc.',
             'activity_score.integer' => 'Điểm Sinh hoạt phải là số nguyên.',
-            'activity_score.min' => 'Điểm Sinh hoạt không được nhỏ hơn 0.',
+            'activity_score.min' => 'Điểm Sinh hoạt không được nhỏ hơn 1.',
             'activity_score.max' => 'Điểm Sinh hoạt không được lớn hơn 1000.',
         ];
     }
