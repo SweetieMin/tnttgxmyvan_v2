@@ -22,14 +22,36 @@ class SectorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sectors = $this->sectorRepository->paginateWith(['academicYear'], 10);
+        $academicYearId = $request->get('academic_year_id');
+        
+        // Tìm niên khóa hiện tại nếu không có filter
+        if (!$academicYearId) {
+            $currentYear = date('Y');
+            $currentAcademicYear = $this->academicYearRepository->getModel()
+                ->where('name', 'like', $currentYear . '%')
+                ->where('status_academic', 'ongoing')
+                ->first();
+            
+            if ($currentAcademicYear) {
+                $academicYearId = $currentAcademicYear->id;
+            }
+        }
+        
+        // Query sectors với filter
+        $query = $this->sectorRepository->getModel()->with(['academicYear']);
+        if ($academicYearId) {
+            $query->where('academic_year_id', $academicYearId);
+        }
+        
+        $sectors = $query->paginate(10);
         $academicYears = $this->academicYearRepository->all();
         
         return Inertia::render('management/sector/index', [
             'sectors' => $sectors,
             'academicYears' => $academicYears,
+            'currentAcademicYearId' => $academicYearId,
         ]);
     }
 

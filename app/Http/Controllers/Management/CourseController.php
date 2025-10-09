@@ -22,14 +22,36 @@ class CourseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $courses = $this->courseRepository->paginateWith(['academicYear'], 10);
+        $academicYearId = $request->get('academic_year_id');
+        
+        // Tìm niên khóa hiện tại nếu không có filter
+        if (!$academicYearId) {
+            $currentYear = date('Y');
+            $currentAcademicYear = $this->academicYearRepository->getModel()
+                ->where('name', 'like', $currentYear . '%')
+                ->where('status_academic', 'ongoing')
+                ->first();
+            
+            if ($currentAcademicYear) {
+                $academicYearId = $currentAcademicYear->id;
+            }
+        }
+        
+        // Query courses với filter
+        $query = $this->courseRepository->getModel()->with(['academicYear']);
+        if ($academicYearId) {
+            $query->where('academic_year_id', $academicYearId);
+        }
+        
+        $courses = $query->paginate(10);
         $academicYears = $this->academicYearRepository->all();
         
         return Inertia::render('management/course/index', [
             'courses' => $courses,
             'academicYears' => $academicYears,
+            'currentAcademicYearId' => $academicYearId,
         ]);
     }
 

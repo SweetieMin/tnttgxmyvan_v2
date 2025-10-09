@@ -40,8 +40,8 @@ import { index as sectors } from '@/routes/management/sectors';
 import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear, Sector } from '@/types/academic';
 import { soundToast } from '@/utils/sound-toast';
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { SquarePen, Trash2 } from 'lucide-react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
+import { SquarePen, Trash2, Filter } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -65,13 +65,15 @@ export interface Props {
         per_page: number;
     };
     academicYears: AcademicYear[];
+    currentAcademicYearId?: number;
 }
 
-export default function SectorIndex({ sectors, academicYears }: Props) {
+export default function SectorIndex({ sectors, academicYears, currentAcademicYearId }: Props) {
     const [isOpen, setIsOpen] = useState(false);
     const [editingSector, setEditingSector] = useState<Sector | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Sector | null>(null);
+    const [selectedAcademicYearId, setSelectedAcademicYearId] = useState<number | undefined>(currentAcademicYearId);
 
     const { flash } = usePage<{
         flash?: {
@@ -176,6 +178,16 @@ export default function SectorIndex({ sectors, academicYears }: Props) {
         resetForm();
     };
 
+    const handleAcademicYearFilter = (academicYearId: string) => {
+        const yearId = academicYearId === 'all' ? undefined : parseInt(academicYearId);
+        setSelectedAcademicYearId(yearId);
+        
+        router.get('/management/sectors', 
+            yearId ? { academic_year_id: yearId } : {},
+            { preserveState: true, replace: true }
+        );
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Ngành sinh hoạt" />
@@ -188,6 +200,36 @@ export default function SectorIndex({ sectors, academicYears }: Props) {
                     buttonLabel="Thêm ngành sinh hoạt"
                     onButtonClick={handleAddClick}
                 />
+
+                {/* Filter Section */}
+                <div className="mb-6 rounded-lg border bg-card p-4">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-center gap-2">
+                            <Filter className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">Lọc theo niên khóa:</span>
+                        </div>
+                        <div className="flex gap-2">
+                            <Select
+                                value={selectedAcademicYearId?.toString() || 'all'}
+                                onValueChange={handleAcademicYearFilter}
+                            >
+                                <SelectTrigger className="w-[200px]">
+                                    <SelectValue placeholder="Chọn niên khóa" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {academicYears.map((year) => (
+                                        <SelectItem
+                                            key={year.id}
+                                            value={year.id.toString()}
+                                        >
+                                            {year.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Table/Card responsive */}
                 <AppTable<Sector>
