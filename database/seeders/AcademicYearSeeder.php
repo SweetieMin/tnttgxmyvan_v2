@@ -15,6 +15,17 @@ class AcademicYearSeeder extends Seeder
     {
         $years = [
             [
+                'name' => '2024-2025',
+                'catechism_start_date' => '2024-09-01',
+                'catechism_end_date'=> '2025-06-30',
+                'catechism_avg_score' => 5,
+                'catechism_training_score'=> 5,
+                'activity_start_date'=> '2024-09-01',
+                'activity_end_date' => '2025-07-31',
+                'activity_score' =>  200,
+                'status_academic' => 'finished',
+            ],
+            [
                 'name' => '2025-2026',
                 'catechism_start_date' => '2025-09-01',
                 'catechism_end_date'=> '2026-06-30',

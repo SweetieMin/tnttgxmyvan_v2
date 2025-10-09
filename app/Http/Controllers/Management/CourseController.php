@@ -45,7 +45,7 @@ class CourseController extends Controller
             $query->where('academic_year_id', $academicYearId);
         }
         
-        $courses = $query->paginate(10);
+        $courses = $query->orderBy('ordering', 'asc')->paginate(10);
         $academicYears = $this->academicYearRepository->all();
         
         return Inertia::render('management/course/index', [

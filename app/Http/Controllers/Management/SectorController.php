@@ -45,7 +45,7 @@ class SectorController extends Controller
             $query->where('academic_year_id', $academicYearId);
         }
         
-        $sectors = $query->paginate(10);
+        $sectors = $query->orderBy('ordering', 'asc')->paginate(10);
         $academicYears = $this->academicYearRepository->all();
         
         return Inertia::render('management/sector/index', [
