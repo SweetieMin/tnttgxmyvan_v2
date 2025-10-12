@@ -109,12 +109,7 @@ export const createCourseColumns = ({ onEdit, onDelete }: CourseColumnsProps): C
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(course.id.toString())}
-                        >
-                            Copy ID
-                        </DropdownMenuItem>
+                        <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => onEdit(course)}>
                             <SquarePen className="h-4 w-4 mr-2" />
