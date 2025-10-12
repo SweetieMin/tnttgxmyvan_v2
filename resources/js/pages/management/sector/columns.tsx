@@ -12,14 +12,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SquarePen, Trash2, MoreHorizontal } from "lucide-react";
-import type { Course } from "@/types/academic";
+import type { Sector } from "@/types/academic";
 
-interface CourseColumnsProps {
-    onEdit: (course: Course) => void;
-    onDelete: (course: Course) => void;
+interface SectorColumnsProps {
+    onEdit: (sector: Sector) => void;
+    onDelete: (sector: Sector) => void;
 }
 
-export const createCourseColumns = ({ onEdit, onDelete }: CourseColumnsProps): ColumnDef<Course>[] => [
+export const createSectorColumns = ({ onEdit, onDelete }: SectorColumnsProps): ColumnDef<Sector>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -56,7 +56,7 @@ export const createCourseColumns = ({ onEdit, onDelete }: CourseColumnsProps): C
     },
     {
         accessorKey: "name",
-        header: "Tên lớp giáo lý",
+        header: "Tên ngành sinh hoạt",
         enableSorting: true,
         cell: ({ row }) => (
             <div className="font-semibold">
@@ -98,33 +98,28 @@ export const createCourseColumns = ({ onEdit, onDelete }: CourseColumnsProps): C
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-            const course = row.original;
+            const sector = row.original;
 
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
                             <span className="sr-only">Open menu</span>
-                            <MoreHorizontal />
+                            <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(course.id.toString())}
-                        >
-                            Copy ID
-                        </DropdownMenuItem>
+                        <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onEdit(course)}>
-                            <SquarePen className="h-4 w-4 mr-2" />
+                        <DropdownMenuItem onClick={() => onEdit(sector)}>
+                            <SquarePen className="mr-2 h-4 w-4" />
                             Chỉnh sửa
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
-                            onClick={() => onDelete(course)}
-                            className="text-destructive"
+                        <DropdownMenuItem
+                            onClick={() => onDelete(sector)}
+                            className="text-red-600"
                         >
-                            <Trash2 className="h-4 w-4 mr-2" />
+                            <Trash2 className="mr-2 h-4 w-4" />
                             Xóa
                         </DropdownMenuItem>
                     </DropdownMenuContent>

@@ -1,6 +1,4 @@
 import AppHeaderAddButton from '@/components/app-header-add-button';
-import AppPagination from '@/components/app-pagination';
-import { AppTable } from '@/components/app-table';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -26,6 +24,7 @@ import {
     InputGroupInput,
     InputGroupText,
 } from '@/components/ui/input-group';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -35,14 +34,23 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import {
+    DropdownMenu,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import { index as sectors } from '@/routes/management/sectors';
 import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear, Sector } from '@/types/academic';
 import { soundToast } from '@/utils/sound-toast';
 import { Head, useForm, usePage, router } from '@inertiajs/react';
-import { SquarePen, Trash2, Filter } from 'lucide-react';
+import { Filter, ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { DataTable } from './data-table';
+import { createSectorColumns } from './columns';
+import ErrorBoundary from '@/components/error-boundary';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Quản lý', href: '' },
@@ -74,6 +82,43 @@ export default function SectorIndex({ sectors, academicYears, currentAcademicYea
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Sector | null>(null);
     const [selectedAcademicYearId, setSelectedAcademicYearId] = useState<number | undefined>(currentAcademicYearId);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showColumnSelect, setShowColumnSelect] = useState(false);
+    const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
+        select: true,
+        ordering: true,
+        name: true,
+        academic_year: true,
+        description: true,
+        actions: true,
+    });
+
+    // Column definitions for visibility control
+    const columnDefinitions = [
+        { id: 'select', label: 'Chọn' },
+        { id: 'ordering', label: 'Thứ tự' },
+        { id: 'name', label: 'Tên ngành sinh hoạt' },
+        { id: 'academic_year', label: 'Niên khóa' },
+        { id: 'description', label: 'Mô tả' },
+        { id: 'actions', label: 'Thao tác' },
+    ];
+
+    // Helper functions for select all/none
+    const handleSelectAll = () => {
+        const allVisible = columnDefinitions.reduce((acc, col) => {
+            acc[col.id] = true;
+            return acc;
+        }, {} as Record<string, boolean>);
+        setColumnVisibility(allVisible);
+    };
+
+    const handleSelectNone = () => {
+        const allHidden = columnDefinitions.reduce((acc, col) => {
+            acc[col.id] = false;
+            return acc;
+        }, {} as Record<string, boolean>);
+        setColumnVisibility(allHidden);
+    };
 
     const { flash } = usePage<{
         flash?: {
@@ -82,6 +127,35 @@ export default function SectorIndex({ sectors, academicYears, currentAcademicYea
             message?: string;
         };
     }>().props;
+
+    // Set default academic year if not provided
+    useEffect(() => {
+        if (!selectedAcademicYearId && academicYears.length > 0) {
+            // Find current academic year (ongoing status)
+            const currentYear = academicYears.find(year => year.status_academic === 'ongoing');
+            if (currentYear) {
+                setSelectedAcademicYearId(currentYear.id);
+            } else if (academicYears.length > 0) {
+                // Fallback to first academic year if no ongoing year found
+                setSelectedAcademicYearId(academicYears[0].id);
+            }
+        }
+    }, [academicYears, selectedAcademicYearId]);
+
+    // Close column select when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Element;
+            if (showColumnSelect && !target.closest('.column-select-container')) {
+                setShowColumnSelect(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showColumnSelect]);
 
     useEffect(() => {
         if (flash?.success) {
@@ -179,14 +253,15 @@ export default function SectorIndex({ sectors, academicYears, currentAcademicYea
     };
 
     const handleAcademicYearFilter = (academicYearId: string) => {
-        const yearId = academicYearId === 'all' ? undefined : parseInt(academicYearId);
+        const yearId = parseInt(academicYearId);
         setSelectedAcademicYearId(yearId);
         
         router.get('/management/sectors', 
-            yearId ? { academic_year_id: yearId } : {},
+            { academic_year_id: yearId },
             { preserveState: true, replace: true }
         );
     };
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -201,150 +276,134 @@ export default function SectorIndex({ sectors, academicYears, currentAcademicYea
                     onButtonClick={handleAddClick}
                 />
 
-                {/* Filter Section */}
+                {/* Unified Filter Section */}
                 <div className="mb-6 rounded-lg border bg-card p-4">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-2">
                             <Filter className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">Lọc theo niên khóa:</span>
+                            <span className="text-sm font-medium">Bộ lọc và tìm kiếm</span>
                         </div>
-                        <div className="flex gap-2">
-                            <Select
-                                value={selectedAcademicYearId?.toString() || 'all'}
-                                onValueChange={handleAcademicYearFilter}
-                            >
-                                <SelectTrigger className="w-[200px]">
-                                    <SelectValue placeholder="Chọn niên khóa" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {academicYears.map((year) => (
-                                        <SelectItem
-                                            key={year.id}
-                                            value={year.id.toString()}
-                                        >
-                                            {year.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-muted-foreground">Niên khóa:</span>
+                                    <Select
+                                        value={selectedAcademicYearId?.toString() || ''}
+                                        onValueChange={handleAcademicYearFilter}
+                                    >
+                                        <SelectTrigger className="w-[200px]">
+                                            <SelectValue placeholder={selectedAcademicYearId ? undefined : "Chọn niên khóa"} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {academicYears.map((year) => (
+                                                <SelectItem key={year.id} value={year.id.toString()}>
+                                                    {year.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-muted-foreground">Tìm kiếm:</span>
+                                    <Input
+                                        placeholder="Tìm kiếm ngành sinh hoạt..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">Cột hiển thị:</span>
+                                <div className="relative column-select-container">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setShowColumnSelect(!showColumnSelect)}
+                                        className="min-w-[120px] justify-between"
+                                    >
+                                        {Object.values(columnVisibility).filter(Boolean).length} cột
+                                        <ChevronDown className="ml-2 h-4 w-4" />
+                                    </Button>
+                                    {showColumnSelect && (
+                                        <div className="absolute top-full right-0 mt-1 w-64 bg-white border rounded-md shadow-lg z-50 p-2">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="text-sm font-medium">Chọn cột hiển thị</span>
+                                                <div className="flex gap-1">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={handleSelectAll}
+                                                        className="text-xs h-6 px-2"
+                                                    >
+                                                        Tất cả
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={handleSelectNone}
+                                                        className="text-xs h-6 px-2"
+                                                    >
+                                                        Không
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1 max-h-48 overflow-y-auto">
+                                                {columnDefinitions.map((column) => (
+                                                    <label
+                                                        key={column.id}
+                                                        className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={columnVisibility[column.id]}
+                                                            onChange={(e) =>
+                                                                setColumnVisibility(prev => ({
+                                                                    ...prev,
+                                                                    [column.id]: e.target.checked
+                                                                }))
+                                                            }
+                                                            className="rounded"
+                                                        />
+                                                        <span className="text-sm">{column.label}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Table/Card responsive */}
-                <AppTable<Sector>
-                    columns={[
-                        {
-                            title: 'Thứ tự',
-                            className: 'text-center w-[100px]',
-                            render: (item) => (
-                                <span className="font-semibold text-primary">
-                                    {item.ordering}
-                                </span>
-                            ),
-                        },
-                        {
-                            title: 'Tên ngành sinh hoạt',
-                            className: 'font-semibold w-[200px]',
-                            render: (item) => item.name,
-                        },
-                        {
-                            title: 'Niên khóa',
-                            className: 'w-[150px]',
-                            render: (item) => (
-                                <span className="text-sm">
-                                    {item.academic_year?.name || 'Chưa chọn'}
-                                </span>
-                            ),
-                        },
-                        {
-                            title: 'Mô tả',
-                            className: 'text-muted-foreground',
-                            render: (item) => (
-                                <span className="line-clamp-2">
-                                    {item.description || 'Không có mô tả'}
-                                </span>
-                            ),
-                        },
-                    ]}
-                    data={sectors.data}
-                    emptyMessage="Chưa có ngành sinh hoạt nào"
-                    emptyHint="Hãy nhấn nút 'Thêm ngành sinh hoạt' để tạo ngành sinh hoạt đầu tiên."
-                    renderActions={(item) => (
-                        <div className="flex justify-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleEdit(item)}
-                            >
-                                <SquarePen /> Sửa
-                            </Button>
-                            <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => handleDelete(item)}
-                            >
-                                <Trash2 /> Xoá
-                            </Button>
-                        </div>
-                    )}
-                    renderCard={(item: Sector) => (
-                        <div className="flex flex-col gap-3">
-                            {/* 🏷️ Tên ngành sinh hoạt */}
-                            <div className="flex items-center justify-between">
-                                <span className="text-base font-semibold text-foreground">
-                                    {item.name}
-                                </span>
-                                <span className="text-sm font-semibold text-primary">
-                                    #{item.ordering}
-                                </span>
-                            </div>
-                            <Separator />
-                            {/* 📅 Niên khóa */}
-                            <div className="text-sm">
-                                <span className="font-medium text-foreground">
-                                    Niên khóa:{' '}
-                                </span>
-                                <span className="text-muted-foreground">
-                                    {item.academic_year?.name || 'Chưa chọn'}
-                                </span>
-                            </div>
-                            <Separator />
-                            {/* 📝 Mô tả */}
-                            <div className="text-sm text-muted-foreground">
-                                <p className="line-clamp-3">
-                                    {item.description || 'Không có mô tả'}
-                                </p>
-                            </div>
-                            <Separator />
-                            {/* ⚙️ Hành động */}
-                            <div className="mt-3 flex gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleEdit(item)}
-                                >
-                                    <SquarePen className="mr-1 h-4 w-4" /> Sửa
-                                </Button>
-                                <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => handleDelete(item)}
-                                >
-                                    <Trash2 className="mr-1 h-4 w-4" /> Xoá
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                />
-
-                {/* Pagination */}
-                <AppPagination
-                    links={sectors.links}
-                    total={sectors.total}
-                    from={sectors.from}
-                    to={sectors.to}
-                />
+                {/* Data Table */}
+                <ErrorBoundary>
+                    <DataTable
+                        columns={createSectorColumns({
+                            onEdit: handleEdit,
+                            onDelete: handleDelete,
+                        })}
+                        data={sectors.data.filter(sector => 
+                            sector.name.toLowerCase().includes(searchTerm.toLowerCase())
+                        )}
+                        columnVisibility={columnVisibility}
+                        onColumnVisibilityChange={(updaterOrValue) => {
+                            if (typeof updaterOrValue === 'function') {
+                                setColumnVisibility(updaterOrValue);
+                            } else {
+                                setColumnVisibility(updaterOrValue);
+                            }
+                        }}
+                        pagination={{
+                            current_page: sectors.current_page,
+                            last_page: sectors.last_page,
+                            per_page: sectors.per_page,
+                            total: sectors.total,
+                            from: sectors.from,
+                            to: sectors.to,
+                            links: sectors.links,
+                        }}
+                    />
+                </ErrorBoundary>
 
                 {/* Sector Dialog */}
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
