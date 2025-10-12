@@ -21,6 +21,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('roles', RoleController::class);
         Route::resource('sectors', SectorController::class);
         Route::resource('courses', CourseController::class);
+        Route::patch('/management/courses/reorder', [CourseController::class, 'reorder']);
+
     });
 
 });

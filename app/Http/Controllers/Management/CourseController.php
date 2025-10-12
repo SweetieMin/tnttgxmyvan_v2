@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Management;
 
 use Inertia\Inertia;
+use App\Models\Course;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Management\CourseRequest;
@@ -13,7 +14,8 @@ class CourseController extends Controller
 {
     protected $courseRepository;
     protected $academicYearRepository;
-    
+    protected $academicYearId;
+
     public function __construct(CourseRepository $courseRepository, AcademicYearRepository $academicYearRepository)
     {
         $this->courseRepository = $courseRepository;
@@ -24,6 +26,7 @@ class CourseController extends Controller
      */
     public function index(Request $request)
     {
+        
         $academicYearId = $request->get('academic_year_id');
         
         // Tìm niên khóa hiện tại nếu không có filter
@@ -39,13 +42,13 @@ class CourseController extends Controller
             }
         }
         
-        // Query courses với filter
+        // Query sectors với filter
         $query = $this->courseRepository->getModel()->with(['academicYear']);
         if ($academicYearId) {
             $query->where('academic_year_id', $academicYearId);
         }
         
-        $courses = $query->orderBy('ordering', 'asc')->paginate(10);
+        $courses = $query->orderBy('ordering', 'asc')->paginate(20);
         $academicYears = $this->academicYearRepository->all();
         
         return Inertia::render('management/course/index', [
@@ -105,5 +108,15 @@ class CourseController extends Controller
         $name = $this->courseRepository->find($id)->name;
         $this->courseRepository->delete($id);
         return redirect()->route('management.courses.index')->with('success', 'Lớp giáo lý ' . $name . ' đã được xóa thành công');
+    }
+
+    public function reorder(Request $request)
+    {
+        foreach ($request->ordered_ids as $item) {
+            Course::where('id', $item['id'])
+                ->update(['ordering' => $item['ordering']]);
+        }
+
+        return redirect()->route('management.courses.index')->with('success', 'Sắp xếp lớp giáo lý thành công!');
     }
 }
