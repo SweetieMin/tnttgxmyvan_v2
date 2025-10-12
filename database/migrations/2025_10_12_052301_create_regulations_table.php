@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('regulations', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('academic_year_id')
+            ->constrained('academic_years')
+            ->onDelete('cascade');
+            $table->unsignedSmallInteger('ordering')->default(1000);
+            $table->text('description');
+            $table->enum('type', ['plus', 'minus']);
+            $table->integer('points')->default(0);
             $table->timestamps();
         });
     }

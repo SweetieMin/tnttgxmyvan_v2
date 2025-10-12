@@ -18,14 +18,15 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupInput,
-    InputGroupText,
-} from '@/components/ui/input-group';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
     DropdownMenu,
@@ -34,25 +35,25 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
-import { index as roles } from '@/routes/management/roles';
+import { index as regulations } from '@/routes/management/regulations';
 import { type BreadcrumbItem } from '@/types';
-import type { Role } from '@/types/academic';
+import type { AcademicYear, Regulation } from '@/types/academic';
 import { soundToast } from '@/utils/sound-toast';
 import { Head, useForm, usePage, router } from '@inertiajs/react';
 import { Filter, ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table';
-import { createRoleColumns } from './columns';
+import { createRegulationColumns } from './columns';
 import ErrorBoundary from '@/components/error-boundary';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Quản lý', href: '' },
-    { title: 'Vai trò', href: roles().url },
+    { title: 'Nội quy', href: regulations().url },
 ];
 
 export interface Props {
-    roles?: {
-        data: Role[];
+    regulations?: {
+        data: Regulation[];
         links: { url: string | null; label: string; active: boolean }[];
         total: number;
         from: number;
@@ -61,29 +62,36 @@ export interface Props {
         last_page: number;
         per_page: number;
     };
+    academicYears?: AcademicYear[];
+    currentAcademicYearId?: number;
 }
 
-export default function RoleIndex({ roles = { data: [], links: [], total: 0, from: 0, to: 0, current_page: 1, last_page: 1, per_page: 10 } }: Props) {
+export default function RegulationIndex({ regulations = { data: [], links: [], total: 0, from: 0, to: 0, current_page: 1, last_page: 1, per_page: 10 }, academicYears = [], currentAcademicYearId }: Props) {
     const [isOpen, setIsOpen] = useState(false);
-    const [editingRole, setEditingRole] = useState<Role | null>(null);
+    const [editingRegulation, setEditingRegulation] = useState<Regulation | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState<Role | null>(null);
+    const [itemToDelete, setItemToDelete] = useState<Regulation | null>(null);
+    const [selectedAcademicYearId, setSelectedAcademicYearId] = useState<number | undefined>(
+        currentAcademicYearId,
+    );
     const [searchTerm, setSearchTerm] = useState('');
     const [showColumnSelect, setShowColumnSelect] = useState(false);
     const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
         select: true,
         ordering: true,
-        name: true,
         description: true,
+        type: true,
+        points: true,
         actions: true,
     });
 
     // Column definitions for visibility control
     const columnDefinitions = [
         { id: 'select', label: 'Chọn' },
-        { id: 'ordering', label: 'Thứ tự' },
-        { id: 'name', label: 'Tên vai trò' },
-        { id: 'description', label: 'Mô tả' },
+        { id: 'ordering', label: 'STT' },
+        { id: 'description', label: 'Nội dung' },
+        { id: 'type', label: 'Loại' },
+        { id: 'points', label: 'Điểm' },
         { id: 'actions', label: 'Thao tác' },
     ];
 
@@ -103,6 +111,20 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
         }, {} as Record<string, boolean>);
         setColumnVisibility(allHidden);
     };
+
+    // Set default academic year if not provided
+    useEffect(() => {
+        if (!selectedAcademicYearId && academicYears.length > 0) {
+            // Find current academic year (ongoing status)
+            const currentYear = academicYears.find(year => year.status_academic === 'ongoing');
+            if (currentYear) {
+                setSelectedAcademicYearId(currentYear.id);
+            } else if (academicYears.length > 0) {
+                // Fallback to first academic year if no ongoing year found
+                setSelectedAcademicYearId(academicYears[0].id);
+            }
+        }
+    }, [academicYears, selectedAcademicYearId]);
 
     // Close column select when clicking outside
     useEffect(() => {
@@ -132,14 +154,16 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
     const { data, setData, post, put, delete: destroy, processing, errors, clearErrors } =
         useForm({
             id: 0,
-            name: '',
+            academic_year_id: 0,
             description: '',
+            type: 'plus',
+            points: 1,
             ordering: 1,
         });
 
     const resetForm = () => {
-        setData({ id: 0, name: '', description: '', ordering: 1 });
-        setEditingRole(null);
+        setData({ id: 0, academic_year_id: 0, description: '', type: 'plus', points: 1, ordering: 1 });
+        setEditingRegulation(null);
         clearErrors();
     };
 
@@ -148,25 +172,27 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
         setIsOpen(true);
     };
 
-    const handleEdit = (item: Role) => {
-        setEditingRole(item);
+    const handleEdit = (item: Regulation) => {
+        setEditingRegulation(item);
         setData({
             id: item.id,
-            name: item.name,
-            description: item.description || '',
+            academic_year_id: item.academic_year_id,
+            description: item.description,
+            type: item.type,
+            points: item.points,
             ordering: item.ordering,
         });
         setIsOpen(true);
     };
 
-    const handleDelete = (item: Role) => {
+    const handleDelete = (item: Regulation) => {
         setItemToDelete(item);
         setDeleteDialogOpen(true);
     };
 
     const confirmDelete = () => {
         if (itemToDelete) {
-            destroy(`/management/roles/${itemToDelete.id}`, {
+            destroy(`/management/regulations/${itemToDelete.id}`, {
                 onSuccess: () => {
                     setDeleteDialogOpen(false);
                     setItemToDelete(null);
@@ -177,15 +203,15 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (editingRole) {
-            put(`/management/roles/${editingRole.id}`, {
+        if (editingRegulation) {
+            put(`/management/regulations/${editingRegulation.id}`, {
                 onSuccess: () => {
                     setIsOpen(false);
                     resetForm();
                 },
             });
         } else {
-            post('/management/roles', {
+            post('/management/regulations', {
                 onSuccess: () => {
                     setIsOpen(false);
                     resetForm();
@@ -196,16 +222,26 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
 
     const handleClose = () => { setIsOpen(false); resetForm(); };
 
+    const handleAcademicYearFilter = (academicYearId: string) => {
+        const yearId = parseInt(academicYearId);
+        setSelectedAcademicYearId(yearId);
+        
+        router.get('/management/regulations', 
+            { academic_year_id: yearId },
+            { preserveState: true, replace: true }
+        );
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Vai trò" />
+            <Head title="Nội quy" />
 
             <div className="px-4 py-6">
                 {/* Header + Button */}
                 <AppHeaderAddButton
-                    title="Vai trò"
-                    description="Quản lý các vai trò trong hệ thống, bao gồm thông tin tên vai trò và mô tả chi tiết."
-                    buttonLabel="Thêm vai trò"
+                    title="Nội quy"
+                    description="Quản lý các nội quy trong hệ thống, bao gồm quy định cộng điểm và trừ điểm."
+                    buttonLabel="Thêm nội quy"
                     onButtonClick={handleAddClick}
                 />
 
@@ -219,9 +255,27 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
                                 <div className="flex items-center gap-2">
+                                    <span className="text-sm text-muted-foreground">Niên khóa:</span>
+                                    <Select
+                                        value={selectedAcademicYearId?.toString() || ''}
+                                        onValueChange={handleAcademicYearFilter}
+                                    >
+                                        <SelectTrigger className="w-[200px]">
+                                            <SelectValue placeholder={selectedAcademicYearId ? undefined : "Chọn niên khóa"} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {academicYears.map((year) => (
+                                                <SelectItem key={year.id} value={year.id.toString()}>
+                                                    {year.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="flex items-center gap-2">
                                     <span className="text-sm text-muted-foreground">Tìm kiếm:</span>
                                     <Input
-                                        placeholder="Tìm kiếm vai trò..."
+                                        placeholder="Tìm kiếm nội quy..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
@@ -293,12 +347,12 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
                 {/* Data Table */}
                 <ErrorBoundary>
                     <DataTable
-                        columns={createRoleColumns({
+                        columns={createRegulationColumns({
                             onEdit: handleEdit,
                             onDelete: handleDelete,
                         })}
-                        data={roles.data.filter(role => 
-                            role.name.toLowerCase().includes(searchTerm.toLowerCase())
+                        data={regulations.data.filter(regulation => 
+                            regulation.description.toLowerCase().includes(searchTerm.toLowerCase())
                         )}
                         columnVisibility={columnVisibility}
                         onColumnVisibilityChange={(updaterOrValue) => {
@@ -309,57 +363,111 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
                             }
                         }}
                         pagination={{
-                            current_page: roles.current_page,
-                            last_page: roles.last_page,
-                            per_page: roles.per_page,
-                            total: roles.total,
-                            from: roles.from,
-                            to: roles.to,
-                            links: roles.links,
+                            current_page: regulations.current_page,
+                            last_page: regulations.last_page,
+                            per_page: regulations.per_page,
+                            total: regulations.total,
+                            from: regulations.from,
+                            to: regulations.to,
+                            links: regulations.links,
                         }}
                     />
                 </ErrorBoundary>
 
-                {/* Role Dialog */}
+                {/* Regulation Dialog */}
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogContent className="max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                             <DialogTitle>
-                                {editingRole
-                                    ? 'Chỉnh sửa vai trò'
-                                    : 'Thêm vai trò mới'}
+                                {editingRegulation
+                                    ? 'Chỉnh sửa nội quy'
+                                    : 'Thêm nội quy mới'}
                             </DialogTitle>
                             <DialogDescription>
-                                {editingRole
-                                    ? 'Cập nhật thông tin vai trò hiện tại'
-                                    : 'Nhập thông tin để tạo vai trò mới'}
+                                {editingRegulation
+                                    ? 'Cập nhật thông tin nội quy hiện tại'
+                                    : 'Nhập thông tin để tạo nội quy mới'}
                             </DialogDescription>
                         </DialogHeader>
                         <Separator />
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">
-                                        Tên vai trò *
+                                    <Label htmlFor="academic_year_id">
+                                        Niên khóa *
                                     </Label>
-                                    <InputGroup>
-                                        <InputGroupInput
-                                            id="name"
-                                            value={data.name}
-                                            onChange={(e) =>
-                                                setData('name', e.target.value)
-                                            }
-                                            placeholder="VD: Admin"
-                                        />
-                                        <InputGroupAddon>
-                                            <InputGroupText>
-                                                Vai trò
-                                            </InputGroupText>
-                                        </InputGroupAddon>
-                                    </InputGroup>
-                                    {errors.name && (
+                                    <Select
+                                        value={data.academic_year_id?.toString() ?? ''}
+                                        onValueChange={(value) =>
+                                            setData('academic_year_id', parseInt(value))
+                                        }
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Chọn niên khóa" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {academicYears.map((year) => (
+                                                <SelectItem
+                                                    key={year.id}
+                                                    value={year.id.toString()}
+                                                >
+                                                    {year.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.academic_year_id && (
                                         <p className="text-sm text-red-500">
-                                            {errors.name}
+                                            {errors.academic_year_id}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="type">
+                                        Loại nội quy *
+                                    </Label>
+                                    <Select
+                                        value={data.type}
+                                        onValueChange={(value) =>
+                                            setData('type', value as 'plus' | 'minus')
+                                        }
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Chọn loại" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="plus">Cộng điểm</SelectItem>
+                                            <SelectItem value="minus">Trừ điểm</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.type && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.type}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="points">
+                                        Điểm số *
+                                    </Label>
+                                    <Input
+                                        id="points"
+                                        type="number"
+                                        min="1"
+                                        max="100"
+                                        value={data.points}
+                                        onChange={(e) =>
+                                            setData('points', parseInt(e.target.value) || 1)
+                                        }
+                                        placeholder="1"
+                                    />
+                                    {errors.points && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.points}
                                         </p>
                                     )}
                                 </div>
@@ -387,15 +495,15 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">Mô tả</Label>
+                                <Label htmlFor="description">Nội dung nội quy *</Label>
                                 <textarea
                                     id="description"
-                                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                    className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                                     value={data.description}
                                     onChange={(e) =>
                                         setData('description', e.target.value)
                                     }
-                                    placeholder="Nhập mô tả chi tiết về vai trò..."
+                                    placeholder="Nhập nội dung nội quy..."
                                 />
                                 {errors.description && (
                                     <p className="text-sm text-red-500">
@@ -416,7 +524,7 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
                                 <Button type="submit" disabled={processing}>
                                     {processing
                                         ? 'Đang xử lý...'
-                                        : editingRole
+                                        : editingRegulation
                                           ? 'Cập nhật'
                                           : 'Tạo mới'}
                                 </Button>
@@ -433,13 +541,11 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>
-                                Xác nhận xóa vai trò
+                                Xác nhận xóa nội quy
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                                Bạn có chắc chắn muốn xóa vai trò "
-                                {itemToDelete?.name}"? Hành động này không thể
-                                hoàn tác và sẽ xóa vĩnh viễn tất cả dữ liệu liên
-                                quan đến vai trò này.
+                                Bạn có chắc chắn muốn xóa nội quy này? Hành động này không thể
+                                hoàn tác và sẽ xóa vĩnh viễn nội quy khỏi hệ thống.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

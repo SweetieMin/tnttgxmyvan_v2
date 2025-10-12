@@ -41,4 +41,9 @@ class AcademicYear extends Model
     {
         return $this->hasMany(Course::class);
     }
+
+    public function regulations()
+    {
+        return $this->hasMany(Regulation::class);
+    }
 }

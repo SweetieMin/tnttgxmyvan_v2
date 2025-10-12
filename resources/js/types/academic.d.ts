@@ -32,3 +32,24 @@ export interface Sector {
     created_at: string;
     updated_at: string;
 }
+
+export interface Role {
+    id: number;
+    name: string;
+    description: string | null;
+    ordering: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Regulation {
+    id: number;
+    academic_year_id: number;
+    ordering: number;
+    description: string;
+    type: 'plus' | 'minus';
+    points: number;
+    academic_year?: AcademicYear;
+    created_at: string;
+    updated_at: string;
+}

@@ -11,13 +11,21 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as academic_years } from '@/routes/management/academic-years';
-import { index as roles } from '@/routes/management/roles';
 import { index as courses } from '@/routes/management/courses';
+import { index as roles } from '@/routes/management/roles';
 import { index as sectors } from '@/routes/management/sectors';
+import { index as regulations } from '@/routes/management/regulations';
 
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, SquareLibrary, ShieldUser,Church, FerrisWheel } from 'lucide-react';
+import {
+    Church,
+    FerrisWheel,
+    LayoutGrid,
+    ShieldUser,
+    SquareLibrary,
+    BookOpenCheck,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const generalNavItems: NavItem[] = [
@@ -45,12 +53,16 @@ const managementNavItems: NavItem[] = [
         icon: FerrisWheel,
     },
     {
+        title: 'Nội quy',
+        href: regulations(),
+        icon: BookOpenCheck,
+    },
+    {
         title: 'Chức vụ',
         href: roles(),
         icon: ShieldUser,
     },
 ];
-
 
 export function AppSidebar() {
     return (
