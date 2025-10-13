@@ -148,7 +148,7 @@ export function DataTable<TData, TValue>({
                                     colSpan={columns.length}
                                     className="h-24 text-center"
                                 >
-                                    No results.
+                                    Không có dữ liệu
                                 </TableCell>
                             </TableRow>
                         )}
@@ -181,7 +181,7 @@ export function DataTable<TData, TValue>({
                                 
                                 const pageNumber = parseInt(link.label);
                                 if (isNaN(pageNumber)) return null;
-                                
+                                const isActive = link.active || pageNumber === pagination.current_page;
                                 return (
                                     <Button
                                         key={index}
@@ -189,6 +189,7 @@ export function DataTable<TData, TValue>({
                                         size="sm"
                                         onClick={() => handlePageChange(pageNumber)}
                                         className="min-w-[32px]"
+                                        disabled={isActive} 
                                     >
                                         {link.label}
                                     </Button>

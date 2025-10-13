@@ -1,7 +1,4 @@
 import AppHeaderAddButton from '@/components/app-header-add-button';
-import { AppPopoverCalendar } from '@/components/app-popover-calendar';
-import { AppTable } from '@/components/app-table';
-import AppPagination from '@/components/app-pagination';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -22,44 +19,42 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupInput,
-    InputGroupText,
-} from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import {
+    DropdownMenu,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
-import { index as academic_years } from '@/routes/management/academic-years';
+import { index as academicYears } from '@/routes/management/academic-years';
 import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear } from '@/types/academic';
 import { soundToast } from '@/utils/sound-toast';
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { SquarePen, Trash2 } from 'lucide-react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
+import { Filter, ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { DataTable } from './data-table';
+import { createAcademicYearColumns } from './columns';
+import ErrorBoundary from '@/components/error-boundary';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Quản lý', href: '' },
-    { title: 'Niên khóa', href: academic_years().url },
+    { title: 'Niên khóa', href: academicYears().url },
 ];
 
 export interface Props {
-    years: {
+    years?: {
         data: AcademicYear[];
-        links: {
-            url: string | null;
-            label: string;
-            active: boolean;
-        }[];
+        links: { url: string | null; label: string; active: boolean }[];
         total: number;
         from: number;
         to: number;
@@ -69,81 +64,91 @@ export interface Props {
     };
 }
 
-export default function AcademicYearIndex({ years }: Props) {
+export default function AcademicYearIndex({ years = { data: [], links: [], total: 0, from: 0, to: 0, current_page: 1, last_page: 1, per_page: 10 } }: Props) {
     const [isOpen, setIsOpen] = useState(false);
-    const [editingAcademicYear, setEditingAcademicYear] =
-        useState<AcademicYear | null>(null);
+    const [editingAcademicYear, setEditingAcademicYear] = useState<AcademicYear | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<AcademicYear | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showColumnSelect, setShowColumnSelect] = useState(false);
+    const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
+        select: true,
+        name: true,
+        catechism_period: true,
+        catechism_avg_score: true,
+        catechism_training_score: true,
+        activity_period: true,
+        activity_score: true,
+        actions: true,
+    });
 
-    // Calendar states
-    const [catechismStartOpen, setCatechismStartOpen] = useState(false);
-    const [catechismStartDate, setCatechismStartDate] = useState<
-        Date | undefined
-    >(undefined);
-    const [catechismEndOpen, setCatechismEndOpen] = useState(false);
-    const [catechismEndDate, setCatechismEndDate] = useState<Date | undefined>(
-        undefined,
-    );
-    const [activityStartOpen, setActivityStartOpen] = useState(false);
-    const [activityStartDate, setActivityStartDate] = useState<
-        Date | undefined
-    >(undefined);
-    const [activityEndOpen, setActivityEndOpen] = useState(false);
-    const [activityEndDate, setActivityEndDate] = useState<Date | undefined>(
-        undefined,
-    );
-    const { flash } = usePage<{
-        flash?: {
-            success?: string;
-            error?: string;
-            message?: string;
+    // Column definitions for visibility control
+    const columnDefinitions = [
+        { id: 'select', label: 'Chọn' },
+        { id: 'name', label: 'Niên khóa' },
+        { id: 'catechism_period', label: 'Giáo lý' },
+        { id: 'catechism_avg_score', label: 'Điểm giáo lý' },
+        { id: 'catechism_training_score', label: 'Điểm chuyên cần giáo lý' },
+        { id: 'activity_period', label: 'Sinh hoạt' },
+        { id: 'activity_score', label: 'Điểm sinh hoạt' },
+        { id: 'actions', label: 'Thao tác' },
+    ];
+
+    // Helper functions for select all/none
+    const handleSelectAll = () => {
+        const allVisible = columnDefinitions.reduce((acc, col) => {
+            acc[col.id] = true;
+            return acc;
+        }, {} as Record<string, boolean>);
+        setColumnVisibility(allVisible);
+    };
+
+    const handleSelectNone = () => {
+        const allHidden = columnDefinitions.reduce((acc, col) => {
+            acc[col.id] = false;
+            return acc;
+        }, {} as Record<string, boolean>);
+        setColumnVisibility(allHidden);
+    };
+
+    // Close column select when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Element;
+            if (showColumnSelect && !target.closest('.column-select-container')) {
+                setShowColumnSelect(false);
+            }
         };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showColumnSelect]);
+
+    const { flash } = usePage<{
+        flash?: { success?: string; error?: string; message?: string };
     }>().props;
 
     useEffect(() => {
-        if (flash?.success) {
-            soundToast('success', flash.success);
-        } else if (flash?.error) {
-            soundToast('error', flash.error);
-        } else if (flash?.message) {
-            soundToast('success', flash.message);
-        }
+        if (flash?.success) soundToast('success', flash.success);
+        else if (flash?.error) soundToast('error', flash.error);
+        else if (flash?.message) soundToast('success', flash.message);
     }, [flash?.success, flash?.error, flash?.message]);
 
-    const {
-        data,
-        setData,
-        post,
-        put,
-        delete: destroy,
-        processing,
-        errors,
-        reset,
-        clearErrors,
-    } = useForm({
-        id: 0,
-        name: '',
-        catechism_start_date: '',
-        catechism_end_date: '',
-        catechism_avg_score: 1,
-        catechism_training_score: 1,
-        activity_start_date: '',
-        activity_end_date: '',
-        activity_score: 1,
-        status_academic: '',
-    });
-
-    const resetCalendarStates = () => {
-        setCatechismStartDate(undefined);
-        setCatechismEndDate(undefined);
-        setActivityStartDate(undefined);
-        setActivityEndDate(undefined);
-        setCatechismStartOpen(false);
-        setCatechismEndOpen(false);
-        setActivityStartOpen(false);
-        setActivityEndOpen(false);
-    };
+    const { data, setData, post, put, delete: destroy, processing, errors, clearErrors } =
+        useForm({
+            id: 0,
+            name: '',
+            catechism_start_date: '',
+            catechism_end_date: '',
+            catechism_avg_score: 0,
+            catechism_training_score: 0,
+            activity_start_date: '',
+            activity_end_date: '',
+            activity_score: 0,
+            status_academic: 'upcoming',
+        });
 
     const resetForm = () => {
         setData({
@@ -151,16 +156,15 @@ export default function AcademicYearIndex({ years }: Props) {
             name: '',
             catechism_start_date: '',
             catechism_end_date: '',
-            catechism_avg_score: 5,
-            catechism_training_score: 5,
+            catechism_avg_score: 0,
+            catechism_training_score: 0,
             activity_start_date: '',
             activity_end_date: '',
-            activity_score: 200,
+            activity_score: 0,
             status_academic: 'upcoming',
         });
         setEditingAcademicYear(null);
         clearErrors();
-        resetCalendarStates();
     };
 
     const handleAddClick = () => {
@@ -170,49 +174,16 @@ export default function AcademicYearIndex({ years }: Props) {
 
     const handleEdit = (item: AcademicYear) => {
         setEditingAcademicYear(item);
-
-        // Set calendar dates
-        setCatechismStartDate(
-            item.catechism_start_date
-                ? new Date(item.catechism_start_date)
-                : undefined,
-        );
-        setCatechismEndDate(
-            item.catechism_end_date
-                ? new Date(item.catechism_end_date)
-                : undefined,
-        );
-        setActivityStartDate(
-            item.activity_start_date
-                ? new Date(item.activity_start_date)
-                : undefined,
-        );
-        setActivityEndDate(
-            item.activity_end_date
-                ? new Date(item.activity_end_date)
-                : undefined,
-        );
-
         setData({
             id: item.id,
             name: item.name,
-            catechism_start_date: item.catechism_start_date
-                ? new Date(item.catechism_start_date)
-                      .toISOString()
-                      .split('T')[0]
-                : '',
-            catechism_end_date: item.catechism_end_date
-                ? new Date(item.catechism_end_date).toISOString().split('T')[0]
-                : '',
-            catechism_avg_score: item.catechism_avg_score || 1,
-            catechism_training_score: item.catechism_training_score || 1,
-            activity_start_date: item.activity_start_date
-                ? new Date(item.activity_start_date).toISOString().split('T')[0]
-                : '',
-            activity_end_date: item.activity_end_date
-                ? new Date(item.activity_end_date).toISOString().split('T')[0]
-                : '',
-            activity_score: item.activity_score || 1,
+            catechism_start_date: item.catechism_start_date,
+            catechism_end_date: item.catechism_end_date,
+            catechism_avg_score: item.catechism_avg_score,
+            catechism_training_score: item.catechism_training_score,
+            activity_start_date: item.activity_start_date,
+            activity_end_date: item.activity_end_date,
+            activity_score: item.activity_score,
             status_academic: item.status_academic,
         });
         setIsOpen(true);
@@ -236,7 +207,6 @@ export default function AcademicYearIndex({ years }: Props) {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         if (editingAcademicYear) {
             put(`/management/academic-years/${editingAcademicYear.id}`, {
                 onSuccess: () => {
@@ -254,187 +224,131 @@ export default function AcademicYearIndex({ years }: Props) {
         }
     };
 
-    const handleClose = () => {
-        setIsOpen(false);
-        resetForm();
-    };
+    const handleClose = () => { setIsOpen(false); resetForm(); };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Niên khoá" />
+            <Head title="Niên khóa" />
 
             <div className="px-4 py-6">
                 {/* Header + Button */}
                 <AppHeaderAddButton
-                    title="Niên khoá"
-                    description="Thiết lập thời gian học giáo lý và sinh hoạt cho từng năm học, bao gồm mốc thời gian bắt đầu – kết thúc, thời gian điểm danh sinh hoạt, cùng với quy định điểm tối thiểu cần đạt cho từng hạng mục."
-                    buttonLabel="Thêm niên khoá"
+                    title="Niên khóa"
+                    description="Quản lý các niên khóa trong hệ thống, bao gồm thông tin thời gian và trạng thái."
+                    buttonLabel="Thêm niên khóa"
                     onButtonClick={handleAddClick}
                 />
 
-                {/* Table/Card responsive */}
-                <AppTable<AcademicYear>
-                    columns={[
-                        {
-                            title: 'Tên niên khoá',
-                            className: 'font-semibold w-[180px]',
-                            render: (item) => item.name,
-                        },
-                        {
-                            title: 'Giáo lý',
-                            className: 'text-muted-foreground w-[200px]',
-                            render: (item) =>
-                                `${new Date(item.catechism_start_date).toLocaleDateString('vi-VN')} - ${new Date(item.catechism_end_date).toLocaleDateString('vi-VN')}`,
-                        },
-                        {
-                            title: 'Điểm Giáo Lý',
-                            className: 'text-center w-[120px]',
-                            render: (item) => (
-                                <>
-                                    <span className="font-bold">
-                                        {item.catechism_avg_score}
-                                    </span>
-                                    /10
-                                </>
-                            ),
-                        },
-                        {
-                            title: 'Điểm chuyên cần Giáo Lý',
-                            className: 'text-center w-[120px]',
-                            render: (item) => (
-                                <>
-                                    <span className="font-bold">
-                                        {item.catechism_training_score}
-                                    </span>
-                                    /10
-                                </>
-                            ),
-                        },
-                        {
-                            title: 'Sinh Hoạt',
-                            className: 'text-muted-foreground w-[200px]',
-                            render: (item) =>
-                                `${new Date(item.activity_start_date).toLocaleDateString('vi-VN')} - ${new Date(item.activity_end_date).toLocaleDateString('vi-VN')}`,
-                        },
-                        {
-                            title: 'Điểm Sinh Hoạt',
-                            className: 'text-center font-bold w-[100px]',
-                            render: (item) => item.activity_score,
-                        },
-                    ]}
-                    data={years.data}
-                    emptyMessage="Chưa có niên khoá nào"
-                    emptyHint="Hãy nhấn nút 'Thêm niên khoá' để tạo niên khoá đầu tiên."
-                    renderActions={(item) => (
-                        <div className="flex justify-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleEdit(item)}
-                            >
-                                <SquarePen /> Sửa
-                            </Button>
-                            <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => handleDelete(item)}
-                            >
-                                <Trash2 /> Xoá
-                            </Button>
+                {/* Unified Filter Section */}
+                <div className="mb-6 rounded-lg border bg-card p-4">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-2">
+                            <Filter className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">Bộ lọc và tìm kiếm</span>
                         </div>
-                    )}
-                    renderCard={(item: AcademicYear) => (
-                        <div className="flex flex-col gap-3">
-                            {/* 🏷️ Tên niên khóa */}
-                            <div>
-                                <span className="text-base font-semibold text-foreground">
-                                    {item.name}
-                                </span>
-                            </div>
-                            <Separator />
-                            {/* 📅 Hai cột thông tin */}
-                            <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground">
-                                {/* Cột trái: Giáo lý */}
-                                <div className="space-y-1">
-                                    <p className="font-semibold text-foreground">
-                                        Giáo lý
-                                    </p>
-                                    <p>
-                                        {new Date(
-                                            item.catechism_start_date,
-                                        ).toLocaleDateString('vi-VN')}{' '}
-                                        –{' '}
-                                        {new Date(
-                                            item.catechism_end_date,
-                                        ).toLocaleDateString('vi-VN')}
-                                    </p>
-                                    <p>
-                                        Điểm TB:{' '}
-                                        <span className="font-bold">
-                                            {item.catechism_avg_score}
-                                        </span>
-                                        /10
-                                    </p>
-                                    <p>
-                                        Điểm ĐT:{' '}
-                                        <span className="font-bold">
-                                            {item.catechism_training_score}
-                                        </span>
-                                        /10
-                                    </p>
-                                </div>
-
-                                {/* Cột phải: Sinh hoạt */}
-                                <div className="space-y-1">
-                                    <p className="font-semibold text-foreground">
-                                        Sinh hoạt
-                                    </p>
-                                    <p>
-                                        {new Date(
-                                            item.activity_start_date,
-                                        ).toLocaleDateString('vi-VN')}{' '}
-                                        –{' '}
-                                        {new Date(
-                                            item.activity_end_date,
-                                        ).toLocaleDateString('vi-VN')}
-                                    </p>
-                                    <p>
-                                        Điểm:{' '}
-                                        <span className="font-bold">
-                                            {item.activity_score}
-                                        </span>
-                                    </p>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-muted-foreground">Tìm kiếm:</span>
+                                    <Input
+                                        placeholder="Tìm kiếm niên khóa..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
                                 </div>
                             </div>
-                            <Separator />
-                            {/* ⚙️ Hành động */}
-                            <div className="mt-3 flex gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleEdit(item)}
-                                >
-                                    <SquarePen className="mr-1 h-4 w-4" /> Sửa
-                                </Button>
-                                <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => handleDelete(item)}
-                                >
-                                    <Trash2 className="mr-1 h-4 w-4" /> Xoá
-                                </Button>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">Cột hiển thị:</span>
+                                <div className="relative column-select-container">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setShowColumnSelect(!showColumnSelect)}
+                                        className="min-w-[120px] justify-between"
+                                    >
+                                        {Object.values(columnVisibility).filter(Boolean).length} cột
+                                        <ChevronDown className="ml-2 h-4 w-4" />
+                                    </Button>
+                                    {showColumnSelect && (
+                                        <div className="absolute top-full right-0 mt-1 w-64 bg-white border rounded-md shadow-lg z-50 p-2">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="text-sm font-medium">Chọn cột hiển thị</span>
+                                                <div className="flex gap-1">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={handleSelectAll}
+                                                        className="text-xs h-6 px-2"
+                                                    >
+                                                        Tất cả
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={handleSelectNone}
+                                                        className="text-xs h-6 px-2"
+                                                    >
+                                                        Không
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1 max-h-48 overflow-y-auto">
+                                                {columnDefinitions.map((column) => (
+                                                    <label
+                                                        key={column.id}
+                                                        className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={columnVisibility[column.id]}
+                                                            onChange={(e) =>
+                                                                setColumnVisibility(prev => ({
+                                                                    ...prev,
+                                                                    [column.id]: e.target.checked
+                                                                }))
+                                                            }
+                                                            className="rounded"
+                                                        />
+                                                        <span className="text-sm">{column.label}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    )}
-                />
+                    </div>
+                </div>
 
-                {/* Pagination */}
-                <AppPagination
-                    links={years.links}
-                    total={years.total}
-                    from={years.from}
-                    to={years.to}
-                />
+                {/* Data Table */}
+                <ErrorBoundary>
+                    <DataTable
+                        columns={createAcademicYearColumns({
+                            onEdit: handleEdit,
+                            onDelete: handleDelete,
+                        })}
+                        data={years.data.filter(year => 
+                            year.name.toLowerCase().includes(searchTerm.toLowerCase())
+                        )}
+                        columnVisibility={columnVisibility}
+                        onColumnVisibilityChange={(updaterOrValue) => {
+                            if (typeof updaterOrValue === 'function') {
+                                setColumnVisibility(updaterOrValue);
+                            } else {
+                                setColumnVisibility(updaterOrValue);
+                            }
+                        }}
+                        pagination={{
+                            current_page: years.current_page,
+                            last_page: years.last_page,
+                            per_page: years.per_page,
+                            total: years.total,
+                            from: years.from,
+                            to: years.to,
+                            links: years.links,
+                        }}
+                    />
+                </ErrorBoundary>
 
                 {/* Academic Year Dialog */}
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -453,27 +367,17 @@ export default function AcademicYearIndex({ years }: Props) {
                         </DialogHeader>
                         <Separator />
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="status_academic">
-                                        Niên khoá
+                                    <Label htmlFor="name">
+                                        Tên niên khóa *
                                     </Label>
-                                    <InputGroup>
-                                        <InputGroupInput
-                                            id="name"
-                                            value={data.name}
-                                            onChange={(e) =>
-                                                setData('name', e.target.value)
-                                            }
-                                            placeholder="VD: 2024-2025"
-                                        />
-                                        <InputGroupAddon>
-                                            <InputGroupText>
-                                                Niên khoá
-                                            </InputGroupText>
-                                        </InputGroupAddon>
-                                    </InputGroup>
-
+                                    <Input
+                                        id="name"
+                                        value={data.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                        placeholder="VD: 2024-2025"
+                                    />
                                     {errors.name && (
                                         <p className="text-sm text-red-500">
                                             {errors.name}
@@ -483,29 +387,19 @@ export default function AcademicYearIndex({ years }: Props) {
 
                                 <div className="space-y-2">
                                     <Label htmlFor="status_academic">
-                                        Trạng thái
+                                        Trạng thái *
                                     </Label>
                                     <Select
                                         value={data.status_academic}
-                                        onValueChange={(value) =>
-                                            setData('status_academic', value)
-                                        }
+                                        onValueChange={(value) => setData('status_academic', value)}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Chọn trạng thái" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value="upcoming">
-                                                    Sắp diễn ra
-                                                </SelectItem>
-                                                <SelectItem value="ongoing">
-                                                    Đang diễn ra
-                                                </SelectItem>
-                                                <SelectItem value="finished">
-                                                    Đã kết thúc
-                                                </SelectItem>
-                                            </SelectGroup>
+                                            <SelectItem value="upcoming">Sắp tới</SelectItem>
+                                            <SelectItem value="ongoing">Đang diễn ra</SelectItem>
+                                            <SelectItem value="completed">Đã kết thúc</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     {errors.status_academic && (
@@ -515,188 +409,141 @@ export default function AcademicYearIndex({ years }: Props) {
                                     )}
                                 </div>
                             </div>
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold">
-                                    Thời gian Giáo lý
-                                </h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <AppPopoverCalendar
+
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="catechism_start_date">
+                                        Bắt đầu giáo lý
+                                    </Label>
+                                    <Input
                                         id="catechism_start_date"
-                                        label="Ngày bắt đầu"
-                                        date={catechismStartDate}
-                                        onChange={(date) => {
-                                            setCatechismStartDate(date);
-                                            setData(
-                                                'catechism_start_date',
-                                                date
-                                                    ? date
-                                                          .toISOString()
-                                                          .split('T')[0]
-                                                    : '',
-                                            );
-                                        }}
-                                        required
-                                        error={errors.catechism_start_date}
+                                        type="date"
+                                        value={data.catechism_start_date}
+                                        onChange={(e) => setData('catechism_start_date', e.target.value)}
                                     />
+                                    {errors.catechism_start_date && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.catechism_start_date}
+                                        </p>
+                                    )}
+                                </div>
 
-                                    <AppPopoverCalendar
+                                <div className="space-y-2">
+                                    <Label htmlFor="catechism_end_date">
+                                        Kết thúc giáo lý
+                                    </Label>
+                                    <Input
                                         id="catechism_end_date"
-                                        label="Ngày kết thúc"
-                                        date={catechismEndDate}
-                                        onChange={(date) => {
-                                            setCatechismEndDate(date);
-                                            setData(
-                                                'catechism_end_date',
-                                                date
-                                                    ? date
-                                                          .toISOString()
-                                                          .split('T')[0]
-                                                    : '',
-                                            );
-                                        }}
-                                        required
-                                        error={errors.catechism_end_date}
+                                        type="date"
+                                        value={data.catechism_end_date}
+                                        onChange={(e) => setData('catechism_end_date', e.target.value)}
                                     />
+                                    {errors.catechism_end_date && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.catechism_end_date}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold">
-                                    Thời gian Sinh hoạt
-                                </h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <AppPopoverCalendar
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="activity_start_date">
+                                        Bắt đầu hoạt động
+                                    </Label>
+                                    <Input
                                         id="activity_start_date"
-                                        label="Ngày bắt đầu"
-                                        date={activityStartDate}
-                                        onChange={(date) => {
-                                            setActivityStartDate(date);
-                                            setData(
-                                                'activity_start_date',
-                                                date
-                                                    ? date
-                                                          .toISOString()
-                                                          .split('T')[0]
-                                                    : '',
-                                            );
-                                        }}
-                                        required
-                                        error={errors.activity_start_date}
+                                        type="date"
+                                        value={data.activity_start_date}
+                                        onChange={(e) => setData('activity_start_date', e.target.value)}
                                     />
+                                    {errors.activity_start_date && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.activity_start_date}
+                                        </p>
+                                    )}
+                                </div>
 
-                                    <AppPopoverCalendar
+                                <div className="space-y-2">
+                                    <Label htmlFor="activity_end_date">
+                                        Kết thúc hoạt động
+                                    </Label>
+                                    <Input
                                         id="activity_end_date"
-                                        label="Ngày kết thúc"
-                                        date={activityEndDate}
-                                        onChange={(date) => {
-                                            setActivityEndDate(date);
-                                            setData(
-                                                'activity_end_date',
-                                                date
-                                                    ? date
-                                                          .toISOString()
-                                                          .split('T')[0]
-                                                    : '',
-                                            );
-                                        }}
-                                        required
-                                        error={errors.activity_end_date}
+                                        type="date"
+                                        value={data.activity_end_date}
+                                        onChange={(e) => setData('activity_end_date', e.target.value)}
                                     />
+                                    {errors.activity_end_date && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.activity_end_date}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold">
-                                    Điểm số
-                                </h3>
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="catechism_avg_score">
-                                            Điểm TB Giáo lý *
-                                        </Label>
-                                        <Input
-                                            id="catechism_avg_score"
-                                            type="number"
-                                            min="1"
-                                            max="10"
-                                            step="0.1"
-                                            value={data.catechism_avg_score}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'catechism_avg_score',
-                                                    parseFloat(
-                                                        e.target.value,
-                                                    ) || 1,
-                                                )
-                                            }
-                                            required
-                                        />
-                                        {errors.catechism_avg_score && (
-                                            <p className="text-sm text-red-500">
-                                                {errors.catechism_avg_score}
-                                            </p>
-                                        )}
-                                    </div>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                <div className="space-y-2">
+                                    <Label htmlFor="catechism_avg_score">
+                                        Điểm TB giáo lý
+                                    </Label>
+                                    <Input
+                                        id="catechism_avg_score"
+                                        type="number"
+                                        min="0"
+                                        max="10"
+                                        step="0.1"
+                                        value={data.catechism_avg_score}
+                                        onChange={(e) => setData('catechism_avg_score', parseFloat(e.target.value) || 0)}
+                                    />
+                                    {errors.catechism_avg_score && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.catechism_avg_score}
+                                        </p>
+                                    )}
+                                </div>
 
-                                    <div className="space-y-2">
-                                        <Label htmlFor="catechism_training_score">
-                                            Điểm ĐT Giáo lý *
-                                        </Label>
-                                        <Input
-                                            id="catechism_training_score"
-                                            type="number"
-                                            min="1"
-                                            max="10"
-                                            step="0.1"
-                                            value={
-                                                data.catechism_training_score
-                                            }
-                                            onChange={(e) =>
-                                                setData(
-                                                    'catechism_training_score',
-                                                    parseFloat(
-                                                        e.target.value,
-                                                    ) || 1,
-                                                )
-                                            }
-                                            required
-                                        />
-                                        {errors.catechism_training_score && (
-                                            <p className="text-sm text-red-500">
-                                                {
-                                                    errors.catechism_training_score
-                                                }
-                                            </p>
-                                        )}
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="catechism_training_score">
+                                        Điểm huấn luyện
+                                    </Label>
+                                    <Input
+                                        id="catechism_training_score"
+                                        type="number"
+                                        min="0"
+                                        max="10"
+                                        step="0.1"
+                                        value={data.catechism_training_score}
+                                        onChange={(e) => setData('catechism_training_score', parseFloat(e.target.value) || 0)}
+                                    />
+                                    {errors.catechism_training_score && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.catechism_training_score}
+                                        </p>
+                                    )}
+                                </div>
 
-                                    <div className="space-y-2">
-                                        <Label htmlFor="activity_score">
-                                            Điểm Sinh hoạt *
-                                        </Label>
-                                        <Input
-                                            id="activity_score"
-                                            type="number"
-                                            min="1"
-                                            max="1000"
-                                            value={data.activity_score}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'activity_score',
-                                                    parseInt(e.target.value) ||
-                                                        1,
-                                                )
-                                            }
-                                            required
-                                        />
-                                        {errors.activity_score && (
-                                            <p className="text-sm text-red-500">
-                                                {errors.activity_score}
-                                            </p>
-                                        )}
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="activity_score">
+                                        Điểm hoạt động
+                                    </Label>
+                                    <Input
+                                        id="activity_score"
+                                        type="number"
+                                        min="0"
+                                        max="10"
+                                        step="0.1"
+                                        value={data.activity_score}
+                                        onChange={(e) => setData('activity_score', parseFloat(e.target.value) || 0)}
+                                    />
+                                    {errors.activity_score && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.activity_score}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
+
                             <Separator />
                             <DialogFooter>
                                 <Button

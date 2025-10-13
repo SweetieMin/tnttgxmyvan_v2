@@ -99,11 +99,6 @@ export function DataTable<TData, TValue>({
             const urlParams = new URLSearchParams(window.location.search);
             const params: Record<string, string> = { page: page.toString() };
             
-            // Preserve academic_year_id if it exists
-            if (urlParams.has('academic_year_id')) {
-                params.academic_year_id = urlParams.get('academic_year_id')!;
-            }
-            
             router.get(window.location.pathname, params, { preserveState: true });
         }
     };
@@ -117,7 +112,7 @@ export function DataTable<TData, TValue>({
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id}>
+                                        <TableHead key={header.id} className="text-center">
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -153,7 +148,7 @@ export function DataTable<TData, TValue>({
                                     colSpan={columns.length}
                                     className="h-24 text-center"
                                 >
-                                    Không có dữ liệu
+                                    Không  có dữ liệu
                                 </TableCell>
                             </TableRow>
                         )}
@@ -194,7 +189,7 @@ export function DataTable<TData, TValue>({
                                         size="sm"
                                         onClick={() => handlePageChange(pageNumber)}
                                         className="min-w-[32px]"
-                                        disabled={isActive} 
+                                        disabled={isActive}
                                     >
                                         {link.label}
                                     </Button>
