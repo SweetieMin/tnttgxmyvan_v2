@@ -16,7 +16,6 @@ import { index as sectors } from '@/routes/management/sectors';
 import { index as regulations } from '@/routes/management/regulations';
 
 import { index as roles } from '@/routes/access/roles';
-import { index as role_hierarchies } from '@/routes/access/role-hierarchies';
 
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
