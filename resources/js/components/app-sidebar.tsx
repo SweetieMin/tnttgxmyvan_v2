@@ -26,7 +26,6 @@ import {
     ShieldUser,
     SquareLibrary,
     BookOpenCheck,
-    LayoutPanelTop,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
