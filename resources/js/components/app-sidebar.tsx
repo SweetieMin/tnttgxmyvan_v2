@@ -12,9 +12,11 @@ import {
 import { dashboard } from '@/routes';
 import { index as academic_years } from '@/routes/management/academic-years';
 import { index as courses } from '@/routes/management/courses';
-import { index as roles } from '@/routes/management/roles';
 import { index as sectors } from '@/routes/management/sectors';
 import { index as regulations } from '@/routes/management/regulations';
+
+import { index as roles } from '@/routes/access/roles';
+import { index as role_hierarchies } from '@/routes/access/role-hierarchies';
 
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
@@ -25,6 +27,7 @@ import {
     ShieldUser,
     SquareLibrary,
     BookOpenCheck,
+    LayoutPanelTop,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -57,6 +60,9 @@ const managementNavItems: NavItem[] = [
         href: regulations(),
         icon: BookOpenCheck,
     },
+];
+
+const accessNavItems: NavItem[] = [
     {
         title: 'Chức vụ',
         href: roles(),
@@ -82,6 +88,7 @@ export function AppSidebar() {
             <SidebarContent>
                 <NavMain items={generalNavItems} label="General" />
                 <NavMain items={managementNavItems} label="Management" />
+                <NavMain items={accessNavItems} label="Access" />
             </SidebarContent>
 
             <SidebarFooter>

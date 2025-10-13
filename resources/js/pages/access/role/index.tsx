@@ -34,7 +34,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
-import { index as roles } from '@/routes/management/roles';
+import { index as roles } from '@/routes/access/roles';
 import { type BreadcrumbItem } from '@/types';
 import type { Role } from '@/types/academic';
 import { soundToast } from '@/utils/sound-toast';

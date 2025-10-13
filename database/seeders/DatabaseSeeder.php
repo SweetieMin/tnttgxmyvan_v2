@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             SectorSeeder::class,
             RoleSeeder::class,
+            RoleHierarchySeeder::class,
             RegulationSeeder::class,
         ]);
     }

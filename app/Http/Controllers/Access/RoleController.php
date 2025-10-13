@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Management;
+namespace App\Http\Controllers\Access;
 
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Management\RoleRequest;
+use App\Http\Requests\Access\RoleRequest;
 use App\Repositories\Eloquent\RoleRepository;
 
 class RoleController extends Controller
@@ -26,7 +26,7 @@ class RoleController extends Controller
             ->orderBy('ordering', 'asc')
             ->paginate(20);
         
-        return Inertia::render('management/role/index', [
+        return Inertia::render('access/role/index', [
             'roles' => $roles,
         ]);
     }
@@ -45,7 +45,7 @@ class RoleController extends Controller
     public function store(RoleRequest $request)
     {
         $this->roleRepository->create($request->all());
-        return redirect()->route('management.roles.index')->with('success', 'Vai trò ' . $request->name . ' đã được tạo thành công');
+        return redirect()->route('access.roles.index')->with('success', 'Vai trò ' . $request->name . ' đã được tạo thành công');
     }
 
     /**
@@ -70,7 +70,7 @@ class RoleController extends Controller
     public function update(RoleRequest $request, string $id)
     {
         $this->roleRepository->update($id, $request->all());
-        return redirect()->route('management.roles.index')->with('success', 'Vai trò ' . $request->name . ' đã được cập nhật thành công');
+        return redirect()->route('access.roles.index')->with('success', 'Vai trò ' . $request->name . ' đã được cập nhật thành công');
     }
 
     /**
@@ -80,6 +80,6 @@ class RoleController extends Controller
     {
         $name = $this->roleRepository->find($id)->name;
         $this->roleRepository->delete($id);
-        return redirect()->route('management.roles.index')->with('success', 'Vai trò ' . $name . ' đã được xóa thành công');
+        return redirect()->route('access.roles.index')->with('success', 'Vai trò ' . $name . ' đã được xóa thành công');
     }
 }
