@@ -28,18 +28,12 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import {
-    DropdownMenu,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import { index as academicYears } from '@/routes/management/academic-years';
 import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear } from '@/types/academic';
 import { soundToast } from '@/utils/sound-toast';
-import { Head, useForm, usePage, router } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { Filter, ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table';
