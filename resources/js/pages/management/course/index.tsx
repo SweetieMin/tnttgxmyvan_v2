@@ -40,11 +40,10 @@ import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear, Course } from '@/types/academic';
 import { soundToast } from '@/utils/sound-toast';
 import { Head, useForm, usePage, router } from '@inertiajs/react';
-import { Filter, ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { DataTable } from './data-table';
 import { createCourseColumns } from './columns';
 import ErrorBoundary from '@/components/error-boundary';
+import { AppDataTablePage, ColumnDefinition } from '@/components/app-data-table-page';
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -77,7 +76,6 @@ export default function CourseIndex({ courses = { data: [], links: [], total: 0,
         currentAcademicYearId,
     );
     const [searchTerm, setSearchTerm] = useState('');
-    const [showColumnSelect, setShowColumnSelect] = useState(false);
     const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
         select: true,
         ordering: true,
@@ -88,7 +86,7 @@ export default function CourseIndex({ courses = { data: [], links: [], total: 0,
     });
 
     // Column definitions for visibility control
-    const columnDefinitions = [
+    const columnDefinitions: ColumnDefinition[] = [
         { id: 'select', label: 'Chọn' },
         { id: 'ordering', label: 'Thứ tự' },
         { id: 'name', label: 'Tên lớp giáo lý' },
@@ -96,23 +94,6 @@ export default function CourseIndex({ courses = { data: [], links: [], total: 0,
         { id: 'description', label: 'Mô tả' },
         { id: 'actions', label: 'Thao tác' },
     ];
-
-    // Helper functions for select all/none
-    const handleSelectAll = () => {
-        const allVisible = columnDefinitions.reduce((acc, col) => {
-            acc[col.id] = true;
-            return acc;
-        }, {} as Record<string, boolean>);
-        setColumnVisibility(allVisible);
-    };
-
-    const handleSelectNone = () => {
-        const allHidden = columnDefinitions.reduce((acc, col) => {
-            acc[col.id] = false;
-            return acc;
-        }, {} as Record<string, boolean>);
-        setColumnVisibility(allHidden);
-    };
 
     // Set default academic year if not provided
     useEffect(() => {
@@ -128,20 +109,6 @@ export default function CourseIndex({ courses = { data: [], links: [], total: 0,
         }
     }, [academicYears, selectedAcademicYearId]);
 
-    // Close column select when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Element;
-            if (showColumnSelect && !target.closest('.column-select-container')) {
-                setShowColumnSelect(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [showColumnSelect]);
 
 
     const { flash } = usePage<{
@@ -245,109 +212,9 @@ export default function CourseIndex({ courses = { data: [], links: [], total: 0,
                     onButtonClick={handleAddClick}
                 />
 
-                {/* Unified Filter Section */}
-                <div className="mb-6 rounded-lg border bg-card p-4">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-2">
-                            <Filter className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">Bộ lọc và tìm kiếm</span>
-                        </div>
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-muted-foreground">Niên khóa:</span>
-                                    <Select
-                                        value={selectedAcademicYearId?.toString() || ''}
-                                        onValueChange={handleAcademicYearFilter}
-                                    >
-                                        <SelectTrigger className="w-[200px]">
-                                            <SelectValue placeholder={selectedAcademicYearId ? undefined : "Chọn niên khóa"} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {academicYears.map((year) => (
-                                                <SelectItem key={year.id} value={year.id.toString()}>
-                                                    {year.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-muted-foreground">Tìm kiếm:</span>
-                                    <Input
-                                        placeholder="Tìm kiếm lớp giáo lý..."
-                                        
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">Cột hiển thị:</span>
-                                <div className="relative column-select-container">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setShowColumnSelect(!showColumnSelect)}
-                                        className="min-w-[120px] justify-between"
-                                    >
-                                        {Object.values(columnVisibility).filter(Boolean).length} cột
-                                        <ChevronDown className="ml-2 h-4 w-4" />
-                                    </Button>
-                                    {showColumnSelect && (
-                                        <div className="absolute top-full right-0 mt-1 w-64 bg-white border rounded-md shadow-lg z-50 p-2">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <span className="text-sm font-medium">Chọn cột hiển thị</span>
-                                                <div className="flex gap-1">
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={handleSelectAll}
-                                                        className="text-xs h-6 px-2"
-                                                    >
-                                                        Tất cả
-                                                    </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={handleSelectNone}
-                                                        className="text-xs h-6 px-2"
-                                                    >
-                                                        Không
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                            <div className="space-y-1 max-h-48 overflow-y-auto">
-                                                {columnDefinitions.map((column) => (
-                                                    <label
-                                                        key={column.id}
-                                                        className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={columnVisibility[column.id]}
-                                                            onChange={(e) =>
-                                                                setColumnVisibility(prev => ({
-                                                                    ...prev,
-                                                                    [column.id]: e.target.checked
-                                                                }))
-                                                            }
-                                                            className="rounded"
-                                                        />
-                                                        <span className="text-sm">{column.label}</span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Data Table */}
+                {/* Data Table Page */}
                 <ErrorBoundary>
-                    <DataTable
+                    <AppDataTablePage
                         columns={createCourseColumns({
                             onEdit: handleEdit,
                             onDelete: handleDelete,
@@ -355,6 +222,9 @@ export default function CourseIndex({ courses = { data: [], links: [], total: 0,
                         data={courses.data.filter(course => 
                             course.name.toLowerCase().includes(searchTerm.toLowerCase())
                         )}
+                        searchTerm={searchTerm}
+                        onSearchChange={setSearchTerm}
+                        searchPlaceholder="Tìm kiếm lớp giáo lý..."
                         columnVisibility={columnVisibility}
                         onColumnVisibilityChange={(updaterOrValue) => {
                             if (typeof updaterOrValue === 'function') {
@@ -363,6 +233,7 @@ export default function CourseIndex({ courses = { data: [], links: [], total: 0,
                                 setColumnVisibility(updaterOrValue);
                             }
                         }}
+                        columnDefinitions={columnDefinitions}
                         pagination={{
                             current_page: courses.current_page,
                             last_page: courses.last_page,
