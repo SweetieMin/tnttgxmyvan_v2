@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Access\RoleRequest;
 use App\Repositories\Eloquent\RoleRepository;
 use App\Models\RoleHierarchy;
+use Illuminate\Support\Facades\Log;
 
 class RoleController extends Controller
 {
@@ -44,7 +45,15 @@ class RoleController extends Controller
      */
     public function create()
     {
-        //
+        // Get all roles for hierarchy selection
+        $allRoles = $this->roleRepository->getModel()
+            ->orderBy('ordering', 'asc')
+            ->get();
+        
+        return Inertia::render('access/role/actions-role', [
+            'allRoles' => $allRoles,
+            'mode' => 'create',
+        ]);
     }
 
     /**
@@ -52,6 +61,10 @@ class RoleController extends Controller
      */
     public function store(RoleRequest $request)
     {
+        // Debug: Log the request data
+        Log::info('Store request data:', $request->all());
+        Log::info('Managed role IDs:', $request->input('managed_role_ids', []));
+        
         // Create the role
         $role = $this->roleRepository->create($request->all());
         
@@ -74,7 +87,23 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $role = $this->roleRepository->find($id);
+        $role->load('subRoles');
+        
+        // Get all roles for hierarchy selection
+        $allRoles = $this->roleRepository->getModel()
+            ->orderBy('ordering', 'asc')
+            ->get();
+        
+        // Get managed roles for this role (sub roles that this role manages)
+        $managedRoles = $role->subRoles;
+        
+        return Inertia::render('access/role/actions-role', [
+            'role' => $role,
+            'allRoles' => $allRoles,
+            'managedRoles' => $managedRoles,
+            'mode' => 'edit',
+        ]);
     }
 
     /**
@@ -82,6 +111,10 @@ class RoleController extends Controller
      */
     public function update(RoleRequest $request, string $id)
     {
+        // Debug: Log the request data
+        Log::info('Update request data:', $request->all());
+        Log::info('Managed role IDs:', $request->input('managed_role_ids', []));
+        
         // Update the role
         $this->roleRepository->update($id, $request->all());
         
@@ -96,28 +129,42 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        $name = $this->roleRepository->find($id)->name;
+        $role = $this->roleRepository->find($id);
+        $name = $role->name;
+        
+        // Sync with empty array to remove all relationships
+        $role->subRoles()->sync([]);
+        
+        // Delete the role
         $this->roleRepository->delete($id);
+        
         return redirect()->route('access.roles.index')->with('success', 'Vai trò ' . $name . ' đã được xóa thành công');
     }
 
     /**
-     * Update role hierarchy relationships
+     * Update role hierarchy relationships using sync
      */
     private function updateRoleHierarchy($roleId, $managedRoleIds)
     {
-        // Remove existing hierarchies for this role
-        RoleHierarchy::where('role_id', $roleId)->delete();
-
-        // Add new hierarchies
-        foreach ($managedRoleIds as $managedRoleId) {
-            // Prevent self-management
-            if ($managedRoleId != $roleId) {
-                RoleHierarchy::create([
-                    'role_id' => $roleId,
-                    'manages_role_id' => $managedRoleId,
-                ]);
-            }
-        }
+        // Debug: Log the data
+        Log::info('updateRoleHierarchy called with:', [
+            'roleId' => $roleId,
+            'managedRoleIds' => $managedRoleIds
+        ]);
+        
+        // Get the role instance
+        $role = $this->roleRepository->find($roleId);
+        
+        // Filter out self-management (prevent role from managing itself)
+        $filteredManagedRoleIds = array_filter($managedRoleIds, function($managedRoleId) use ($roleId) {
+            return $managedRoleId != $roleId;
+        });
+        
+        Log::info('Filtered managed role IDs:', $filteredManagedRoleIds);
+        
+        // Use sync to update the many-to-many relationship
+        $role->subRoles()->sync($filteredManagedRoleIds);
+        
+        Log::info('Sync completed successfully');
     }
 }
