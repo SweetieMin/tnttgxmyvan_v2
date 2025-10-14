@@ -26,16 +26,18 @@ export const createAcademicYearColumns = ({
     {
         id: 'select',
         header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && 'indeterminate')
-                }
-                onCheckedChange={(value) =>
-                    table.toggleAllPageRowsSelected(!!value)
-                }
-                aria-label="Select all"
-            />
+            
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && 'indeterminate')
+                    }
+                    onCheckedChange={(value) =>
+                        table.toggleAllPageRowsSelected(!!value)
+                    }
+                    aria-label="Select all"
+                />
+
         ),
         cell: ({ row }) => (
             <Checkbox
@@ -49,7 +51,7 @@ export const createAcademicYearColumns = ({
     },
     {
         accessorKey: 'name',
-        header: 'Niên khóa',
+        header: () => <div className="text-center">Niên khóa</div>,
         enableSorting: true,
         cell: ({ row }) => (
             <div className="text-center">
@@ -59,7 +61,7 @@ export const createAcademicYearColumns = ({
     },
     {
         id: 'catechism_period',
-        header: 'Giáo lý',
+        header: () => <div className="text-center">Giáo lý</div>,
         enableSorting: false,
         cell: ({ row }) => {
             const startDate = row.original.catechism_start_date;
@@ -84,7 +86,7 @@ export const createAcademicYearColumns = ({
     },
     {
         accessorKey: 'catechism_avg_score',
-        header: 'Điểm giáo lý',
+        header: () => <div className="text-center">Điểm giáo lý</div>,
         enableSorting: true,
         cell: ({ row }) => {
             const score = row.getValue('catechism_avg_score') as number;
@@ -99,7 +101,7 @@ export const createAcademicYearColumns = ({
     },
     {
         accessorKey: 'catechism_training_score',
-        header: 'Điểm chuyên cần giáo lý',
+        header: () => <div className="text-center">Điểm chuyên cần giáo lý</div>,
         enableSorting: true,
         cell: ({ row }) => {
             const score = row.getValue('catechism_training_score') as number;
@@ -114,7 +116,7 @@ export const createAcademicYearColumns = ({
     },
     {
         id: 'activity_period',
-        header: 'Sinh hoạt',
+        header: () => <div className="text-center">Sinh hoạt</div>,
         enableSorting: false,
         cell: ({ row }) => {
             const startDate = row.original.activity_start_date;
@@ -139,7 +141,7 @@ export const createAcademicYearColumns = ({
     },
     {
         accessorKey: 'activity_score',
-        header: 'Điểm sinh hoạt',
+        header: () => <div className="text-center">Điểm sinh hoạt</div>,
         enableSorting: true,
         cell: ({ row }) => {
             const score = row.getValue('activity_score') as number;

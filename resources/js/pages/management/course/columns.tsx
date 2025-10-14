@@ -57,6 +57,7 @@ export const createCourseColumns = ({ onEdit, onDelete }: CourseColumnsProps): C
     {
         accessorKey: "name",
         header: "Tên lớp giáo lý",
+        
         enableSorting: true,
         cell: ({ row }) => (
             <div className="font-semibold">

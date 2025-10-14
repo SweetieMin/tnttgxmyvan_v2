@@ -68,7 +68,7 @@ export const createRegulationColumns = ({ onEdit, onDelete }: RegulationColumnsP
     },
     {
         accessorKey: "type",
-        header: "Loại",
+        header: () => <div className="text-center">Loại</div>,
         enableSorting: true,
         cell: ({ row }) => {
             const type = row.getValue("type") as string;
@@ -87,7 +87,7 @@ export const createRegulationColumns = ({ onEdit, onDelete }: RegulationColumnsP
     },
     {
         accessorKey: "points",
-        header: "Điểm",
+        header: () => <div className="text-center">Điểm</div>,
         enableSorting: true,
         cell: ({ row }) => {
             const points = row.getValue("points") as number;
