@@ -25,6 +25,8 @@ class RoleRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'ordering' => 'required|integer|min:1',
+            'managed_role_ids' => 'array',
+            'managed_role_ids.*' => 'integer|exists:roles,id',
         ];
     }
 

@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/input-group';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { index as roles } from '@/routes/access/roles';
@@ -33,7 +34,7 @@ import { type BreadcrumbItem } from '@/types';
 import type { Role } from '@/types/academic';
 import { soundToast } from '@/utils/sound-toast';
 import { Head, useForm, usePage, router } from '@inertiajs/react';
-import { Filter, ChevronDown } from 'lucide-react';
+import { Filter, ChevronDown, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DataTable } from './data-table';
 import { createRoleColumns } from './columns';
@@ -55,9 +56,10 @@ export interface Props {
         last_page: number;
         per_page: number;
     };
+    allRoles?: Role[];
 }
 
-export default function RoleIndex({ roles = { data: [], links: [], total: 0, from: 0, to: 0, current_page: 1, last_page: 1, per_page: 10 } }: Props) {
+export default function RoleIndex({ roles = { data: [], links: [], total: 0, from: 0, to: 0, current_page: 1, last_page: 1, per_page: 10 }, allRoles = [] }: Props) {
     const [isOpen, setIsOpen] = useState(false);
     const [editingRole, setEditingRole] = useState<Role | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -71,6 +73,11 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
         description: true,
         actions: true,
     });
+    
+    // Role hierarchy states
+    const [selectedManagedRoles, setSelectedManagedRoles] = useState<Set<number>>(new Set());
+    const [hierarchySearchTerm, setHierarchySearchTerm] = useState('');
+    const [showHierarchySection, setShowHierarchySection] = useState(false);
 
     // Column definitions for visibility control
     const columnDefinitions = [
@@ -129,11 +136,15 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
             name: '',
             description: '',
             ordering: 1,
+            managed_role_ids: [] as number[],
         });
 
     const resetForm = () => {
-        setData({ id: 0, name: '', description: '', ordering: 1 });
+        setData({ id: 0, name: '', description: '', ordering: 1, managed_role_ids: [] });
         setEditingRole(null);
+        setSelectedManagedRoles(new Set());
+        setHierarchySearchTerm('');
+        setShowHierarchySection(false);
         clearErrors();
     };
 
@@ -149,7 +160,13 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
             name: item.name,
             description: item.description || '',
             ordering: item.ordering,
+            managed_role_ids: (item as any).sub_roles?.map((r: any) => r.id) || [],
         });
+        
+        // Set selected managed roles
+        const managedRoleIds = new Set<number>((item as any).sub_roles?.map((r: any) => r.id) || []);
+        setSelectedManagedRoles(managedRoleIds);
+        
         setIsOpen(true);
     };
 
@@ -157,6 +174,7 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
         setItemToDelete(item);
         setDeleteDialogOpen(true);
     };
+
 
     const confirmDelete = () => {
         if (itemToDelete) {
@@ -171,6 +189,10 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        
+        // Update managed_role_ids from selectedManagedRoles
+        setData('managed_role_ids', Array.from(selectedManagedRoles));
+        
         if (editingRole) {
             put(`/management/roles/${editingRole.id}`, {
                 onSuccess: () => {
@@ -189,6 +211,37 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
     };
 
     const handleClose = () => { setIsOpen(false); resetForm(); };
+
+    // Role hierarchy helper functions
+    const handleRoleToggle = (roleId: number, checked: boolean) => {
+        const newSelected = new Set(selectedManagedRoles);
+        if (checked) {
+            newSelected.add(roleId);
+        } else {
+            newSelected.delete(roleId);
+        }
+        setSelectedManagedRoles(newSelected);
+    };
+
+    const handleSelectAllManagedRoles = () => {
+        const availableRoles = allRoles.filter(role => 
+            role.id !== data.id && 
+            role.name.toLowerCase().includes(hierarchySearchTerm.toLowerCase())
+        );
+        const allIds = new Set(availableRoles.map(r => r.id));
+        setSelectedManagedRoles(allIds);
+    };
+
+    const handleSelectNoneManagedRoles = () => {
+        setSelectedManagedRoles(new Set());
+    };
+
+    // Filter available roles for hierarchy
+    const availableManagedRoles = allRoles.filter(role => 
+        role.id !== data.id && 
+        (role.name.toLowerCase().includes(hierarchySearchTerm.toLowerCase()) ||
+         (role.description && role.description.toLowerCase().includes(hierarchySearchTerm.toLowerCase())))
+    );
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -316,7 +369,7 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
 
                 {/* Role Dialog */}
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                    <DialogContent className="max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="max-h-[85vh] w-[90vw] max-w-4xl overflow-hidden flex flex-col">
                         <DialogHeader>
                             <DialogTitle>
                                 {editingRole
@@ -330,7 +383,7 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
                             </DialogDescription>
                         </DialogHeader>
                         <Separator />
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto flex-1 px-1">
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">
@@ -398,8 +451,116 @@ export default function RoleIndex({ roles = { data: [], links: [], total: 0, fro
                                 )}
                             </div>
 
+                            {/* Role Hierarchy Section */}
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <Label className="text-base font-medium">Vai trò được quản lý</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            Chọn các vai trò mà vai trò này có thể quản lý
+                                        </p>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setShowHierarchySection(!showHierarchySection)}
+                                    >
+                                        {showHierarchySection ? 'Ẩn' : 'Hiện'} danh sách
+                                    </Button>
+                                </div>
+
+                                {showHierarchySection && (
+                                    <div className="space-y-3 rounded-lg border p-4 bg-muted/30">
+                                        {/* Search and Controls */}
+                                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Search className="h-4 w-4 text-muted-foreground" />
+                                                <Input
+                                                    placeholder="Tìm kiếm vai trò..."
+                                                    value={hierarchySearchTerm}
+                                                    onChange={(e) => setHierarchySearchTerm(e.target.value)}
+                                                    className="max-w-sm"
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={handleSelectAllManagedRoles}
+                                                >
+                                                    Chọn tất cả
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={handleSelectNoneManagedRoles}
+                                                >
+                                                    Bỏ chọn tất cả
+                                                </Button>
+                                            </div>
+                                        </div>
+
+                                        {/* Role Selection */}
+                                        <div className="max-h-48 overflow-y-auto space-y-2 border rounded-md p-2 bg-background">
+                                            {availableManagedRoles.length === 0 ? (
+                                                <div className="text-center py-4 text-muted-foreground">
+                                                    {hierarchySearchTerm ? 'Không tìm thấy vai trò nào phù hợp' : 'Không có vai trò nào để chọn'}
+                                                </div>
+                                            ) : (
+                                                availableManagedRoles.map((role) => {
+                                                    const isSelected = selectedManagedRoles.has(role.id);
+                                                    
+                                                    return (
+                                                        <div
+                                                            key={role.id}
+                                                            className={`flex items-center space-x-3 p-2 rounded-md border transition-colors ${
+                                                                isSelected 
+                                                                    ? 'bg-primary/5 border-primary/20' 
+                                                                    : 'hover:bg-muted/30'
+                                                            }`}
+                                                        >
+                                                            <Checkbox
+                                                                id={`managed-role-${role.id}`}
+                                                                checked={isSelected}
+                                                                onCheckedChange={(checked) => 
+                                                                    handleRoleToggle(role.id, !!checked)
+                                                                }
+                                                            />
+                                                            <div className="flex-1 min-w-0">
+                                                                <Label
+                                                                    htmlFor={`managed-role-${role.id}`}
+                                                                    className="font-medium cursor-pointer"
+                                                                >
+                                                                    {role.name}
+                                                                </Label>
+                                                                {role.description && (
+                                                                    <p className="text-sm text-muted-foreground mt-1">
+                                                                        {role.description}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                            <div className="text-sm text-muted-foreground">
+                                                                Thứ tự: {role.ordering}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
+
+                                        {/* Summary */}
+                                        <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded-md">
+                                            ✓ Đã chọn {selectedManagedRoles.size} vai trò
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                             <Separator />
-                            <DialogFooter>
+                            <DialogFooter className="flex-shrink-0">
                                 <Button
                                     type="button"
                                     variant="outline"

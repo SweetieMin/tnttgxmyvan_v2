@@ -40,6 +40,7 @@ export interface Role {
     ordering: number;
     created_at: string;
     updated_at: string;
+    sub_roles?: Role[];
 }
 
 export interface Regulation {
