@@ -183,15 +183,6 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
 
     const handleClose = () => { setIsOpen(false); resetForm(); };
 
-    const handleAcademicYearFilter = (academicYearId: string) => {
-        const yearId = parseInt(academicYearId);
-        setSelectedAcademicYearId(yearId);
-        
-        router.get('/management/regulations', 
-            { academic_year_id: yearId },
-            { preserveState: true, replace: true }
-        );
-    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
