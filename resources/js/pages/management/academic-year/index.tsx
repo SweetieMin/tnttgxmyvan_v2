@@ -484,9 +484,9 @@ export default function AcademicYearIndex({ years = { data: [], links: [], total
                                     <Input
                                         id="catechism_avg_score"
                                         type="number"
-                                        min="0"
+                                        min="1"
                                         max="10"
-                                        step="0.1"
+                                        step="0.5"
                                         value={data.catechism_avg_score}
                                         onChange={(e) => setData('catechism_avg_score', parseFloat(e.target.value) || 0)}
                                     />
@@ -504,9 +504,9 @@ export default function AcademicYearIndex({ years = { data: [], links: [], total
                                     <Input
                                         id="catechism_training_score"
                                         type="number"
-                                        min="0"
+                                        min="1"
                                         max="10"
-                                        step="0.1"
+                                        step="0.5"
                                         value={data.catechism_training_score}
                                         onChange={(e) => setData('catechism_training_score', parseFloat(e.target.value) || 0)}
                                     />
@@ -524,9 +524,9 @@ export default function AcademicYearIndex({ years = { data: [], links: [], total
                                     <Input
                                         id="activity_score"
                                         type="number"
-                                        min="0"
-                                        max="10"
-                                        step="0.1"
+                                        min="1"
+                                        max="1000"
+                                        step="1"
                                         value={data.activity_score}
                                         onChange={(e) => setData('activity_score', parseFloat(e.target.value) || 0)}
                                     />
