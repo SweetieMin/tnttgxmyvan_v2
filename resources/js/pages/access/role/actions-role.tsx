@@ -63,31 +63,26 @@ export default function ActionsRole({ role, allRoles = [], managedRoles = [], mo
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
-        // Debug: Log the data being sent
-        console.log('Selected managed roles:', selectedManagedRoles);
-        console.log('Current form data:', data);
-        
-        // Prepare data with managed_role_ids
-        const formData = {
-            name: data.name,
-            description: data.description,
-            ordering: data.ordering,
-            managed_role_ids: Array.from(selectedManagedRoles)
-        };
-        
-        console.log('Form data being sent:', formData);
+        // Update managed_role_ids from selectedManagedRoles
+        setData('managed_role_ids', Array.from(selectedManagedRoles));
         
         if (mode === 'edit' && role) {
-            router.put(`/access/roles/${role.id}`, formData, {
+            put(`/access/roles/${role.id}`, {
                 onSuccess: () => {
                     router.visit('/access/roles');
                 },
+                onError: (errors) => {
+                    console.error('Validation errors:', errors);
+                }
             });
         } else {
-            router.post('/access/roles', formData, {
+            post('/access/roles', {
                 onSuccess: () => {
                     router.visit('/access/roles');
                 },
+                onError: (errors) => {
+                    console.error('Validation errors:', errors);
+                }
             });
         }
     };
@@ -333,6 +328,18 @@ export default function ActionsRole({ role, allRoles = [], managedRoles = [], mo
                                 <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
                                     ✓ Đã chọn {selectedManagedRoles.size} vai trò
                                 </div>
+                                
+                                {/* Validation errors for managed_role_ids */}
+                                {errors.managed_role_ids && (
+                                    <div className="text-sm text-red-500 bg-red-50 p-2 rounded-md">
+                                        {errors.managed_role_ids}
+                                    </div>
+                                )}
+                                {(errors as any)['managed_role_ids.*'] && (
+                                    <div className="text-sm text-red-500 bg-red-50 p-2 rounded-md">
+                                        {(errors as any)['managed_role_ids.*']}
+                                    </div>
+                                )}
                             </div>
                         </div>
 

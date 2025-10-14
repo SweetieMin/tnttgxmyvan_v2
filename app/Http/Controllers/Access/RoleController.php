@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Access\RoleRequest;
 use App\Repositories\Eloquent\RoleRepository;
-use App\Models\RoleHierarchy;
-use Illuminate\Support\Facades\Log;
 
 class RoleController extends Controller
 {
@@ -61,10 +59,7 @@ class RoleController extends Controller
      */
     public function store(RoleRequest $request)
     {
-        // Debug: Log the request data
-        Log::info('Store request data:', $request->all());
-        Log::info('Managed role IDs:', $request->input('managed_role_ids', []));
-        
+
         // Create the role
         $role = $this->roleRepository->create($request->all());
         
@@ -111,9 +106,6 @@ class RoleController extends Controller
      */
     public function update(RoleRequest $request, string $id)
     {
-        // Debug: Log the request data
-        Log::info('Update request data:', $request->all());
-        Log::info('Managed role IDs:', $request->input('managed_role_ids', []));
         
         // Update the role
         $this->roleRepository->update($id, $request->all());
@@ -146,11 +138,6 @@ class RoleController extends Controller
      */
     private function updateRoleHierarchy($roleId, $managedRoleIds)
     {
-        // Debug: Log the data
-        Log::info('updateRoleHierarchy called with:', [
-            'roleId' => $roleId,
-            'managedRoleIds' => $managedRoleIds
-        ]);
         
         // Get the role instance
         $role = $this->roleRepository->find($roleId);
@@ -160,11 +147,8 @@ class RoleController extends Controller
             return $managedRoleId != $roleId;
         });
         
-        Log::info('Filtered managed role IDs:', $filteredManagedRoleIds);
-        
         // Use sync to update the many-to-many relationship
         $role->subRoles()->sync($filteredManagedRoleIds);
-        
-        Log::info('Sync completed successfully');
+
     }
 }
