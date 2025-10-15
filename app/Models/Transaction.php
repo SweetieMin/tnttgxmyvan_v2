@@ -12,6 +12,7 @@ class Transaction extends Model
         'description',
         'type',
         'amount',
+        'file_name',
         'created_by',
     ];
 
@@ -20,13 +21,9 @@ class Transaction extends Model
         'amount' => 'integer',
     ];
 
-    public function createdBy()
+    public function createdByUser()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function files()
-    {
-        return $this->hasMany(TransactionFile::class);
-    }
 }

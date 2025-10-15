@@ -17,6 +17,8 @@ import { index as regulations } from '@/routes/management/regulations';
 
 import { index as roles } from '@/routes/access/roles';
 
+import { index as transactions } from '@/routes/finance/transactions';
+
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
@@ -26,13 +28,14 @@ import {
     ShieldUser,
     SquareLibrary,
     BookOpenCheck,
+    Banknote,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const generalNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: dashboard.url(),
         icon: LayoutGrid,
     },
 ];
@@ -40,22 +43,22 @@ const generalNavItems: NavItem[] = [
 const managementNavItems: NavItem[] = [
     {
         title: 'Niên khoá',
-        href: academic_years(),
+        href: academic_years.url(),
         icon: SquareLibrary,
     },
     {
         title: 'Lớp Giáo Lý',
-        href: courses(),
+        href: courses.url(),
         icon: Church,
     },
     {
         title: 'Ngành Sinh Hoạt',
-        href: sectors(),
+        href: sectors.url(),
         icon: FerrisWheel,
     },
     {
         title: 'Nội quy',
-        href: regulations(),
+        href: regulations.url(),
         icon: BookOpenCheck,
     },
 ];
@@ -63,8 +66,16 @@ const managementNavItems: NavItem[] = [
 const accessNavItems: NavItem[] = [
     {
         title: 'Chức vụ',
-        href: roles(),
+        href: roles.url(),
         icon: ShieldUser,
+    },
+];
+
+const financeNavItems: NavItem[] = [
+    {
+        title: 'Tiền quỹ',
+        href: transactions.url(),
+        icon: Banknote,
     },
 ];
 
@@ -86,6 +97,7 @@ export function AppSidebar() {
             <SidebarContent>
                 <NavMain items={generalNavItems} label="General" />
                 <NavMain items={managementNavItems} label="Management" />
+                <NavMain items={financeNavItems} label="Finance" />
                 <NavMain items={accessNavItems} label="Access" />
             </SidebarContent>
 

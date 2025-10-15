@@ -60,32 +60,30 @@ export default function ActionsRole({ role, allRoles = [], managedRoles = [], mo
         managed_role_ids: [] as number[],
     });
 
+
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
-        // Update managed_role_ids from selectedManagedRoles
-        setData('managed_role_ids', Array.from(selectedManagedRoles));
-        
+    
+        const payload = {
+            name: data.name,
+            description: data.description,
+            ordering: data.ordering,
+            managed_role_ids: Array.from(selectedManagedRoles),
+        };
+    
         if (mode === 'edit' && role) {
-            put(`/access/roles/${role.id}`, {
-                onSuccess: () => {
-                    router.visit('/access/roles');
-                },
-                onError: (errors) => {
-                    console.error('Validation errors:', errors);
-                }
+            router.put(`/access/roles/${role.id}`, payload, {
+                onError: (errors) => console.error('Validation errors:', errors),
             });
         } else {
-            post('/access/roles', {
-                onSuccess: () => {
-                    router.visit('/access/roles');
-                },
-                onError: (errors) => {
-                    console.error('Validation errors:', errors);
-                }
+            router.post('/access/roles', payload, {
+                onError: (errors) => console.error('Validation errors:', errors),
             });
         }
     };
+    
+    
 
     const handleCancel = () => {
         router.visit('/access/roles');

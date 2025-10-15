@@ -2,10 +2,10 @@ import { toast } from 'sonner';
 
 /**
  * Hiển thị toast + âm thanh đồng bộ toàn hệ thống
- * @param type  'success' | 'error'
+ * @param type  'success' | 'error' | 'info'
  * @param message  nội dung thông báo
  */
-export function soundToast(type: 'success' | 'error', message: string) {
+export function soundToast(type: 'success' | 'error' | 'info', message: string) {
   // 🔊 Đường dẫn âm thanh trong thư mục public/sounds
   const audio = new Audio(`/storage/sounds/${type}.mp3`);
   audio.volume = 0.6;
@@ -21,9 +21,14 @@ export function soundToast(type: 'success' | 'error', message: string) {
       duration: 3000,
       className: 'font-medium',
     });
-  } else {
+  } else if (type === 'error') {
     toast.error(message, {
       duration: 4000,
+      className: 'font-medium',
+    });
+  } else {
+    toast.info(message, {
+      duration: 3000,
       className: 'font-medium',
     });
   }

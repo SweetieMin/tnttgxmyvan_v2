@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Access\RoleController;
 use App\Http\Controllers\Management\CourseController;
 use App\Http\Controllers\Management\SectorController;
+use App\Http\Controllers\Finance\TransactionController;
 use App\Http\Controllers\Management\RegulationController;
 use App\Http\Controllers\Management\AcademicYearController;
 
@@ -27,6 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('access')->name('access.')->group(function () {
         Route::resource('roles', RoleController::class);
+    });
+
+    Route::prefix('finance')->name('finance.')->group(function () {
+        Route::resource('transactions', TransactionController::class);
     });
 
 });
