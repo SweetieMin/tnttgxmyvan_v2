@@ -117,7 +117,7 @@ export const createTransactionColumns = ({ onEdit, onDelete }: TransactionColumn
     },
     {
         accessorKey: "file_name",
-        header: "Tài liệu",
+        header: "File chi tiết",
         enableSorting: false,
         cell: ({ row }) => {
             const fileName = row.original.file_name;

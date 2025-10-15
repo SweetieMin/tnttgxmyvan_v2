@@ -342,7 +342,7 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
                         <div className="space-y-4">
                             <div>
                                 <h2 className="text-lg font-semibold">
-                                    Tài liệu đính kèm
+                                    Bảng chi tiết đính kèm
                                 </h2>
                                 <p className="text-sm text-muted-foreground">
                                     Tải lên các file PDF liên quan đến giao dịch

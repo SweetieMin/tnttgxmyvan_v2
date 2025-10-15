@@ -61,7 +61,7 @@ export default function TransactionIndex({ transactions = { data: [], links: [],
         { id: 'type', label: 'Loại' },
         { id: 'amount', label: 'Số tiền' },
         { id: 'description', label: 'Mô tả' },
-        { id: 'files', label: 'Tài liệu' },
+        { id: 'files', label: 'File chi tiết' },
         { id: 'actions', label: 'Thao tác' },
     ];
 
