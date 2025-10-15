@@ -137,17 +137,18 @@ export default function AcademicYearIndex({ years = { data: [], links: [], total
         setData({
             id: item.id,
             name: item.name,
-            catechism_start_date: item.catechism_start_date,
-            catechism_end_date: item.catechism_end_date,
+            catechism_start_date: item.catechism_start_date ? item.catechism_start_date.substring(0, 10) : '',
+            catechism_end_date: item.catechism_end_date ? item.catechism_end_date.substring(0, 10) : '',
             catechism_avg_score: item.catechism_avg_score,
             catechism_training_score: item.catechism_training_score,
-            activity_start_date: item.activity_start_date,
-            activity_end_date: item.activity_end_date,
+            activity_start_date: item.activity_start_date ? item.activity_start_date.substring(0, 10) : '',
+            activity_end_date: item.activity_end_date ? item.activity_end_date.substring(0, 10) : '',
             activity_score: item.activity_score,
             status_academic: item.status_academic,
         });
         setIsOpen(true);
     };
+    
 
     const handleDelete = (item: AcademicYear) => {
         setItemToDelete(item);

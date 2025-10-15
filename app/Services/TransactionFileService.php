@@ -19,15 +19,8 @@ class TransactionFileService
      */
     public function storeFile(UploadedFile $file, int $transactionId): ?string
     {
-        \Log::info('TransactionFileService: storeFile called', [
-            'transaction_id' => $transactionId,
-            'file_name' => $file->getClientOriginalName(),
-            'file_size' => $file->getSize(),
-            'is_valid' => $file->isValid()
-        ]);
 
         if (!$file->isValid()) {
-            \Log::error('File is not valid');
             return null;
         }
 
@@ -36,12 +29,9 @@ class TransactionFileService
         $extension = $file->getClientOriginalExtension();
         $uniqueFileName = $this->generateUniqueFileName($originalName, $extension);
         
-        \Log::info('Generated unique filename:', ['unique_file_name' => $uniqueFileName]);
-        
         // Lưu file vào storage
         $filePath = $file->storeAs('transactions', $uniqueFileName, 'public');
         
-        \Log::info('File stored:', ['file_path' => $filePath]);
         
         if ($filePath) {
             // Cập nhật transaction với tên file
@@ -49,16 +39,10 @@ class TransactionFileService
                 'file_name' => $uniqueFileName
             ]);
             
-            \Log::info('Transaction updated:', [
-                'transaction_id' => $transactionId,
-                'file_name' => $uniqueFileName,
-                'updated' => $updated
-            ]);
             
             return $uniqueFileName;
         }
 
-        \Log::error('Failed to store file');
         return null;
     }
 

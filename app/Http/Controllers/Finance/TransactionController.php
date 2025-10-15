@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Finance;
 use Inertia\Inertia;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;        
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -46,10 +46,10 @@ class TransactionController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('createdByUser', function ($userQuery) use ($search) {
-                      $userQuery->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('createdByUser', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -75,7 +75,7 @@ class TransactionController extends Controller
      */
     public function store(TransactionRequest $request)
     {
-        
+
         try {
             DB::beginTransaction();
 
@@ -98,16 +98,15 @@ class TransactionController extends Controller
 
                     $this->fileService->storeFile($file, $transaction->id);
                 }
-            } 
+            }
 
             DB::commit();
 
             return redirect()->route('finance.transactions.index')
                 ->with('success', 'Giao dịch đã được tạo thành công.');
-
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return redirect()->back()
                 ->withErrors(['error' => 'Có lỗi xảy ra khi tạo giao dịch: ' . $e->getMessage()])
                 ->withInput();
@@ -120,7 +119,7 @@ class TransactionController extends Controller
     public function show(string $id)
     {
         $transaction = $this->transactionRepository->find($id, ['createdByUser', 'files']);
-        
+
         if (!$transaction) {
             abort(404, 'Giao dịch không tồn tại.');
         }
@@ -136,14 +135,14 @@ class TransactionController extends Controller
     public function edit(string $id)
     {
         $transaction = $this->transactionRepository->find($id);
-        
+
         if (!$transaction) {
             return redirect()->route('finance.transactions.index')
                 ->with('error', 'Giao dịch không tồn tại');
         }
-        
+
         $transaction->load(['createdByUser']);
-        
+
         return Inertia::render('finance/transaction/actions-transaction', [
             'transaction' => $transaction,
             'mode' => 'edit'
@@ -154,17 +153,17 @@ class TransactionController extends Controller
      * Update the specified resource in storage.
      */
     public function update(TransactionRequest $request, string $id)
-    { 
+    {
         try {
             DB::beginTransaction();
 
             $transaction = $this->transactionRepository->find($id);
-            
+
             if (!$transaction) {
                 abort(404, 'Giao dịch không tồn tại.');
             }
 
-            // Update transaction
+            // 🧩 1. Cập nhật dữ liệu giao dịch
             $this->transactionRepository->update($id, [
                 'transaction_date' => $request->transaction_date,
                 'title' => $request->title,
@@ -173,7 +172,17 @@ class TransactionController extends Controller
                 'amount' => $request->amount,
             ]);
 
-            // Handle file upload (replace existing file if any)
+            // 🧩 2. Nếu có file được đánh dấu để xoá
+            if ($request->has('deleted_files')) {
+                foreach ($request->deleted_files as $transId) {
+                    // chỉ xoá file của chính transaction hiện tại
+                    if ($transaction->id == $transId) {
+                        $this->fileService->deleteFile($transaction->id);
+                    }
+                }
+            }
+
+            // 🧩 3. Nếu có file mới được upload → thay thế file cũ
             if ($request->hasFile('files')) {
                 $files = $request->file('files');
                 $file = is_array($files) ? $files[0] : $files;
@@ -184,17 +193,19 @@ class TransactionController extends Controller
 
             DB::commit();
 
-            return redirect()->route('finance.transactions.index')
+            return redirect()
+                ->route('finance.transactions.index')
                 ->with('success', 'Giao dịch đã được cập nhật thành công.');
-
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            return redirect()->back()
+
+            return redirect()
+                ->back()
                 ->withErrors(['error' => 'Có lỗi xảy ra khi cập nhật giao dịch: ' . $e->getMessage()])
                 ->withInput();
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -205,7 +216,7 @@ class TransactionController extends Controller
             DB::beginTransaction();
 
             $transaction = $this->transactionRepository->find($id, ['files']);
-            
+
             if (!$transaction) {
                 abort(404, 'Giao dịch không tồn tại.');
             }
@@ -221,13 +232,11 @@ class TransactionController extends Controller
 
             return redirect()->route('finance.transactions.index')
                 ->with('success', 'Giao dịch ' . $name . ' đã được xóa thành công.');
-
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return redirect()->back()
                 ->withErrors(['error' => 'Có lỗi xảy ra khi xóa giao dịch: ' . $e->getMessage()]);
         }
     }
-
 }

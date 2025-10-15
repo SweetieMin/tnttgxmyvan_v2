@@ -55,14 +55,6 @@ export interface Regulation {
     updated_at: string;
 }
 
-export interface TransactionFile {
-    id: number;
-    transaction_id: number;
-    file_name: string;
-    created_at: string;
-    updated_at: string;
-}
-
 export interface Transaction {
     id: number;
     transaction_date: string;
@@ -78,5 +70,5 @@ export interface Transaction {
         name: string;
         email: string;
     };
-    files?: TransactionFile[];
+    file_name?: string | null; 
 }

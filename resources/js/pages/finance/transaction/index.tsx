@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Tài chính', href: '' },
+    { title: 'Tiền quỹ', href: '' },
     { title: 'Giao dịch', href: '/finance/transactions' },
 ];
 

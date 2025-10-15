@@ -77,33 +77,33 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
+
         const formData = new FormData();
         formData.append('transaction_date', data.transaction_date);
         formData.append('title', data.title);
         formData.append('description', data.description || '');
         formData.append('type', data.type);
         formData.append('amount', data.amount.toString());
-    
+
         selectedFiles.forEach((file) => {
             formData.append('files[]', file);
         });
-    
+
         deletedFiles.forEach((id) => {
             formData.append('deleted_files[]', id.toString());
         });
-    
+
         // Thêm _method nếu là chế độ chỉnh sửa
         if (mode === 'edit') {
             formData.append('_method', 'PUT');
         }
-    
+
         // 🧠 Fix TypeScript warning bằng cách kiểm tra rõ ràng
         const url =
             mode === 'edit' && transaction
                 ? `/finance/transactions/${transaction.id}`
                 : '/finance/transactions';
-    
+
         router.post(url, formData, {
             onError: (errors) => {
                 console.error('Validation errors:', errors);
@@ -115,7 +115,6 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
             forceFormData: true,
         });
     };
-    
 
     const handleCancel = () => {
         router.visit('/finance/transactions');
@@ -193,7 +192,7 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
                             <div className="space-y-4 lg:col-span-1">
                                 <div className="space-y-2">
                                     <Label htmlFor="transaction_date">
-                                        Ngày giao dịch *
+                                        Ngày *
                                     </Label>
                                     <Calendar22
                                         date={
@@ -223,9 +222,7 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="type">
-                                        Loại giao dịch *
-                                    </Label>
+                                    <Label htmlFor="type">Thu/Chi *</Label>
                                     <Select
                                         value={data.type}
                                         onValueChange={(value) =>
@@ -293,9 +290,7 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
                             {/* Cột phải: Tiêu đề và Mô tả - 4 phần */}
                             <div className="space-y-4 lg:col-span-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="title">
-                                        Tiêu đề giao dịch *
-                                    </Label>
+                                    <Label htmlFor="title">Hạng mục *</Label>
                                     <InputGroup>
                                         <InputGroupInput
                                             id="title"
@@ -407,38 +402,57 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
                                 )}
 
                                 {/* Existing File (for edit mode) */}
-                                {mode === 'edit' && transaction?.file_name && (
-                                    <div className="space-y-2">
-                                        <h4 className="text-sm font-medium">
-                                            File hiện có:
-                                        </h4>
-                                        <div className="flex items-center justify-between rounded-md bg-muted/50 p-2">
-                                            <div className="flex items-center gap-2">
-                                                <FileText className="h-4 w-4 text-muted-foreground" />
-                                                <a
-                                                    href={`/storage/transactions/${transaction.file_name}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                                {/* Existing File (for edit mode) */}
+                                {mode === 'edit' &&
+                                    transaction?.file_name &&
+                                    !deletedFiles.includes(transaction.id) && (
+                                        <div className="space-y-2">
+                                            <h4 className="text-sm font-medium">
+                                                File hiện có:
+                                            </h4>
+                                            <div className="flex items-center justify-between rounded-md bg-muted/50 p-2">
+                                                <div className="flex items-center gap-2">
+                                                    <FileText className="h-4 w-4 text-muted-foreground" />
+                                                    <a
+                                                        href={`/storage/transactions/${transaction.file_name}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                                                    >
+                                                        Xem file
+                                                    </a>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        // chỉ đánh dấu cần xóa, chưa xóa thật
+                                                        setDeletedFiles(
+                                                            (prev) => [
+                                                                ...prev,
+                                                                transaction.id,
+                                                            ],
+                                                        );
+                                                    }}
+                                                    className="text-red-500 hover:text-red-700"
                                                 >
-                                                    Xem file
-                                                </a>
+                                                    Xóa
+                                                </Button>
                                             </div>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => {
-                                                    // Mark file for deletion by setting selectedFiles to empty
-                                                    setSelectedFiles([]);
-                                                }}
-                                                className="text-red-500 hover:text-red-700"
-                                            >
-                                                Xóa
-                                            </Button>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+
+                                {/* Nếu người dùng đã chọn xóa nhưng chưa cập nhật */}
+                                {mode === 'edit' &&
+                                    deletedFiles.includes(
+                                        transaction?.id ?? 0,
+                                    ) && (
+                                        <div className="rounded-md bg-yellow-50 p-2 text-sm text-yellow-700">
+                                            File này sẽ bị xóa khi bạn nhấn{' '}
+                                            <b>Cập nhật</b>.
+                                        </div>
+                                    )}
 
                                 {/* File validation errors */}
                                 {errors.files && (
