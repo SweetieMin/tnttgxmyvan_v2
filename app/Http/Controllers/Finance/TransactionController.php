@@ -4,12 +4,10 @@ namespace App\Http\Controllers\Finance;
 
 use Inertia\Inertia;
 use App\Models\Transaction;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use App\Services\TransactionFileService;
 use App\Http\Requests\TransactionRequest;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
@@ -33,15 +31,16 @@ class TransactionController extends Controller
         $query = Transaction::with(['createdByUser'])
             ->orderBy('transaction_date', 'desc');
 
-        // Apply date filters if provided
+        // Lọc theo ngày nếu có
         if ($request->filled('start_date')) {
             $query->where('transaction_date', '>=', $request->start_date);
         }
+
         if ($request->filled('end_date')) {
             $query->where('transaction_date', '<=', $request->end_date);
         }
 
-        // Apply search filter
+        // Lọc theo từ khóa tìm kiếm
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -53,12 +52,31 @@ class TransactionController extends Controller
             });
         }
 
+        // ✅ Clone query để tính tổng chính xác theo bộ lọc
+        $summaryQuery = clone $query;
+
         $transactions = $query->paginate(15);
 
+        // 🧮 Tính tổng thu / chi / số dư dựa trên query đã lọc
+        $totalIncome = (clone $summaryQuery)->where('type', 'income')->sum('amount');
+        $totalExpense = (clone $summaryQuery)->where('type', 'expense')->sum('amount');
+        $balance = $totalIncome - $totalExpense;
+
         return Inertia::render('finance/transaction/index', [
-            'transactions' => $transactions
+            'transactions' => $transactions,
+            'summary' => [
+                'total_income' => $totalIncome,
+                'total_expense' => $totalExpense,
+                'balance' => $balance,
+            ],
+            'filters' => [
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'search' => $request->search,
+            ],
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

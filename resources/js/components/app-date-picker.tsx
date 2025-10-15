@@ -1,54 +1,44 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { ChevronDownIcon } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Label } from "@/components/ui/label"
+import * as React from 'react'
+import { ChevronDownIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from '@/components/ui/popover'
 
-interface Calendar22Props {
-  date?: Date | undefined;
-  onDateChange?: (date: Date | undefined) => void;
-  placeholder?: string;
-  label?: string;
-  className?: string;
+export interface AppDatePickerProps {
+  label?: string
+  date?: Date
+  onDateChange?: (date?: Date) => void
+  placeholder?: string
+  className?: string
 }
 
-export function Calendar22({ 
-  date: externalDate, 
-  onDateChange, 
-  placeholder = "Select date",
+export function AppDatePicker({
   label,
-  className = "w-48"
-}: Calendar22Props) {
+  date,
+  onDateChange,
+  placeholder = 'Chọn ngày',
+  className = 'w-48',
+}: AppDatePickerProps) {
   const [open, setOpen] = React.useState(false)
-  const [internalDate, setInternalDate] = React.useState<Date | undefined>(undefined)
-  
-  const date = externalDate !== undefined ? externalDate : internalDate
-  const setDate = onDateChange || setInternalDate
 
   return (
-    <div className="flex flex-col gap-3">
-      {label && (
-        <Label htmlFor="date" className="px-1">
-          {label}
-        </Label>
-      )}
+    <div className="flex flex-col gap-2">
+      {label && <Label className="px-1">{label}</Label>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            id="date"
             className={`${className} justify-between font-normal`}
           >
             {date ? date.toLocaleDateString('vi-VN') : placeholder}
-            <ChevronDownIcon />
+            <ChevronDownIcon className="h-4 w-4" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto overflow-hidden p-0" align="start">
@@ -57,7 +47,7 @@ export function Calendar22({
             selected={date}
             captionLayout="dropdown"
             onSelect={(selectedDate) => {
-              setDate(selectedDate)
+              onDateChange?.(selectedDate)
               setOpen(false)
             }}
           />

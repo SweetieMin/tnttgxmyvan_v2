@@ -1,14 +1,9 @@
+import {
+    AppDataTableTransaction,
+    ColumnDefinition,
+} from '@/components/app-data-table-transaction';
 import AppHeaderAddButton from '@/components/app-header-add-button';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import type { Transaction } from '@/types/academic';
-import { soundToast } from '@/utils/sound-toast';
-import { Head, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
-import { createTransactionColumns } from './columns';
 import ErrorBoundary from '@/components/error-boundary';
-import { router } from '@inertiajs/react';
-import { AppDataTablePage, ColumnDefinition } from '@/components/app-data-table-page';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -19,29 +14,53 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import type { Transaction } from '@/types/academic';
+import { soundToast } from '@/utils/sound-toast';
+import { Head, router, usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { createTransactionColumns } from './columns';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tiền quỹ', href: '' },
     { title: 'Giao dịch', href: '/finance/transactions' },
 ];
 
-export interface Props {
-    transactions?: {
-        data: Transaction[];
-        links: { url: string | null; label: string; active: boolean }[];
-        total: number;
-        from: number;
-        to: number;
-        current_page: number;
-        last_page: number;
-        per_page: number;
-    };
-}
+export default function TransactionIndex() {
+    const {
+        transactions,
+        summary,
+        filters,
+        flash,
+    } = usePage<{
+        transactions: {
+            data: Transaction[];
+            links: { url: string | null; label: string; active: boolean }[];
+            total: number;
+            from: number;
+            to: number;
+            current_page: number;
+            last_page: number;
+            per_page: number;
+        };
+        summary: {
+            total_income: number;
+            total_expense: number;
+            balance: number;
+        };
+        filters: {
+            start_date?: string;
+            end_date?: string;
+            search?: string;
+        };
+        flash?: { success?: string; error?: string; message?: string };
+    }>().props;
 
-export default function TransactionIndex({ transactions = { data: [], links: [], total: 0, from: 0, to: 0, current_page: 1, last_page: 1, per_page: 10 } }: Props) {
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Transaction | null>(null);
+
     const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
         select: true,
         transaction_date: true,
@@ -53,7 +72,6 @@ export default function TransactionIndex({ transactions = { data: [], links: [],
         actions: true,
     });
 
-    // Column definitions for visibility control
     const columnDefinitions: ColumnDefinition[] = [
         { id: 'select', label: 'Chọn' },
         { id: 'transaction_date', label: 'Ngày giao dịch' },
@@ -65,25 +83,38 @@ export default function TransactionIndex({ transactions = { data: [], links: [],
         { id: 'actions', label: 'Thao tác' },
     ];
 
-    const { flash } = usePage<{
-        flash?: { success?: string; error?: string; message?: string };
-    }>().props;
+    // ✅ Gọi lại API khi người dùng gõ vào ô tìm kiếm
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            router.get(
+                '/finance/transactions',
+                {
+                    search: searchTerm,
+                    start_date: filters?.start_date || '',
+                    end_date: filters?.end_date || '',
+                },
+                {
+                    preserveState: true,
+                    only: ['transactions', 'summary', 'filters'],
+                },
+            );
+        }, 400); // debounce 0.4s
 
+        return () => clearTimeout(timeout);
+    }, [searchTerm]);
+
+    // ✅ Toast thông báo
     useEffect(() => {
         if (flash?.success) soundToast('success', flash.success);
         else if (flash?.error) soundToast('error', flash.error);
         else if (flash?.message) soundToast('success', flash.message);
     }, [flash?.success, flash?.error, flash?.message]);
 
-
-    const handleAddClick = () => {
-        router.visit('/finance/transactions/create');
-    };
+    const handleAddClick = () => router.visit('/finance/transactions/create');
 
     const handleEdit = (item: Transaction) => {
         router.visit(`/finance/transactions/${item.id}/edit`);
     };
-
 
     const handleDelete = (item: Transaction) => {
         setItemToDelete(item);
@@ -101,13 +132,11 @@ export default function TransactionIndex({ transactions = { data: [], links: [],
         }
     };
 
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Giao dịch" />
 
             <div className="px-4 py-6">
-                {/* Header + Button */}
                 <AppHeaderAddButton
                     title="Giao dịch"
                     description="Quản lý các giao dịch tài chính trong hệ thống, bao gồm thu nhập và chi phí."
@@ -115,29 +144,34 @@ export default function TransactionIndex({ transactions = { data: [], links: [],
                     onButtonClick={handleAddClick}
                 />
 
-                {/* Data Table Page */}
                 <ErrorBoundary>
-                    <AppDataTablePage
+                    <AppDataTableTransaction
                         columns={createTransactionColumns({
                             onEdit: handleEdit,
                             onDelete: handleDelete,
                         })}
-                        data={transactions.data.filter(transaction => 
-                            transaction.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            (transaction.description && transaction.description.toLowerCase().includes(searchTerm.toLowerCase()))
-                        )}
+                        data={transactions.data}
                         searchTerm={searchTerm}
                         onSearchChange={setSearchTerm}
-                        searchPlaceholder="Tìm kiếm giao dịch..."
                         columnVisibility={columnVisibility}
-                        onColumnVisibilityChange={(updaterOrValue) => {
-                            if (typeof updaterOrValue === 'function') {
-                                setColumnVisibility(updaterOrValue);
-                            } else {
-                                setColumnVisibility(updaterOrValue);
-                            }
-                        }}
+                        onColumnVisibilityChange={setColumnVisibility}
                         columnDefinitions={columnDefinitions}
+                        summary={summary}
+                        filters={filters}
+                        onDateFilterChange={(field, value) => {
+                            router.get(
+                                '/finance/transactions',
+                                {
+                                    ...filters,
+                                    [field]: value,
+                                    search: searchTerm,
+                                },
+                                {
+                                    preserveState: true,
+                                    only: ['transactions', 'summary', 'filters'],
+                                },
+                            );
+                        }}
                         pagination={{
                             current_page: transactions.current_page,
                             last_page: transactions.last_page,
@@ -149,24 +183,16 @@ export default function TransactionIndex({ transactions = { data: [], links: [],
                         }}
                     />
                 </ErrorBoundary>
-
             </div>
 
-            {/* Delete Confirmation Dialog */}
-            <AlertDialog
-                open={deleteDialogOpen}
-                onOpenChange={setDeleteDialogOpen}
-            >
+            {/* Xác nhận xoá */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            Xác nhận xóa bản ghi
-                        </AlertDialogTitle>
+                        <AlertDialogTitle>Xác nhận xóa bản ghi</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Bạn có chắc chắn muốn xóa bản ghi "
-                            {itemToDelete?.title}"? Hành động này không thể hoàn
-                            tác và sẽ xóa vĩnh viễn tất cả dữ liệu liên quan đến
-                            bản ghi này.
+                            Bạn có chắc chắn muốn xóa bản ghi "{itemToDelete?.title}"?
+                            Hành động này không thể hoàn tác.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
