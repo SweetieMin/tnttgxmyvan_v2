@@ -6,9 +6,11 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin, {
   DateClickArg,
+  EventClickArg,
+  EventDropArg,
   EventResizeDoneArg,
 } from '@fullcalendar/interaction'
-import { EventClickArg, EventDropArg } from '@fullcalendar/core';
+
 
 interface CalendarEvent {
   id: string
