@@ -57,16 +57,59 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
         else if (flash?.message) soundToast('success', flash.message);
     }, [flash?.success, flash?.error, flash?.message]);
 
-    const { data, setData, post, put, processing, errors, clearErrors } =
-        useForm({
-            transaction_date: transaction?.transaction_date || '',
-            title: transaction?.title || '',
-            description: transaction?.description || '',
-            type: transaction?.type || 'expense',
-            amount: transaction?.amount || 0,
-            files: [] as File[],
-            deleted_files: [] as number[],
-        });
+    const {
+        data,
+        setData,
+        post,
+        put,
+        processing,
+        errors,
+        clearErrors,
+        transform,
+    } = useForm({
+        transaction_date: transaction?.transaction_date || '',
+        title: transaction?.title || '',
+        description: transaction?.description || '',
+        type: transaction?.type || 'expense',
+        amount: transaction?.amount || 0,
+        files: [] as File[],
+        deleted_files: [] as number[],
+    });
+
+    useEffect(() => {
+        clearErrors(); // Xóa lỗi khi mở form hoặc load dữ liệu mới
+    }, [transaction]);
+
+    // Transform data to FormData for file uploads
+    transform((data) => {
+        const formData = new FormData();
+
+        formData.append('transaction_date', data.transaction_date);
+        formData.append('title', data.title);
+        formData.append('description', data.description || '');
+        formData.append('type', data.type);
+        formData.append('amount', data.amount.toString());
+
+        if (mode === 'edit') {
+            formData.append('_method', 'PUT'); // ✅ Laravel hiểu là PUT
+        }
+
+        if (data.files && data.files.length > 0) {
+            data.files.forEach((file) => {
+                if (file instanceof File) {
+                    formData.append('files[]', file);
+                }
+            });
+        }
+
+        if (data.deleted_files && data.deleted_files.length > 0) {
+            data.deleted_files.forEach((id) => {
+                formData.append('deleted_files[]', id.toString());
+            });
+        }
+
+        return formData;
+    });
 
     // Initialize files for edit mode
     useEffect(() => {
@@ -95,34 +138,12 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Create FormData manually for better control
-        const formData = new FormData();
-        formData.append('transaction_date', data.transaction_date);
-        formData.append('title', data.title);
-        formData.append('description', data.description || '');
-        formData.append('type', data.type);
-        formData.append('amount', data.amount.toString());
+        const url =
+            mode === 'edit' && transaction
+                ? `/finance/transactions/${transaction.id}`
+                : '/finance/transactions';
 
-        // Add files
-        data.files.forEach((file) => {
-            formData.append('files[]', file);
-        });
-
-        // Add deleted files
-        data.deleted_files.forEach((id) => {
-            formData.append('deleted_files[]', id.toString());
-        });
-
-        // Add _method for edit mode
-        if (mode === 'edit') {
-            formData.append('_method', 'PUT');
-        }
-
-        const url = mode === 'edit' && transaction 
-            ? `/finance/transactions/${transaction.id}`
-            : '/finance/transactions';
-
-        router.post(url, formData, {
+        post(url, {
             onError: (errors: any) => {
                 console.error('Validation errors:', errors);
             },

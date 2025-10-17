@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\TransactionFileService;
-use App\Http\Requests\TransactionRequest;
+use App\Http\Requests\Finance\TransactionRequest;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
 use App\Helpers\ResponseToastHelper;
 

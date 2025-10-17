@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Finance;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -21,14 +21,20 @@ class TransactionRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isCreate = $this->isMethod('post'); // true nếu đang tạo mới
+
         return [
             'transaction_date' => 'required|date',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'type' => 'required|in:income,expense',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1000',
+
+            // 🔹 Tạo mới: bắt buộc có ít nhất 1 file
+            // 🔹 Chỉnh sửa: cho phép không có file mới
             'files' => 'nullable|array',
-            'files.*' => 'file|mimes:pdf|max:10240', // Max 10MB per file
+            'files.*' => 'file|mimes:pdf|max:10240', // PDF, tối đa 10MB
+
             'deleted_files' => 'nullable|array',
             'deleted_files.*' => 'integer|exists:transaction_files,id',
         ];
@@ -53,11 +59,13 @@ class TransactionRequest extends FormRequest
             'type.in' => 'Loại giao dịch phải là thu hoặc chi.',
             'amount.required' => 'Số tiền là bắt buộc.',
             'amount.numeric' => 'Số tiền phải là số.',
-            'amount.min' => 'Số tiền phải lớn hơn hoặc bằng 0.',
+            'amount.min' => 'Số tiền phải lớn hơn hoặc bằng 1000.',
+
             'files.array' => 'Tệp đính kèm phải là mảng.',
             'files.*.file' => 'Mỗi tệp phải là file hợp lệ.',
             'files.*.mimes' => 'Chỉ cho phép tệp PDF.',
             'files.*.max' => 'Mỗi tệp không được vượt quá 10MB.',
+
             'deleted_files.array' => 'Danh sách tệp xóa phải là mảng.',
             'deleted_files.*.integer' => 'ID tệp xóa phải là số nguyên.',
             'deleted_files.*.exists' => 'Tệp cần xóa không tồn tại.',
