@@ -23,7 +23,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('sectors', SectorController::class);
         Route::resource('courses', CourseController::class);
         Route::resource('regulations', RegulationController::class);
-
     });
 
     Route::prefix('access')->name('access.')->group(function () {

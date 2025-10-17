@@ -27,6 +27,8 @@ class RegulationRequest extends FormRequest
             'type' => 'required|in:plus,minus',
             'points' => 'required|integer|min:1|max:100',
             'ordering' => 'required|integer|min:1',
+            'role_ids' => 'nullable|array',
+            'role_ids.*' => 'integer|exists:roles,id',
         ];
     }
 
@@ -53,6 +55,9 @@ class RegulationRequest extends FormRequest
             'ordering.required' => 'Thứ tự là bắt buộc.',
             'ordering.integer' => 'Thứ tự phải là số nguyên.',
             'ordering.min' => 'Thứ tự phải lớn hơn hoặc bằng 1.',
+            'role_ids.array' => 'Vai trò áp dụng phải là danh sách.',
+            'role_ids.*.integer' => 'Mỗi vai trò phải là số nguyên.',
+            'role_ids.*.exists' => 'Một hoặc nhiều vai trò không tồn tại.',
         ];
     }
 }

@@ -9,17 +9,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Management\RegulationRequest;
 use App\Repositories\Eloquent\RegulationRepository;
 use App\Repositories\Eloquent\AcademicYearRepository;
+use App\Repositories\Eloquent\RoleRepository;
+use App\Models\RegulationRole;
 
 
 class RegulationController extends Controller
 {
     protected $regulationRepository;
     protected $academicYearRepository;
+    protected $roleRepository;
 
-    public function __construct(RegulationRepository $regulationRepository, AcademicYearRepository $academicYearRepository)
+    public function __construct(RegulationRepository $regulationRepository, AcademicYearRepository $academicYearRepository, RoleRepository $roleRepository)
     {
         $this->regulationRepository = $regulationRepository;
         $this->academicYearRepository = $academicYearRepository;
+        $this->roleRepository = $roleRepository;
     }
 
     /**
@@ -42,7 +46,7 @@ class RegulationController extends Controller
         }
 
         // Query regulations với filter
-        $query = $this->regulationRepository->getModel()->with(['academicYear']);
+        $query = $this->regulationRepository->getModel()->with(['academicYear', 'regulationRoles.role']);
         if ($academicYearId) {
             $query->where('academic_year_id', $academicYearId);
         }
@@ -60,9 +64,28 @@ class RegulationController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $academicYears = $this->academicYearRepository->all();
+        $allRoles = $this->roleRepository->all();
+        
+        // Lấy academic_year_id từ query parameter hoặc tìm niên khóa hiện tại
+        $academicYearId = $request->get('academic_year_id');
+        if (!$academicYearId) {
+            $currentYear = date('Y');
+            $currentAcademicYear = $this->academicYearRepository->getModel()
+                ->where('name', 'like', $currentYear . '%')
+                ->first();
+            if ($currentAcademicYear) {
+                $academicYearId = $currentAcademicYear->id;
+            }
+        }
+
+        return Inertia::render('management/regulation/actions-regulation', [
+            'academicYears' => $academicYears,
+            'allRoles' => $allRoles,
+            'currentAcademicYearId' => $academicYearId,
+        ]);
     }
 
     /**
@@ -70,7 +93,21 @@ class RegulationController extends Controller
      */
     public function store(RegulationRequest $request)
     {
-        $this->regulationRepository->create($request->all());
+        $data = $request->all();
+        $roleIds = $data['role_ids'] ?? [];
+        unset($data['role_ids']);
+
+        $regulation = $this->regulationRepository->create($data);
+
+        // Lưu RegulationRole
+        if (!empty($roleIds)) {
+            foreach ($roleIds as $roleId) {
+                RegulationRole::create([
+                    'regulation_id' => $regulation->id,
+                    'role_id' => $roleId,
+                ]);
+            }
+        }
 
         // Redirect về niên khóa hiện tại (đang ongoing)
         $academicYearId = $request->academic_year_id ?? null;
@@ -96,7 +133,29 @@ class RegulationController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $regulation = $this->regulationRepository->find($id);
+        $academicYears = $this->academicYearRepository->all();
+        $allRoles = $this->roleRepository->all();
+        
+        // Lấy RegulationRole hiện tại
+        $regulationRoles = RegulationRole::where('regulation_id', $id)
+            ->with('role')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'role_id' => $item->role_id,
+                    'role' => $item->role
+                ];
+            });
+
+            return Inertia::render('management/regulation/actions-regulation', [
+                'regulation' => $regulation,
+                'academicYears' => $academicYears,
+                'allRoles' => $allRoles,
+                'regulationRoles' => $regulationRoles,
+                'currentAcademicYearId' => $regulation->academic_year_id,
+            ]);
+            
     }
 
     /**
@@ -104,7 +163,24 @@ class RegulationController extends Controller
      */
     public function update(RegulationRequest $request, string $id)
     {
-        $this->regulationRepository->update($id, $request->all());
+        $data = $request->all();
+        $roleIds = $data['role_ids'] ?? [];
+        unset($data['role_ids']);
+
+        $this->regulationRepository->update($id, $data);
+
+        // Xóa RegulationRole cũ
+        RegulationRole::where('regulation_id', $id)->delete();
+
+        // Lưu RegulationRole mới
+        if (!empty($roleIds)) {
+            foreach ($roleIds as $roleId) {
+                RegulationRole::create([
+                    'regulation_id' => $id,
+                    'role_id' => $roleId,
+                ]);
+            }
+        }
 
         // Redirect về niên khóa hiện tại (đang ongoing)
         $academicYearId = $request->academic_year_id ?? null;

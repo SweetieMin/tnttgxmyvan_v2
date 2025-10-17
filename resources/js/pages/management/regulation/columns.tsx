@@ -104,6 +104,28 @@ export const createRegulationColumns = ({ onEdit, onDelete }: RegulationColumnsP
         },
     },
     {
+        accessorKey: "regulation_roles",
+        header: "Đối tượng áp dụng",
+        enableSorting: false,
+        cell: ({ row }) => {
+            const regulationRoles = row.original.regulation_roles || [];
+            
+
+            return (
+                <div className="flex flex-wrap gap-1">
+                    {regulationRoles.map((regulationRole: any, index: number) => (
+                        <span
+                            key={regulationRole.role_id || index}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                        >
+                            {regulationRole.role?.name || `Role ${regulationRole.role_id}`}
+                        </span>
+                    ))}
+                </div>
+            );
+        },
+    },
+    {
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {

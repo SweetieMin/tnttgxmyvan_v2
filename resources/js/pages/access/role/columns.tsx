@@ -83,14 +83,6 @@ export const createRoleColumns = ({ onEdit, onDelete }: RoleColumnsProps): Colum
         cell: ({ row }) => {
             const subRoles = row.original.sub_roles || [];
             
-            if (subRoles.length === 0) {
-                return (
-                    <div className="text-muted-foreground text-sm">
-                        Không có
-                    </div>
-                );
-            }
-
             return (
                 <div className="flex flex-wrap gap-1">
                     {subRoles.map((subRole, index) => (

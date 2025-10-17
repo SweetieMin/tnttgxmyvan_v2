@@ -13,7 +13,6 @@ import AppLayout from '@/layouts/app-layout';
 import { index as roles } from '@/routes/access/roles';
 import { type BreadcrumbItem } from '@/types';
 import type { Role } from '@/types/academic';
-import { soundToast } from '@/utils/sound-toast';
 import { Head, useForm, usePage, router } from '@inertiajs/react';
 import { Search, ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -34,16 +33,6 @@ export interface Props {
 export default function ActionsRole({ role, allRoles = [], managedRoles = [], mode }: Props) {
     const [selectedManagedRoles, setSelectedManagedRoles] = useState<Set<number>>(new Set());
     const [hierarchySearchTerm, setHierarchySearchTerm] = useState('');
-
-    const { flash } = usePage<{
-        flash?: { success?: string; error?: string; message?: string };
-    }>().props;
-
-    useEffect(() => {
-        if (flash?.success) soundToast('success', flash.success);
-        else if (flash?.error) soundToast('error', flash.error);
-        else if (flash?.message) soundToast('success', flash.message);
-    }, [flash?.success, flash?.error, flash?.message]);
 
     // Initialize selectedManagedRoles with current managed roles for edit mode
     useEffect(() => {

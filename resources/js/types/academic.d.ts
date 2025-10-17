@@ -53,6 +53,7 @@ export interface Regulation {
     academic_year?: AcademicYear;
     created_at: string;
     updated_at: string;
+    regulation_roles?: Role[];
 }
 
 export interface Transaction {

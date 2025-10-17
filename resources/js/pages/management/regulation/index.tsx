@@ -9,30 +9,11 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { index as regulations } from '@/routes/management/regulations';
 import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear, Regulation } from '@/types/academic';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { createRegulationColumns } from './columns';
 import ErrorBoundary from '@/components/error-boundary';
@@ -59,8 +40,6 @@ export interface Props {
 }
 
 export default function RegulationIndex({ regulations = { data: [], links: [], total: 0, from: 0, to: 0, current_page: 1, last_page: 1, per_page: 10 }, academicYears = [], currentAcademicYearId }: Props) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [editingRegulation, setEditingRegulation] = useState<Regulation | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Regulation | null>(null);
     const [selectedAcademicYearId, setSelectedAcademicYearId] = useState<number | undefined>(
@@ -73,6 +52,7 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
         description: true,
         type: true,
         points: true,
+        regulation_roles: true,
         actions: true,
     });
 
@@ -83,6 +63,7 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
         { id: 'description', label: 'Nội dung' },
         { id: 'type', label: 'Loại' },
         { id: 'points', label: 'Điểm' },
+        { id: 'regulation_roles', label: 'Đối tượng áp dụng' },
         { id: 'actions', label: 'Thao tác' },
     ];
 
@@ -101,38 +82,12 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
     }, [academicYears, selectedAcademicYearId]);
 
 
-    const { data, setData, post, put, delete: destroy, processing, errors, clearErrors } =
-        useForm({
-            id: 0,
-            academic_year_id: 0,
-            description: '',
-            type: 'plus',
-            points: 1,
-            ordering: 1,
-        });
-
-    const resetForm = () => {
-        setData({ id: 0, academic_year_id: 0, description: '', type: 'plus', points: 1, ordering: 1 });
-        setEditingRegulation(null);
-        clearErrors();
-    };
-
     const handleAddClick = () => {
-        resetForm();
-        setIsOpen(true);
+        router.visit('/management/regulations/create');
     };
 
     const handleEdit = (item: Regulation) => {
-        setEditingRegulation(item);
-        setData({
-            id: item.id,
-            academic_year_id: item.academic_year_id,
-            description: item.description,
-            type: item.type,
-            points: item.points,
-            ordering: item.ordering,
-        });
-        setIsOpen(true);
+        router.visit(`/management/regulations/${item.id}/edit`);
     };
 
     const handleDelete = (item: Regulation) => {
@@ -142,7 +97,7 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
 
     const confirmDelete = () => {
         if (itemToDelete) {
-            destroy(`/management/regulations/${itemToDelete.id}`, {
+            router.delete(`/management/regulations/${itemToDelete.id}`, {
                 onSuccess: () => {
                     setDeleteDialogOpen(false);
                     setItemToDelete(null);
@@ -150,27 +105,6 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
             });
         }
     };
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (editingRegulation) {
-            put(`/management/regulations/${editingRegulation.id}`, {
-                onSuccess: () => {
-                    setIsOpen(false);
-                    resetForm();
-                },
-            });
-        } else {
-            post('/management/regulations', {
-                onSuccess: () => {
-                    setIsOpen(false);
-                    resetForm();
-                },
-            });
-        }
-    };
-
-    const handleClose = () => { setIsOpen(false); resetForm(); };
 
     const handleAcademicYearFilter = (academicYearId: number) => {
         setSelectedAcademicYearId(academicYearId);
@@ -234,164 +168,6 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
                     />
                 </ErrorBoundary>
 
-                {/* Regulation Dialog */}
-                <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                    <DialogContent className="max-h-[90vh] overflow-y-auto">
-                        <DialogHeader>
-                            <DialogTitle>
-                                {editingRegulation
-                                    ? 'Chỉnh sửa nội quy'
-                                    : 'Thêm nội quy mới'}
-                            </DialogTitle>
-                            <DialogDescription>
-                                {editingRegulation
-                                    ? 'Cập nhật thông tin nội quy hiện tại'
-                                    : 'Nhập thông tin để tạo nội quy mới'}
-                            </DialogDescription>
-                        </DialogHeader>
-                        <Separator />
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="academic_year_id">
-                                        Niên khóa *
-                                    </Label>
-                                    <Select
-                                        value={data.academic_year_id?.toString() ?? ''}
-                                        onValueChange={(value) =>
-                                            setData('academic_year_id', parseInt(value))
-                                        }
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Chọn niên khóa" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {academicYears.map((year) => (
-                                                <SelectItem
-                                                    key={year.id}
-                                                    value={year.id.toString()}
-                                                >
-                                                    {year.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.academic_year_id && (
-                                        <p className="text-sm text-red-500">
-                                            {errors.academic_year_id}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="type">
-                                        Loại nội quy *
-                                    </Label>
-                                    <Select
-                                        value={data.type}
-                                        onValueChange={(value) =>
-                                            setData('type', value as 'plus' | 'minus')
-                                        }
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Chọn loại" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="plus">Cộng điểm</SelectItem>
-                                            <SelectItem value="minus">Trừ điểm</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.type && (
-                                        <p className="text-sm text-red-500">
-                                            {errors.type}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="points">
-                                        Điểm số *
-                                    </Label>
-                                    <Input
-                                        id="points"
-                                        type="number"
-                                        min="1"
-                                        max="100"
-                                        value={data.points}
-                                        onChange={(e) =>
-                                            setData('points', parseInt(e.target.value) || 1)
-                                        }
-                                        placeholder="1"
-                                    />
-                                    {errors.points && (
-                                        <p className="text-sm text-red-500">
-                                            {errors.points}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="ordering">
-                                        Thứ tự *
-                                    </Label>
-                                    <Input
-                                        id="ordering"
-                                        type="number"
-                                        min="1"
-                                        value={data.ordering}
-                                        onChange={(e) =>
-                                            setData('ordering', parseInt(e.target.value) || 1)
-                                        }
-                                        placeholder="1"
-                                    />
-                                    {errors.ordering && (
-                                        <p className="text-sm text-red-500">
-                                            {errors.ordering}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="description">Nội dung nội quy *</Label>
-                                <textarea
-                                    id="description"
-                                    className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={data.description}
-                                    onChange={(e) =>
-                                        setData('description', e.target.value)
-                                    }
-                                    placeholder="Nhập nội dung nội quy..."
-                                />
-                                {errors.description && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.description}
-                                    </p>
-                                )}
-                            </div>
-
-                            <Separator />
-                            <DialogFooter>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={handleClose}
-                                >
-                                    Hủy
-                                </Button>
-                                <Button type="submit" disabled={processing}>
-                                    {processing
-                                        ? 'Đang xử lý...'
-                                        : editingRegulation
-                                          ? 'Cập nhật'
-                                          : 'Tạo mới'}
-                                </Button>
-                            </DialogFooter>
-                        </form>
-                    </DialogContent>
-                </Dialog>
 
                 {/* Delete Confirmation Dialog */}
                 <AlertDialog

@@ -33,4 +33,9 @@ class Regulation extends Model
             'role_id'
         );
     }
+
+    public function regulationRoles()
+    {
+        return $this->hasMany(RegulationRole::class);
+    }
 }
