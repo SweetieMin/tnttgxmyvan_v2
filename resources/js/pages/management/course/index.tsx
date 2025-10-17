@@ -24,7 +24,6 @@ import {
     InputGroupInput,
     InputGroupText,
 } from '@/components/ui/input-group';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -38,8 +37,7 @@ import AppLayout from '@/layouts/app-layout';
 import { index as courses } from '@/routes/management/courses';
 import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear, Course } from '@/types/academic';
-import { soundToast } from '@/utils/sound-toast';
-import { Head, useForm, usePage, router } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { createCourseColumns } from './columns';
 import ErrorBoundary from '@/components/error-boundary';
@@ -109,17 +107,6 @@ export default function CourseIndex({ courses = { data: [], links: [], total: 0,
         }
     }, [academicYears, selectedAcademicYearId]);
 
-
-
-    const { flash } = usePage<{
-        flash?: { success?: string; error?: string; message?: string };
-    }>().props;
-
-    useEffect(() => {
-        if (flash?.success) soundToast('success', flash.success);
-        else if (flash?.error) soundToast('error', flash.error);
-        else if (flash?.message) soundToast('success', flash.message);
-    }, [flash?.success, flash?.error, flash?.message]);
 
     const { data, setData, post, put, delete: destroy, processing, errors, clearErrors } =
         useForm({

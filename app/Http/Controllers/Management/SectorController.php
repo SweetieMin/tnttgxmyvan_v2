@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Management\SectorRequest;
 use App\Repositories\Eloquent\SectorRepository;
 use App\Repositories\Eloquent\AcademicYearRepository;
+use App\Helpers\ResponseToastHelper;
 
 class SectorController extends Controller
 {
@@ -69,7 +70,11 @@ class SectorController extends Controller
     public function store(SectorRequest $request)
     {
         $this->sectorRepository->create($request->all());
-        return redirect()->route('management.sectors.index')->with('success', 'Ngành sinh hoạt ' . $request->name . ' đã được tạo thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.sectors.index',
+            'Ngành sinh hoạt ":name" đã được tạo thành công.',
+            ['name' => $request->name]
+        );
     }
 
     /**
@@ -94,7 +99,11 @@ class SectorController extends Controller
     public function update(SectorRequest $request, string $id)
     {
         $this->sectorRepository->update($id, $request->all());
-        return redirect()->route('management.sectors.index')->with('success', 'Ngành sinh hoạt ' . $request->name . ' đã được cập nhật thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.sectors.index',
+            'Ngành sinh hoạt ":name" đã được cập nhật thành công.',
+            ['name' => $request->name]
+        );
     }
 
     /**
@@ -104,6 +113,10 @@ class SectorController extends Controller
     {
         $name = $this->sectorRepository->find($id)->name;
         $this->sectorRepository->delete($id);
-        return redirect()->route('management.sectors.index')->with('success', 'Ngành sinh hoạt ' . $name . ' đã được xóa thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.sectors.index',
+            'Ngành sinh hoạt ":name" đã được xóa thành công.',
+            ['name' => $name]
+        );
     }
 }

@@ -17,7 +17,6 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import type { Transaction } from '@/types/academic';
-import { soundToast } from '@/utils/sound-toast';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { createTransactionColumns } from './columns';
@@ -32,7 +31,6 @@ export default function TransactionIndex() {
         transactions,
         summary,
         filters,
-        flash,
     } = usePage<{
         transactions: {
             data: Transaction[];
@@ -54,7 +52,6 @@ export default function TransactionIndex() {
             end_date?: string;
             search?: string;
         };
-        flash?: { success?: string; error?: string; message?: string };
     }>().props;
 
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
@@ -103,12 +100,6 @@ export default function TransactionIndex() {
         return () => clearTimeout(timeout);
     }, [searchTerm]);
 
-    // ✅ Toast thông báo
-    useEffect(() => {
-        if (flash?.success) soundToast('success', flash.success);
-        else if (flash?.error) soundToast('error', flash.error);
-        else if (flash?.message) soundToast('success', flash.message);
-    }, [flash?.success, flash?.error, flash?.message]);
 
     const handleAddClick = () => router.visit('/finance/transactions/create');
 

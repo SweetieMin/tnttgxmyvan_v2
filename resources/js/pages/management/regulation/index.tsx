@@ -32,8 +32,7 @@ import AppLayout from '@/layouts/app-layout';
 import { index as regulations } from '@/routes/management/regulations';
 import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear, Regulation } from '@/types/academic';
-import { soundToast } from '@/utils/sound-toast';
-import { Head, useForm, usePage, router } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { createRegulationColumns } from './columns';
 import ErrorBoundary from '@/components/error-boundary';
@@ -101,16 +100,6 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
         }
     }, [academicYears, selectedAcademicYearId]);
 
-
-    const { flash } = usePage<{
-        flash?: { success?: string; error?: string; message?: string };
-    }>().props;
-
-    useEffect(() => {
-        if (flash?.success) soundToast('success', flash.success);
-        else if (flash?.error) soundToast('error', flash.error);
-        else if (flash?.message) soundToast('success', flash.message);
-    }, [flash?.success, flash?.error, flash?.message]);
 
     const { data, setData, post, put, delete: destroy, processing, errors, clearErrors } =
         useForm({

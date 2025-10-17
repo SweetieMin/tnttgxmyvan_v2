@@ -77,16 +77,6 @@ export default function RoleIndex({
         { id: 'actions', label: 'Thao tác' },
     ];
 
-    const { flash } = usePage<{
-        flash?: { success?: string; error?: string; message?: string };
-    }>().props;
-
-    useEffect(() => {
-        if (flash?.success) soundToast('success', flash.success);
-        else if (flash?.error) soundToast('error', flash.error);
-        else if (flash?.message) soundToast('success', flash.message);
-    }, [flash?.success, flash?.error, flash?.message]);
-
     const handleAddClick = () => {
         router.visit('/access/roles/create');
     };

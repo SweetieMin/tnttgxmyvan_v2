@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Regulation extends Model
 {
-    protected $fillable=[
+    protected $fillable = [
         'academic_year_id',
         'ordering',
         'description',
@@ -22,5 +22,15 @@ class Regulation extends Model
     public function academicYear()
     {
         return $this->belongsTo(AcademicYear::class);
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(
+            Role::class,
+            'regulation_role',
+            'regulation_id',
+            'role_id'
+        );
     }
 }

@@ -2,11 +2,16 @@ import { toast } from 'sonner';
 
 /**
  * Hiển thị toast + âm thanh đồng bộ toàn hệ thống
- * @param type  'success' | 'error' | 'info'
- * @param message  nội dung thông báo
+ * @param type 'success' | 'error' | 'info'
+ * @param message nội dung chính của thông báo
+ * @param description mô tả bổ sung (tùy chọn)
  */
-export function soundToast(type: 'success' | 'error' | 'info', message: string) {
-  // 🔊 Đường dẫn âm thanh trong thư mục public/sounds
+export function soundToast(
+  type: 'success' | 'error' | 'info',
+  message: string,
+  description?: string
+) {
+  // 🔊 Đường dẫn âm thanh trong thư mục public/storage/sounds
   const audio = new Audio(`/storage/sounds/${type}.mp3`);
   audio.volume = 0.6;
 
@@ -15,21 +20,22 @@ export function soundToast(type: 'success' | 'error' | 'info', message: string) 
     console.warn('Không thể phát âm thanh — cần tương tác người dùng trước.');
   });
 
-  // Hiển thị toast bằng sonner
-  if (type === 'success') {
-    toast.success(message, {
-      duration: 3000,
-      className: 'font-medium',
-    });
-  } else if (type === 'error') {
-    toast.error(message, {
-      duration: 4000,
-      className: 'font-medium',
-    });
-  } else {
-    toast.info(message, {
-      duration: 3000,
-      className: 'font-medium',
-    });
+  // ⚡ Hiển thị toast (kèm mô tả nếu có)
+  const toastOptions = {
+    duration: type === 'error' ? 4000 : 3000,
+    className: 'font-medium',
+    description: description || undefined,
+  };
+
+  switch (type) {
+    case 'success':
+      toast.success(message, toastOptions);
+      break;
+    case 'error':
+      toast.error(message, toastOptions);
+      break;
+    default:
+      toast.info(message, toastOptions);
+      break;
   }
 }

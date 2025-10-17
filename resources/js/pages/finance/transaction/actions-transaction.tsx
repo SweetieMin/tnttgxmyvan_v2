@@ -1,4 +1,4 @@
-import { Calendar22 } from '@/components/app-date-picker';
+import { AppDatePicker } from '@/components/app-date-picker';
 import { Button } from '@/components/ui/button';
 import {
     InputGroup,
@@ -194,7 +194,7 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
                                     <Label htmlFor="transaction_date">
                                         Ngày *
                                     </Label>
-                                    <Calendar22
+                                    <AppDatePicker
                                         date={
                                             data.transaction_date
                                                 ? new Date(

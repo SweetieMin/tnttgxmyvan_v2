@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\TransactionFileService;
 use App\Http\Requests\TransactionRequest;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
+use App\Helpers\ResponseToastHelper;
 
 class TransactionController extends Controller
 {
@@ -120,14 +121,18 @@ class TransactionController extends Controller
 
             DB::commit();
 
-            return redirect()->route('finance.transactions.index')
-                ->with('success', 'Giao dịch đã được tạo thành công.');
+            return ResponseToastHelper::successRedirect(
+                'finance.transactions.index',
+                'Giao dịch đã được tạo thành công.',
+                ['title' => $request->title]
+            );
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return redirect()->back()
-                ->withErrors(['error' => 'Có lỗi xảy ra khi tạo giao dịch: ' . $e->getMessage()])
-                ->withInput();
+            
+            return ResponseToastHelper::errorRedirect(
+                'finance.transactions.index',
+                'Có lỗi xảy ra khi tạo giao dịch: ' . $e->getMessage(),
+            );
         }
     }
 
@@ -137,10 +142,6 @@ class TransactionController extends Controller
     public function show(string $id)
     {
         $transaction = $this->transactionRepository->find($id, ['createdByUser', 'files']);
-
-        if (!$transaction) {
-            abort(404, 'Giao dịch không tồn tại.');
-        }
 
         return Inertia::render('finance/show', [
             'transaction' => $transaction
@@ -177,10 +178,6 @@ class TransactionController extends Controller
 
             $transaction = $this->transactionRepository->find($id);
 
-            if (!$transaction) {
-                abort(404, 'Giao dịch không tồn tại.');
-            }
-
             // 🧩 1. Cập nhật dữ liệu giao dịch
             $this->transactionRepository->update($id, [
                 'transaction_date' => $request->transaction_date,
@@ -211,16 +208,18 @@ class TransactionController extends Controller
 
             DB::commit();
 
-            return redirect()
-                ->route('finance.transactions.index')
-                ->with('success', 'Giao dịch đã được cập nhật thành công.');
+            return ResponseToastHelper::successRedirect(
+                'finance.transactions.index',
+                'Giao dịch ":title" đã được cập nhật thành công.',
+                ['title' => $request->title]
+            );
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return redirect()
-                ->back()
-                ->withErrors(['error' => 'Có lỗi xảy ra khi cập nhật giao dịch: ' . $e->getMessage()])
-                ->withInput();
+            return ResponseToastHelper::errorRedirect(
+                'finance.transactions.index',
+                'Có lỗi xảy ra khi cập nhật giao dịch: ' . $e->getMessage(),
+            );
         }
     }
 
@@ -235,10 +234,6 @@ class TransactionController extends Controller
 
             $transaction = $this->transactionRepository->find($id, ['files']);
 
-            if (!$transaction) {
-                abort(404, 'Giao dịch không tồn tại.');
-            }
-
             // Delete associated files from storage and database
             $this->fileService->deleteFile($transaction->id);
 
@@ -248,13 +243,18 @@ class TransactionController extends Controller
 
             DB::commit();
 
-            return redirect()->route('finance.transactions.index')
-                ->with('success', 'Giao dịch ' . $name . ' đã được xóa thành công.');
+            return ResponseToastHelper::successRedirect(
+                'finance.transactions.index',
+                'Giao dịch ":title" đã được xóa thành công.',
+                ['title' => $name]
+            );
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return redirect()->back()
-                ->withErrors(['error' => 'Có lỗi xảy ra khi xóa giao dịch: ' . $e->getMessage()]);
+            return ResponseToastHelper::errorRedirect(
+                'finance.transactions.index',
+                'Có lỗi xảy ra khi xóa giao dịch: ' . $e->getMessage(),
+            );
         }
     }
 }

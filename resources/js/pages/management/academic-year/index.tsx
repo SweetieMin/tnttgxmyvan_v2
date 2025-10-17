@@ -32,9 +32,8 @@ import AppLayout from '@/layouts/app-layout';
 import { index as academicYears } from '@/routes/management/academic-years';
 import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear } from '@/types/academic';
-import { soundToast } from '@/utils/sound-toast';
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { Head, useForm } from '@inertiajs/react';
+import { useState } from 'react';
 import { createAcademicYearColumns } from './columns';
 import ErrorBoundary from '@/components/error-boundary';
 import { AppDataTablePage, ColumnDefinition } from '@/components/app-data-table-page';
@@ -85,16 +84,6 @@ export default function AcademicYearIndex({ years = { data: [], links: [], total
         { id: 'activity_score', label: 'Điểm sinh hoạt' },
         { id: 'actions', label: 'Thao tác' },
     ];
-
-    const { flash } = usePage<{
-        flash?: { success?: string; error?: string; message?: string };
-    }>().props;
-
-    useEffect(() => {
-        if (flash?.success) soundToast('success', flash.success);
-        else if (flash?.error) soundToast('error', flash.error);
-        else if (flash?.message) soundToast('success', flash.message);
-    }, [flash?.success, flash?.error, flash?.message]);
 
     const { data, setData, post, put, delete: destroy, processing, errors, clearErrors } =
         useForm({

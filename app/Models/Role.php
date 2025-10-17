@@ -57,4 +57,18 @@ class Role extends Model
     {
         return $this->hasMany(RoleHierarchy::class, 'manages_role_id');
     }
+
+    /**
+     * Mỗi vai trò có thể có nhiều quy định
+     */
+
+    public function regulations()
+    {
+        return $this->belongsToMany(
+            Regulation::class,
+            'regulation_role',
+            'role_id',
+            'regulation_id'
+        );
+    }
 }

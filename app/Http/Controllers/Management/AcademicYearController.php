@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Management\AcademicYearRequest;
 use App\Repositories\Interfaces\AcademicYearRepositoryInterface;
+use App\Helpers\ResponseToastHelper;
 
 class AcademicYearController extends Controller
 {
@@ -43,7 +44,11 @@ class AcademicYearController extends Controller
     {
         $this->academicYearRepository->create($request->validated());
 
-        return redirect()->route('management.academic-years.index')->with('success', 'Niên khóa ' . $request->name . ' đã được tạo thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.academic-years.index',
+            'Niên khóa ":name" đã được tạo thành công.',
+            ['name' => $request->name]
+        );
     }
 
     /**
@@ -69,7 +74,12 @@ class AcademicYearController extends Controller
     {
         $this->academicYearRepository->update($id, $request->validated());
 
-        return redirect()->route('management.academic-years.index')->with('success', 'Niên khóa ' . $request->name . ' đã được cập nhật thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.academic-years.index',
+            'Niên khóa ":name" đã được cập nhật thành công.',
+            ['name' => $request->name]
+        );
+
     }
 
     /**
@@ -81,6 +91,10 @@ class AcademicYearController extends Controller
         $name = $this->academicYearRepository->find($id)->name;
         $this->academicYearRepository->delete($id);
 
-        return redirect()->route('management.academic-years.index')->with('success', 'Niên khóa ' . $name . ' đã được xóa thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.academic-years.index',
+            'Niên khóa ":name" đã được xóa thành công.',
+            ['name' => $name]
+        );
     }
 }

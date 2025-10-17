@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Management;
 
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use App\Helpers\ResponseToastHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Management\RegulationRequest;
 use App\Repositories\Eloquent\RegulationRepository;
 use App\Repositories\Eloquent\AcademicYearRepository;
+
 
 class RegulationController extends Controller
 {
@@ -74,12 +76,14 @@ class RegulationController extends Controller
         $currentAcademicYear = $this->academicYearRepository->getModel()
                 ->first();
         
-        if ($currentAcademicYear) {
-            return redirect()->route('management.regulations.index', ['academic_year_id' => $currentAcademicYear->id])
-                ->with('success', 'Nội quy đã được tạo thành công');
-        }
-        
-        return redirect()->route('management.regulations.index')->with('success', 'Nội quy đã được tạo thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.regulations.index',
+            'Nội quy ":description" đã được tạo thành công.',
+            [
+                'description' => $request->description,
+                'academic_year_id' => optional($currentAcademicYear)->id,
+            ]
+        );
     }
 
     /**
@@ -108,13 +112,15 @@ class RegulationController extends Controller
         // Redirect về niên khóa hiện tại (đang ongoing)
         $currentAcademicYear = $this->academicYearRepository->getModel()
             ->first();
-        
-        if ($currentAcademicYear) {
-            return redirect()->route('management.regulations.index', ['academic_year_id' => $currentAcademicYear->id])
-                ->with('success', 'Nội quy đã được cập nhật thành công');
-        }
-        
-        return redirect()->route('management.regulations.index')->with('success', 'Nội quy đã được cập nhật thành công');
+
+        return ResponseToastHelper::successRedirect(
+            'management.regulations.index',
+            'Nội quy ":description" đã được cập nhật thành công.',
+            [
+                'description' => $request->description,
+                'academic_year_id' => optional($currentAcademicYear)->id,
+            ]
+        );
     }
 
     /**
@@ -122,7 +128,17 @@ class RegulationController extends Controller
      */
     public function destroy(string $id)
     {
+        $currentAcademicYear = $this->academicYearRepository->getModel()
+            ->first();
+        $description = $this->regulationRepository->find($id)->description;
         $this->regulationRepository->delete($id);
-        return redirect()->route('management.regulations.index')->with('success', 'Nội quy đã được xóa thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.regulations.index',
+            'Nội quy ":description" đã được tạo thành công.',
+            [
+                'description' => $description,
+                'academic_year_id' => optional($currentAcademicYear)->id,
+            ]
+        );
     }
 }

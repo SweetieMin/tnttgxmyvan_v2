@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Management;
 
 use Inertia\Inertia;
-use App\Models\Course;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Management\CourseRequest;
 use App\Repositories\Eloquent\CourseRepository;
 use App\Repositories\Eloquent\AcademicYearRepository;
+use App\Helpers\ResponseToastHelper;
 
 class CourseController extends Controller
 {
@@ -72,7 +72,11 @@ class CourseController extends Controller
     public function store(CourseRequest $request)
     {
         $this->courseRepository->create($request->all());
-        return redirect()->route('management.courses.index')->with('success', 'Lớp giáo lý ' . $request->name . ' đã được tạo thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.courses.index',
+            'Lớp giáo lý ":name" đã được tạo thành công.',
+            ['name' => $request->name]
+        );
     }
 
     /**
@@ -97,7 +101,11 @@ class CourseController extends Controller
     public function update(CourseRequest $request, string $id)
     {
         $this->courseRepository->update($id, $request->all());
-        return redirect()->route('management.courses.index')->with('success', 'Lớp giáo lý ' . $request->name . ' đã được cập nhật thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.courses.index',
+            'Lớp giáo lý ":name" đã được cập nhật thành công.',
+            ['name' => $request->name]
+        );
     }
 
     /**
@@ -107,16 +115,12 @@ class CourseController extends Controller
     {
         $name = $this->courseRepository->find($id)->name;
         $this->courseRepository->delete($id);
-        return redirect()->route('management.courses.index')->with('success', 'Lớp giáo lý ' . $name . ' đã được xóa thành công');
+        return ResponseToastHelper::successRedirect(
+            'management.courses.index',
+            'Lớp giáo lý ":name" đã được xóa thành công.',
+            ['name' => $name]
+        );
     }
 
-    public function reorder(Request $request)
-    {
-        foreach ($request->ordered_ids as $item) {
-            Course::where('id', $item['id'])
-                ->update(['ordering' => $item['ordering']]);
-        }
 
-        return redirect()->route('management.courses.index')->with('success', 'Sắp xếp lớp giáo lý thành công!');
-    }
 }

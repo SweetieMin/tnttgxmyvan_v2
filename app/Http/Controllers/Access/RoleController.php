@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Access\RoleRequest;
 use App\Repositories\Eloquent\RoleRepository;
+use App\Helpers\ResponseToastHelper;
 
 class RoleController extends Controller
 {
@@ -66,7 +67,11 @@ class RoleController extends Controller
         // Handle role hierarchy
         $this->updateRoleHierarchy($role->id, $request->input('managed_role_ids', []));
         
-        return redirect()->route('access.roles.index')->with('success', 'Vai trò ' . $request->name . ' đã được tạo thành công');
+        return ResponseToastHelper::successRedirect(
+            'access.roles.index',
+            'Vai trò ":name" đã được tạo thành công.',
+            ['name' => $request->name]
+        );
     }
 
     /**
@@ -113,7 +118,11 @@ class RoleController extends Controller
         // Handle role hierarchy
         $this->updateRoleHierarchy($id, $request->input('managed_role_ids', []));
         
-        return redirect()->route('access.roles.index')->with('success', 'Vai trò ' . $request->name . ' đã được cập nhật thành công');
+        return ResponseToastHelper::successRedirect(
+            'access.roles.index',
+            'Vai trò ":name" đã được cập nhật thành công.',
+            ['name' => $request->name]
+        );
     }
 
     /**
@@ -130,7 +139,11 @@ class RoleController extends Controller
         // Delete the role
         $this->roleRepository->delete($id);
         
-        return redirect()->route('access.roles.index')->with('success', 'Vai trò ' . $name . ' đã được xóa thành công');
+        return ResponseToastHelper::successRedirect(
+            'access.roles.index',
+            'Vai trò ":name" đã được xóa thành công.',
+            ['name' => $name]
+        );
     }
 
     /**
