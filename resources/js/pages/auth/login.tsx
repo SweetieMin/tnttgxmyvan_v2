@@ -10,6 +10,7 @@ import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { AppPasswordInput } from '@/components/app-password-input'
 
 interface LoginProps {
     status?: string;
@@ -81,7 +82,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                         </TextLink>
                                     )}
                                 </div>
-                                <Input
+                                <AppPasswordInput
                                     id="password"
                                     type="password"
                                     name="password"
