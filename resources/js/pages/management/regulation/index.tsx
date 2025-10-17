@@ -32,11 +32,11 @@ import AppLayout from '@/layouts/app-layout';
 import { index as regulations } from '@/routes/management/regulations';
 import { type BreadcrumbItem } from '@/types';
 import type { AcademicYear, Regulation } from '@/types/academic';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { createRegulationColumns } from './columns';
 import ErrorBoundary from '@/components/error-boundary';
-import { AppDataTablePage, ColumnDefinition } from '@/components/app-data-table-page';
+import { AppDataTableFilterYear, ColumnDefinition } from '@/components/app-data-table-filter-year';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Quản lý', href: '' },
@@ -172,6 +172,15 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
 
     const handleClose = () => { setIsOpen(false); resetForm(); };
 
+    const handleAcademicYearFilter = (academicYearId: number) => {
+        setSelectedAcademicYearId(academicYearId);
+        
+        router.get('/management/regulations', 
+            { academic_year_id: academicYearId },
+            { preserveState: true, replace: true }
+        );
+    };
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -186,9 +195,9 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
                     onButtonClick={handleAddClick}
                 />
 
-                {/* Data Table Page */}
+                {/* Data Table Page with Academic Year Filter */}
                 <ErrorBoundary>
-                    <AppDataTablePage
+                    <AppDataTableFilterYear
                         columns={createRegulationColumns({
                             onEdit: handleEdit,
                             onDelete: handleDelete,
@@ -199,6 +208,11 @@ export default function RegulationIndex({ regulations = { data: [], links: [], t
                         searchTerm={searchTerm}
                         onSearchChange={setSearchTerm}
                         searchPlaceholder="Tìm kiếm nội quy..."
+                        academicYears={academicYears}
+                        selectedAcademicYearId={selectedAcademicYearId}
+                        onAcademicYearChange={handleAcademicYearFilter}
+                        academicYearLabel="Lọc theo niên khóa:"
+                        academicYearPlaceholder="Chọn niên khóa để lọc"
                         columnVisibility={columnVisibility}
                         onColumnVisibilityChange={(updaterOrValue) => {
                             if (typeof updaterOrValue === 'function') {

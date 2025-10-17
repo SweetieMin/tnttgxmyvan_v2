@@ -15,41 +15,41 @@ class RegulationController extends Controller
 {
     protected $regulationRepository;
     protected $academicYearRepository;
-    
+
     public function __construct(RegulationRepository $regulationRepository, AcademicYearRepository $academicYearRepository)
     {
         $this->regulationRepository = $regulationRepository;
         $this->academicYearRepository = $academicYearRepository;
     }
-    
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $academicYearId = $request->get('academic_year_id');
-        
+
         // Tìm niên khóa hiện tại nếu không có filter
         if (!$academicYearId) {
             $currentYear = date('Y');
             $currentAcademicYear = $this->academicYearRepository->getModel()
                 ->where('name', 'like', $currentYear . '%')
                 ->first();
-            
+
             if ($currentAcademicYear) {
                 $academicYearId = $currentAcademicYear->id;
             }
         }
-        
+
         // Query regulations với filter
         $query = $this->regulationRepository->getModel()->with(['academicYear']);
         if ($academicYearId) {
             $query->where('academic_year_id', $academicYearId);
         }
-        
+
         $regulations = $query->orderBy('ordering', 'asc')->paginate(20);
         $academicYears = $this->academicYearRepository->all();
-        
+
         return Inertia::render('management/regulation/index', [
             'regulations' => $regulations,
             'academicYears' => $academicYears,
@@ -71,18 +71,15 @@ class RegulationController extends Controller
     public function store(RegulationRequest $request)
     {
         $this->regulationRepository->create($request->all());
-        
+
         // Redirect về niên khóa hiện tại (đang ongoing)
-        $currentAcademicYear = $this->academicYearRepository->getModel()
-                ->first();
-        
+        $academicYearId = $request->academic_year_id ?? null;
+
         return ResponseToastHelper::successRedirect(
             'management.regulations.index',
             'Nội quy ":description" đã được tạo thành công.',
-            [
-                'description' => $request->description,
-                'academic_year_id' => optional($currentAcademicYear)->id,
-            ]
+            ['description' => $request->description],
+            ['academic_year_id' => $academicYearId]
         );
     }
 
@@ -108,18 +105,15 @@ class RegulationController extends Controller
     public function update(RegulationRequest $request, string $id)
     {
         $this->regulationRepository->update($id, $request->all());
-        
+
         // Redirect về niên khóa hiện tại (đang ongoing)
-        $currentAcademicYear = $this->academicYearRepository->getModel()
-            ->first();
+        $academicYearId = $request->academic_year_id ?? null;
 
         return ResponseToastHelper::successRedirect(
             'management.regulations.index',
             'Nội quy ":description" đã được cập nhật thành công.',
-            [
-                'description' => $request->description,
-                'academic_year_id' => optional($currentAcademicYear)->id,
-            ]
+            ['description' => $request->description],
+            ['academic_year_id' => $academicYearId]
         );
     }
 
@@ -128,17 +122,17 @@ class RegulationController extends Controller
      */
     public function destroy(string $id)
     {
-        $currentAcademicYear = $this->academicYearRepository->getModel()
-            ->first();
-        $description = $this->regulationRepository->find($id)->description;
+        $regulation = $this->regulationRepository->find($id);
+        $description = $regulation->description;
+        $academicYearId = $regulation->academic_year_id ?? null;
+
         $this->regulationRepository->delete($id);
+
         return ResponseToastHelper::successRedirect(
             'management.regulations.index',
-            'Nội quy ":description" đã được tạo thành công.',
-            [
-                'description' => $description,
-                'academic_year_id' => optional($currentAcademicYear)->id,
-            ]
+            'Nội quy ":description" đã được xóa thành công.',
+            ['description' => $description],
+            ['academic_year_id' => $academicYearId]
         );
     }
 }

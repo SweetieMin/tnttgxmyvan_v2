@@ -41,7 +41,7 @@ import { Head, useForm, usePage, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { createSectorColumns } from './columns';
 import ErrorBoundary from '@/components/error-boundary';
-import { AppDataTablePage, ColumnDefinition } from '@/components/app-data-table-page';
+import { AppDataTableFilterYear, ColumnDefinition } from '@/components/app-data-table-filter-year';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Quản lý', href: '' },
@@ -194,12 +194,11 @@ export default function SectorIndex({ sectors, academicYears, currentAcademicYea
         resetForm();
     };
 
-    const handleAcademicYearFilter = (academicYearId: string) => {
-        const yearId = parseInt(academicYearId);
-        setSelectedAcademicYearId(yearId);
+    const handleAcademicYearFilter = (academicYearId: number) => {
+        setSelectedAcademicYearId(academicYearId);
         
         router.get('/management/sectors', 
-            { academic_year_id: yearId },
+            { academic_year_id: academicYearId },
             { preserveState: true, replace: true }
         );
     };
@@ -218,9 +217,9 @@ export default function SectorIndex({ sectors, academicYears, currentAcademicYea
                     onButtonClick={handleAddClick}
                 />
 
-                {/* Data Table Page */}
+                {/* Data Table Page with Academic Year Filter */}
                 <ErrorBoundary>
-                    <AppDataTablePage
+                    <AppDataTableFilterYear
                         columns={createSectorColumns({
                             onEdit: handleEdit,
                             onDelete: handleDelete,
@@ -231,6 +230,11 @@ export default function SectorIndex({ sectors, academicYears, currentAcademicYea
                         searchTerm={searchTerm}
                         onSearchChange={setSearchTerm}
                         searchPlaceholder="Tìm kiếm ngành sinh hoạt..."
+                        academicYears={academicYears}
+                        selectedAcademicYearId={selectedAcademicYearId}
+                        onAcademicYearChange={handleAcademicYearFilter}
+                        academicYearLabel="Lọc theo niên khóa:"
+                        academicYearPlaceholder="Chọn niên khóa để lọc"
                         columnVisibility={columnVisibility}
                         onColumnVisibilityChange={(updaterOrValue) => {
                             if (typeof updaterOrValue === 'function') {

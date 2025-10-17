@@ -75,7 +75,8 @@ class CourseController extends Controller
         return ResponseToastHelper::successRedirect(
             'management.courses.index',
             'Lớp giáo lý ":name" đã được tạo thành công.',
-            ['name' => $request->name]
+            ['name' => $request->name],
+            ['academic_year_id' => $request->academic_year_id]
         );
     }
 
@@ -104,7 +105,8 @@ class CourseController extends Controller
         return ResponseToastHelper::successRedirect(
             'management.courses.index',
             'Lớp giáo lý ":name" đã được cập nhật thành công.',
-            ['name' => $request->name]
+            ['name' => $request->name],
+            ['academic_year_id' => $request->academic_year_id]
         );
     }
 
@@ -113,14 +115,18 @@ class CourseController extends Controller
      */
     public function destroy(string $id)
     {
-        $name = $this->courseRepository->find($id)->name;
+        $course = $this->courseRepository->find($id);
+        $name = $course->name;
+        $academicYearId = $course->academic_year_id ?? null;
+
         $this->courseRepository->delete($id);
+
         return ResponseToastHelper::successRedirect(
             'management.courses.index',
             'Lớp giáo lý ":name" đã được xóa thành công.',
-            ['name' => $name]
+            ['name' => $name],
+            ['academic_year_id' => $academicYearId] // ✅ giữ nguyên filter khi xóa
         );
     }
-
 
 }

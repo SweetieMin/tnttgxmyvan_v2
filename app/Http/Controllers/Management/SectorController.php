@@ -73,7 +73,8 @@ class SectorController extends Controller
         return ResponseToastHelper::successRedirect(
             'management.sectors.index',
             'Ngành sinh hoạt ":name" đã được tạo thành công.',
-            ['name' => $request->name]
+            ['name' => $request->name],
+            ['academic_year_id' => $request->academic_year_id] // ✅ giữ filter
         );
     }
 
@@ -102,7 +103,8 @@ class SectorController extends Controller
         return ResponseToastHelper::successRedirect(
             'management.sectors.index',
             'Ngành sinh hoạt ":name" đã được cập nhật thành công.',
-            ['name' => $request->name]
+            ['name' => $request->name],
+            ['academic_year_id' => $request->academic_year_id] // ✅ giữ filter
         );
     }
 
@@ -111,12 +113,17 @@ class SectorController extends Controller
      */
     public function destroy(string $id)
     {
-        $name = $this->sectorRepository->find($id)->name;
+        $sector = $this->sectorRepository->find($id);
+        $name = $sector->name;
+        $academicYearId = $sector->academic_year_id ?? null;
+
         $this->sectorRepository->delete($id);
+
         return ResponseToastHelper::successRedirect(
             'management.sectors.index',
             'Ngành sinh hoạt ":name" đã được xóa thành công.',
-            ['name' => $name]
+            ['name' => $name],
+            ['academic_year_id' => $academicYearId] // ✅ giữ filter
         );
     }
 }
