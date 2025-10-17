@@ -64,6 +64,7 @@ export default function RoleIndex({
         ordering: true,
         name: true,
         description: true,
+        sub_roles: true,
         actions: true,
     });
     const [itemToDelete, setItemToDelete] = useState<Role | null>(null);
@@ -74,6 +75,7 @@ export default function RoleIndex({
         { id: 'ordering', label: 'Thứ tự' },
         { id: 'name', label: 'Tên vai trò' },
         { id: 'description', label: 'Mô tả' },
+        { id: 'sub_roles', label: 'Vai trò quản lý' },
         { id: 'actions', label: 'Thao tác' },
     ];
 

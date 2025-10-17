@@ -77,6 +77,35 @@ export const createRoleColumns = ({ onEdit, onDelete }: RoleColumnsProps): Colum
         ),
     },
     {
+        accessorKey: "sub_roles",
+        header: "Vai trò quản lý",
+        enableSorting: false,
+        cell: ({ row }) => {
+            const subRoles = row.original.sub_roles || [];
+            
+            if (subRoles.length === 0) {
+                return (
+                    <div className="text-muted-foreground text-sm">
+                        Không có
+                    </div>
+                );
+            }
+
+            return (
+                <div className="flex flex-wrap gap-1">
+                    {subRoles.map((subRole, index) => (
+                        <span
+                            key={subRole.id}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                        >
+                            {subRole.name}
+                        </span>
+                    ))}
+                </div>
+            );
+        },
+    },
+    {
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
