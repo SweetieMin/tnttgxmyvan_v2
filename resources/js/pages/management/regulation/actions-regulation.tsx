@@ -30,15 +30,14 @@ import { useEffect, useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { index as regulations } from '@/routes/management/regulations'
 
-// ✅ Dynamic breadcrumb giống actions-role.tsx
+// ✅ Dynamic breadcrumb
 const getBreadcrumbs = (mode: 'create' | 'edit', regulationName?: string): BreadcrumbItem[] => [
   { title: 'Quản lý', href: '' },
   { title: 'Nội quy', href: regulations().url },
   {
-    title:
-      mode === 'create'
-        ? 'Thêm mới'
-        : `Chỉnh sửa: ${regulationName ? regulationName.slice(0, 40) : ''}`,
+    title: mode === 'create'
+      ? 'Thêm mới'
+      : `Chỉnh sửa: ${regulationName ? regulationName : ''}`,
     href: '',
   },
 ]
@@ -73,7 +72,7 @@ export default function ActionsRegulationIndex({
     role_ids: [] as number[],
   })
 
-  // Khi edit: nạp dữ liệu
+  // Khi edit: load dữ liệu
   useEffect(() => {
     if (mode === 'edit' && regulation) {
       const ids = regulationRoles.map((r) => r.role_id)
@@ -89,22 +88,36 @@ export default function ActionsRegulationIndex({
     }
   }, [regulation, regulationRoles])
 
-  // Khi tạo mới: tự chọn niên khóa mặc định
+  // Khi tạo mới: gán niên khóa mặc định
   useEffect(() => {
     if (mode === 'create' && currentAcademicYearId) {
       setData('academic_year_id', currentAcademicYearId)
     }
   }, [currentAcademicYearId, mode])
 
-  // Submit
+  // Gửi form
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const payload = { ...data, role_ids: Array.from(selectedRoles) }
 
     if (mode === 'edit' && regulation) {
-      router.put(`/management/regulations/${regulation.id}`, payload)
+      put(`/management/regulations/${regulation.id}`, {
+        onSuccess: () => {
+          router.visit('/management/regulations')
+        },
+        onError: (errors: any) => {
+          console.error('Validation errors:', errors)
+        }
+      })
     } else {
-      router.post(`/management/regulations`, payload)
+      post(`/management/regulations`, {
+        onSuccess: () => {
+          router.visit('/management/regulations')
+        },
+        onError: (errors: any) => {
+          console.error('Validation errors:', errors)
+        }
+      })
     }
   }
 
@@ -118,7 +131,7 @@ export default function ActionsRegulationIndex({
 
   const handleBack = () => router.visit('/management/regulations')
 
-  // Vai trò toggle
+  // Toggle role
   const handleRoleToggle = (roleId: number, checked: boolean) => {
     const updated = new Set(selectedRoles)
     checked ? updated.add(roleId) : updated.delete(roleId)
@@ -162,9 +175,7 @@ export default function ActionsRegulationIndex({
 
   return (
     <AppLayout breadcrumbs={getBreadcrumbs(mode, regulation?.description)}>
-      <Head
-        title={mode === 'edit' ? 'Chỉnh sửa nội quy' : 'Thêm nội quy mới'}
-      />
+      <Head title={mode === 'edit' ? 'Chỉnh sửa nội quy' : 'Thêm nội quy mới'} />
 
       <div className="px-4 py-6">
         {/* Header */}
@@ -197,14 +208,13 @@ export default function ActionsRegulationIndex({
           <div className="rounded-lg border bg-card p-6">
             <h2 className="text-lg font-semibold mb-4">Thông tin cơ bản</h2>
 
+            {/* Niên khóa + loại */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="academic_year_id">Niên khóa *</Label>
                 <Select
                   value={data.academic_year_id?.toString() ?? ''}
-                  onValueChange={(v) =>
-                    setData('academic_year_id', parseInt(v))
-                  }
+                  onValueChange={(v) => setData('academic_year_id', parseInt(v))}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Chọn niên khóa" />
@@ -217,9 +227,9 @@ export default function ActionsRegulationIndex({
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.academic_year_id && (
-                  <p className="text-sm text-red-500">
-                    {errors.academic_year_id}
+                {(errors.academic_year_id ) && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.academic_year_id }
                   </p>
                 )}
               </div>
@@ -238,9 +248,15 @@ export default function ActionsRegulationIndex({
                     <SelectItem value="minus">Trừ điểm</SelectItem>
                   </SelectContent>
                 </Select>
+                {(errors.type ) && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.type }
+                  </p>
+                )}
               </div>
             </div>
 
+            {/* Điểm số + thứ tự */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4">
               <div className="space-y-2">
                 <Label htmlFor="points">Điểm số *</Label>
@@ -254,6 +270,11 @@ export default function ActionsRegulationIndex({
                     setData('points', parseInt(e.target.value) || 1)
                   }
                 />
+                {(errors.points ) && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.points }
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -267,9 +288,15 @@ export default function ActionsRegulationIndex({
                     setData('ordering', parseInt(e.target.value) || 1)
                   }
                 />
+                {(errors.ordering ) && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.ordering }
+                  </p>
+                )}
               </div>
             </div>
 
+            {/* Nội dung */}
             <div className="space-y-2 mt-4">
               <Label htmlFor="description">Nội dung nội quy *</Label>
               <textarea
@@ -279,6 +306,11 @@ export default function ActionsRegulationIndex({
                 onChange={(e) => setData('description', e.target.value)}
                 placeholder="Nhập nội dung nội quy..."
               />
+              {(errors.description ) && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.description }
+                </p>
+              )}
             </div>
           </div>
 
@@ -323,7 +355,7 @@ export default function ActionsRegulationIndex({
                 </div>
               </div>
 
-              {/* Danh sách vai trò */}
+              {/* Grid vai trò */}
               <div className="space-y-4">
                 {roleRows.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
@@ -379,6 +411,10 @@ export default function ActionsRegulationIndex({
                 )}
               </div>
 
+              {errors.role_ids && (
+                <p className="text-sm text-red-500 mt-2">{errors.role_ids}</p>
+              )}
+
               <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
                 ✓ Đã chọn {selectedRoles.size} vai trò
               </div>
@@ -405,14 +441,13 @@ export default function ActionsRegulationIndex({
         </form>
       </div>
 
-      {/* Hộp thoại xóa */}
+      {/* Dialog Xóa */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa nội quy</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa nội quy này? Hành động này không thể hoàn
-              tác.
+              Bạn có chắc chắn muốn xóa nội quy này? Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

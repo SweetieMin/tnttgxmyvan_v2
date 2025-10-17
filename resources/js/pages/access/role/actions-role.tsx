@@ -54,20 +54,26 @@ export default function ActionsRole({ role, allRoles = [], managedRoles = [], mo
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
     
-        const payload = {
-            name: data.name,
-            description: data.description,
-            ordering: data.ordering,
-            managed_role_ids: Array.from(selectedManagedRoles),
-        };
+        // Update form data with selected managed roles
+        setData('managed_role_ids', Array.from(selectedManagedRoles));
     
         if (mode === 'edit' && role) {
-            router.put(`/access/roles/${role.id}`, payload, {
-                onError: (errors) => console.error('Validation errors:', errors),
+            put(`/access/roles/${role.id}`, {
+                onSuccess: () => {
+                    router.visit('/access/roles');
+                },
+                onError: (errors: any) => {
+                    console.error('Validation errors:', errors);
+                }
             });
         } else {
-            router.post('/access/roles', payload, {
-                onError: (errors) => console.error('Validation errors:', errors),
+            post('/access/roles', {
+                onSuccess: () => {
+                    router.visit('/access/roles');
+                },
+                onError: (errors: any) => {
+                    console.error('Validation errors:', errors);
+                }
             });
         }
     };
@@ -87,6 +93,7 @@ export default function ActionsRole({ role, allRoles = [], managedRoles = [], mo
             newSelected.delete(roleId);
         }
         setSelectedManagedRoles(newSelected);
+        setData('managed_role_ids', Array.from(newSelected));
     };
 
     const handleSelectAllManagedRoles = () => {
@@ -96,10 +103,12 @@ export default function ActionsRole({ role, allRoles = [], managedRoles = [], mo
         );
         const allIds = new Set(availableRoles.map(r => r.id));
         setSelectedManagedRoles(allIds);
+        setData('managed_role_ids', Array.from(allIds));
     };
 
     const handleSelectNoneManagedRoles = () => {
         setSelectedManagedRoles(new Set());
+        setData('managed_role_ids', []);
     };
 
     // Filter available roles for hierarchy

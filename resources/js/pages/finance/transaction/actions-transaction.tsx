@@ -72,12 +72,30 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
     useEffect(() => {
         if (mode === 'edit' && transaction) {
             setSelectedFiles([]);
+            setData('files', []);
+            setData('deleted_files', []);
         }
     }, [mode, transaction]);
+
+    // Sync form data when transaction changes
+    useEffect(() => {
+        if (mode === 'edit' && transaction) {
+            setData({
+                transaction_date: transaction.transaction_date || '',
+                title: transaction.title || '',
+                description: transaction.description || '',
+                type: transaction.type || 'expense',
+                amount: transaction.amount || 0,
+                files: [],
+                deleted_files: [],
+            });
+        }
+    }, [transaction, mode]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        // Create FormData manually for better control
         const formData = new FormData();
         formData.append('transaction_date', data.transaction_date);
         formData.append('title', data.title);
@@ -85,32 +103,31 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
         formData.append('type', data.type);
         formData.append('amount', data.amount.toString());
 
-        selectedFiles.forEach((file) => {
+        // Add files
+        data.files.forEach((file) => {
             formData.append('files[]', file);
         });
 
-        deletedFiles.forEach((id) => {
+        // Add deleted files
+        data.deleted_files.forEach((id) => {
             formData.append('deleted_files[]', id.toString());
         });
 
-        // Thêm _method nếu là chế độ chỉnh sửa
+        // Add _method for edit mode
         if (mode === 'edit') {
             formData.append('_method', 'PUT');
         }
 
-        // 🧠 Fix TypeScript warning bằng cách kiểm tra rõ ràng
-        const url =
-            mode === 'edit' && transaction
-                ? `/finance/transactions/${transaction.id}`
-                : '/finance/transactions';
+        const url = mode === 'edit' && transaction 
+            ? `/finance/transactions/${transaction.id}`
+            : '/finance/transactions';
 
         router.post(url, formData, {
-            onError: (errors) => {
+            onError: (errors: any) => {
                 console.error('Validation errors:', errors);
             },
             onSuccess: () => {
-                // Không cần router.visit()
-                // Laravel redirect -> flash tự hiển thị
+                router.visit('/finance/transactions');
             },
             forceFormData: true,
         });
@@ -123,15 +140,21 @@ export default function ActionsTransaction({ transaction, mode }: Props) {
     // File handling functions
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        setSelectedFiles(file ? [file] : []);
+        const newFiles = file ? [file] : [];
+        setSelectedFiles(newFiles);
+        setData('files', newFiles);
     };
 
     const handleRemoveFile = (index: number) => {
-        setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+        const newFiles = selectedFiles.filter((_, i) => i !== index);
+        setSelectedFiles(newFiles);
+        setData('files', newFiles);
     };
 
     const handleDeleteExistingFile = (fileId: number) => {
-        setDeletedFiles((prev) => [...prev, fileId]);
+        const newDeletedFiles = [...deletedFiles, fileId];
+        setDeletedFiles(newDeletedFiles);
+        setData('deleted_files', newDeletedFiles);
     };
 
     const formatCurrency = (amount: number) => {
