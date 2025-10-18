@@ -10,6 +10,8 @@ class UserDetail extends Model
     public $incrementing = false;
     protected $keyType = 'int';
 
+    protected $table = 'user_details';
+
     protected $fillable = [
         'user_id',
         'picture',

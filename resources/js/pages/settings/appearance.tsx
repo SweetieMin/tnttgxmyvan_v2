@@ -1,6 +1,5 @@
 import { Head } from '@inertiajs/react';
 
-import AppearanceTabs from '@/components/appearance-tabs';
 import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 
@@ -26,7 +25,7 @@ export default function Appearance() {
                         title="Cài đặt giao diện"
                         description="Tùy chỉnh và thay đổi giao diện hiển thị cho tài khoản của bạn"
                     />
-                    <AppearanceTabs />
+                    
                 </div>
             </SettingsLayout>
         </AppLayout>

@@ -19,6 +19,13 @@ import { index as roles } from '@/routes/access/roles';
 
 import { index as transactions } from '@/routes/finance/transactions';
 
+import { index as spirituals } from '@/routes/personnel/spirituals';
+import { index as catechists } from '@/routes/personnel/catechists';
+import { index as scouters } from '@/routes/personnel/scouters';
+import { index as childrenActive } from '@/routes/personnel/children/active';
+import { index as childrenGraduation } from '@/routes/personnel/children/graduation';
+
+
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
@@ -29,12 +36,17 @@ import {
     SquareLibrary,
     BookOpenCheck,
     Banknote,
+    Cross,
+    BookPlus,
+    UserStar,
+    Baby,
+    GraduationCap,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const generalNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Trang chủ',
         href: dashboard.url(),
         icon: LayoutGrid,
     },
@@ -49,7 +61,7 @@ const managementNavItems: NavItem[] = [
     {
         title: 'Lớp Giáo Lý',
         href: courses.url(),
-        icon: Church,
+        icon: BookPlus,
     },
     {
         title: 'Ngành Sinh Hoạt',
@@ -60,6 +72,34 @@ const managementNavItems: NavItem[] = [
         title: 'Nội quy',
         href: regulations.url(),
         icon: BookOpenCheck,
+    },
+];
+
+const personnelNavItems: NavItem[] = [
+    {
+        title: 'Linh hướng',
+        href: spirituals.url(),
+        icon: Cross,
+    },
+    {
+        title: 'Giáo lý viên',
+        href: catechists.url(),
+        icon: BookOpenCheck,
+    },
+    {
+        title: 'Huynh-Dự-Đội trưởng',
+        href: scouters.url(),
+        icon: UserStar,
+    },
+    {
+        title: 'Thiếu nhi',
+        href: childrenActive.url(),
+        icon: Baby,
+    },
+    {
+        title: 'Đã tốt nghiệp',
+        href: childrenGraduation.url(),
+        icon: GraduationCap,
     },
 ];
 
@@ -95,10 +135,11 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={generalNavItems} label="General" />
-                <NavMain items={managementNavItems} label="Management" />
-                <NavMain items={financeNavItems} label="Finance" />
-                <NavMain items={accessNavItems} label="Access" />
+                <NavMain items={generalNavItems} label="Tổng quan" />
+                <NavMain items={managementNavItems} label="Quản lý" />
+                <NavMain items={personnelNavItems} label="Nhân sự" />
+                <NavMain items={financeNavItems} label="Tài chính" />
+                <NavMain items={accessNavItems} label="Quyền truy cập" />
             </SidebarContent>
 
             <SidebarFooter>

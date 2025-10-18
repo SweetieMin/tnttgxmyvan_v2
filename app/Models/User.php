@@ -104,4 +104,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserDetail::class);
     }
+
+    /**
+     * Relationship with User Parent
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function parents()
+    {
+        return $this->hasOne(UserParent::class);
+    }
 }
