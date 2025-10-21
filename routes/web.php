@@ -13,7 +13,7 @@ Route::view('dashboard', 'dashboard')
     ->name('dashboard');
 
 Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(function () {
-
+    
     Route::prefix('general')->name('general.')->group(function () {
         
     });

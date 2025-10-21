@@ -28,6 +28,9 @@
     --color-accent: var(--color-blue-500);
     --color-accent-content: var(--color-blue-600);
     --color-accent-foreground: var(--color-white);
+    --color-accent-text: var(--color-blue-500);
+    --color-accent-background: color-mix(in srgb, var(--color-accent) 20%, white);
+
 }
 
 @layer theme {
@@ -35,6 +38,9 @@
         --color-accent: var(--color-blue-500);
         --color-accent-content: var(--color-blue-400);
         --color-accent-foreground: var(--color-white);
+        --color-accent-text: var(--color-white);
+        --color-accent-background: color-mix(in srgb, var(--color-accent) 35%, var(--color-zinc-950));
+
     }
 }
 
@@ -59,9 +65,62 @@
 input:focus[data-flux-control],
 textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+    @apply outline-hidden ring-2 ring-accent ring-offset-accent-foreground;
 }
 
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* Pink Theme - Table */
+.theme-table {
+    @apply bg-accent-background dark:bg-accent-background 
+        rounded-2xl border border-accent/20 
+        overflow-hidden shadow-xl;
+}
+
+/* Table chính */
+.theme-table table {
+    @apply w-full divide-y divide-accent/20;
+}
+
+/* Header */
+.theme-table thead {
+    @apply bg-accent-background;
+}
+
+.theme-table th {
+    @apply px-6 py-3 text-xs font-medium 
+        text-accent-text uppercase tracking-wider text-left;
+}
+
+.theme-table th.text-center {
+    text-align: center !important;
+}
+
+/* Body */
+.theme-table tbody {
+    @apply bg-white dark:bg-zinc-900 divide-y divide-accent/20;
+}
+
+.theme-table tr {
+    @apply hover:bg-accent-background/50 transition-colors;
+}
+
+.theme-table td {
+    @apply px-6 py-4 text-sm text-accent-text dark:text-accent-text/90;
+}
+
+/* Pagination */
+.theme-table .pagination-container {
+    @apply px-6 py-4 border-t border-accent/20;
+}
+
+/* Empty state */
+.theme-table .empty-state {
+    @apply text-center text-accent-text/70;
+}
+
+.theme-table .empty-state svg {
+    @apply text-accent-text/50;
+}
