@@ -55,6 +55,4 @@ class AcademicYears extends Component
     public function deleteAcademicYear($id){
         $this->dispatch('deleteAcademicYear', $id);
     }
-
-    
 }

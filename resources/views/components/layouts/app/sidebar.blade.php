@@ -20,10 +20,15 @@
 
                 <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>Trang chủ</flux:sidebar.item>
-                    <flux:separator class="my-2"/>
+
+                <flux:separator class="my-2" />
 
                 <flux:sidebar.item icon="squares-plus" :href="route('admin.management.academic-year')"
                     :current="request()->routeIs('admin.management.academic-year')" wire:navigate>Niên khoá
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="bookmark-square" :href="route('admin.management.programs')"
+                    :current="request()->routeIs('admin.management.programs')" wire:navigate>Chương trình học
                 </flux:sidebar.item>
 
 
@@ -41,7 +46,8 @@
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <flux:avatar src="{{ auth()->user()->details?->picture }}" />
                                 <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->christian_full_name }}</span>
+                                    <span
+                                        class="truncate font-semibold">{{ auth()->user()->christian_full_name }}</span>
                                     <span class="truncate text-xs opacity-60">{{ auth()->user()->email }}</span>
                                 </div>
                             </div>
@@ -73,7 +79,7 @@
             <flux:header class="lg:hidden">
                 <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
                 <flux:spacer />
-                <flux:dropdown  position="top" align="end">
+                <flux:dropdown position="top" align="end">
                     <flux:profile avatar="{{ auth()->user()->details?->picture }}" icon-trailing="chevron-down" />
 
                     <flux:menu>
@@ -82,7 +88,8 @@
                                 <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                     <flux:avatar src="{{ auth()->user()->details?->picture }}" />
                                     <div class="grid flex-1 text-start text-sm leading-tight">
-                                        <span class="truncate font-semibold">{{ auth()->user()->christian_full_name }}</span>
+                                        <span
+                                            class="truncate font-semibold">{{ auth()->user()->christian_full_name }}</span>
                                         <span class="truncate text-xs opacity-60">{{ auth()->user()->email }}</span>
                                     </div>
                                 </div>
@@ -112,8 +119,8 @@
             {{-- Nội dung --}}
             <main class="flex-grow overflow-auto">
 
-              
-                    {{ $slot }}
+
+                {{ $slot }}
 
 
             </main>
