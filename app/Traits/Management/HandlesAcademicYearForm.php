@@ -20,6 +20,8 @@ trait HandlesAcademicYearForm
             'status_academic',
         ]);
 
+        $this->isEditAcademicYearMode=false;
+
         $this->resetErrorBag();
     }
 

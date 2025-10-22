@@ -160,6 +160,9 @@ class ActionsAcademicYear extends Component
     #[On('deleteAcademicYear')]
     public function deleteAcademicYear($id)
     {
+
+        $this->resetForm();
+
         $academicYear = $this->academicYearRepository->find($id);
 
         if ($academicYear) {
