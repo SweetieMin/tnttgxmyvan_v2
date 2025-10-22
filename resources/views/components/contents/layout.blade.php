@@ -2,7 +2,6 @@
     'heading' => null,          {{-- Tiêu đề chính --}}
     'subheading' => null,       {{-- Mô tả ngắn --}}
     'breadcrumb' => [],         {{-- Mảng breadcrumb --}}
-    'count' => null,            {{-- Tổng số (ví dụ: 2 cơ sở) --}}
     'buttonLabel' => null,      {{-- Nút thêm --}}
     'buttonAction' => null,     {{-- Livewire action hoặc route --}}
 ])
@@ -42,7 +41,7 @@
         @if ($buttonLabel)
             <button
                 @if ($buttonAction) wire:click="{{ $buttonAction }}" @endif
-                class="inline-flex items-center justify-center gap-2 bg-accent text-white px-4 py-2 rounded-xl font-semibold shadow hover:shadow-md transition w-full sm:w-auto">
+                class="inline-flex items-center justify-center gap-2 bg-accent text-white px-4 py-2 rounded-xl font-semibold shadow hover:shadow-md transition w-full sm:w-auto cursor-pointer">
                 <flux:icon.plus class="w-5 h-5" />
                 <span>{{ $buttonLabel }}</span>
             </button>

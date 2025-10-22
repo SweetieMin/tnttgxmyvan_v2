@@ -3,14 +3,13 @@
         :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Niên khoá']]" :count="$academic_years->total() ?? 0" buttonLabel="Thêm niên khoá" buttonAction="addAcademicYear">
 
         {{-- Component Search & Filter --}}
-        @if ($academic_years->total() > 1)
-            <div class="flex flex-col sm:flex-row gap-4">
-                <div class="flex-1">
-                    <x-contents.search searchPlaceholder="Tìm kiếm niên khoá..."
-                        wire:model.live.debounce.300ms="search" />
-                </div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex-1">
+                <x-contents.search searchPlaceholder="Tìm kiếm niên khoá..." wire:model.live.debounce.300ms="search"
+                    :count="$academic_years->total() ?? 0" />
             </div>
-        @endif
+        </div>
 
 
         {{-- Main content area --}}
@@ -28,6 +27,7 @@
                                 <th class="text-center">Điểm chuyên cần giáo lý</th>
                                 <th class="text-center">Sinh hoạt</th>
                                 <th class="text-center">Điểm sinh hoạt</th>
+                                <th class="text-center">Thạng thái</th>
                                 <th class="text-center"></th>
                             </tr>
                         </thead>
@@ -45,12 +45,21 @@
                                             class="text-accent/50">/10</span></td>
                                     <td class="text-center">{{ $year->activity_period }}</td>
                                     <td class="text-center">{{ $year->activity_score }}</td>
+                                    <td class="text-center">
+                                        <flux:badge color="{{ $year->status_academic_color }}">
+                                            {{ $year->status_academic_label }}
+                                        </flux:badge>
+                                    </td>
                                     <td>
                                         <flux:dropdown position="bottom" align="end">
-                                            <flux:button icon="ellipsis-horizontal" variant="subtle" />
+                                            <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
+                                                variant="subtle" />
                                             <flux:menu>
-                                                <flux:menu.item icon="pencil-square">Sửa</flux:menu.item>
-                                                <flux:menu.item icon="trash" variant="danger">Xoá
+                                                <flux:menu.item class="cursor-pointer" icon="pencil-square"
+                                                    wire:click='editAcademicYear({{ $year->id }})'>Sửa
+                                                </flux:menu.item>
+                                                <flux:menu.item class="cursor-pointer" icon="trash" variant="danger" wire:click='deleteAcademicYear({{ $year->id }})'>
+                                                    Xoá
                                                 </flux:menu.item>
                                             </flux:menu>
                                         </flux:dropdown>
@@ -166,5 +175,7 @@
         </div>
 
     </x-contents.layout>
+
+    <livewire:management.academic-year.actions-academic-year />
 
 </div>

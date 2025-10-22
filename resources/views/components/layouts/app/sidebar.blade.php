@@ -32,17 +32,17 @@
             <flux:sidebar.spacer />
 
             <flux:dropdown position="top" align="start" class="max-lg:hidden">
-                <flux:sidebar.profile avatar="{{ auth()->user()->detail?->avatar }}"
-                    name="{{ auth()->user()->name }}" />
+                <flux:sidebar.profile avatar="{{ auth()->user()->details?->picture }}"
+                    name="{{ auth()->user()->full_name }}" />
 
                 <flux:menu>
                     <flux:menu.radio.group>
                         <div class="p-0 text-sm font-normal">
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <flux:avatar src="{{ auth()->user()->detail?->avatar }}" />
+                                <flux:avatar src="{{ auth()->user()->details?->picture }}" />
                                 <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                    <span class="truncate font-semibold">{{ auth()->user()->christian_full_name }}</span>
+                                    <span class="truncate text-xs opacity-60">{{ auth()->user()->email }}</span>
                                 </div>
                             </div>
                         </div>
@@ -73,17 +73,17 @@
             <flux:header class="lg:hidden">
                 <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
                 <flux:spacer />
-                <flux:dropdown class="cursor-pointer" position="top" align="end">
-                    <flux:profile avatar="{{ auth()->user()->detail?->avatar }}" icon-trailing="chevron-down" />
+                <flux:dropdown  position="top" align="end">
+                    <flux:profile avatar="{{ auth()->user()->details?->picture }}" icon-trailing="chevron-down" />
 
                     <flux:menu>
                         <flux:menu.radio.group>
                             <div class="p-0 text-sm font-normal">
                                 <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                    <flux:avatar src="{{ auth()->user()->detail?->avatar }}" />
+                                    <flux:avatar src="{{ auth()->user()->details?->picture }}" />
                                     <div class="grid flex-1 text-start text-sm leading-tight">
-                                        <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                        <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                        <span class="truncate font-semibold">{{ auth()->user()->christian_full_name }}</span>
+                                        <span class="truncate text-xs opacity-60">{{ auth()->user()->email }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -117,6 +117,8 @@
 
 
             </main>
+
+            <x-alert-toastr />
             {{-- Footer --}}
             @include('components.layouts.app.footer')
             {{-- @include('components.layouts.app.dial') --}}

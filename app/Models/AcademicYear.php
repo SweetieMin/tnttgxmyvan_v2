@@ -33,6 +33,51 @@ class AcademicYear extends Model
         ];
     }
 
+    // 🕊️ Giáo lý — Ngày bắt đầu
+    public function getFormattedCatechismStartDateAttribute(): string
+    {
+        return optional($this->catechism_start_date)->format('Y-m-d');
+    }
+
+    // 🕊️ Giáo lý — Ngày kết thúc
+    public function getFormattedCatechismEndDateAttribute(): string
+    {
+        return optional($this->catechism_end_date)->format('Y-m-d');
+    }
+
+    // 🕊️ Sinh hoạt — Ngày bắt đầu
+    public function getFormattedActivityStartDateAttribute(): string
+    {
+        return optional($this->activity_start_date)->format('Y-m-d');
+    }
+
+    // 🕊️ Sinh hoạt — Ngày kết thúc
+    public function getFormattedActivityEndDateAttribute(): string
+    {
+        return optional($this->activity_end_date)->format('Y-m-d');
+    }
+
+    public function getStatusAcademicLabelAttribute(): string
+    {
+        return match ($this->attributes['status_academic'] ?? null) {
+            'upcoming'   => 'Sắp diễn ra',
+            'ongoing' => 'Đang diễn ra',
+            'finished' => 'Đã hoàn thành',
+            default    => 'Sắp diễn ra',
+        };
+    }
+
+    public function getStatusAcademicColorAttribute(): string
+    {
+        return match ($this->attributes['status_academic'] ?? null) {
+            'upcoming'   => 'orange',
+            'ongoing' => 'green',
+            'finished' => 'zinc',
+            default    => 'Sắp diễn ra',
+        };
+    }
+
+
     public function getCatechismPeriodAttribute(): string
     {
         if (!$this->catechism_start_date || !$this->catechism_end_date) {

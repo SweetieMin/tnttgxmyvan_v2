@@ -24,6 +24,7 @@
                             icon="shield-exclamation"
                             icon:variant="outline"
                             wire:click="disable"
+                            class="cursor-pointer"
                         >
                             {{ __('Tắt xác thực hai bước') }}
                         </flux:button>
@@ -44,6 +45,7 @@
                         icon="shield-check"
                         icon:variant="outline"
                         wire:click="enable"
+                        class="cursor-pointer"
                     >
                         {{ __('Bật xác thực hai bước') }}
                     </flux:button>
@@ -103,15 +105,16 @@
                     <div class="flex items-center space-x-3">
                         <flux:button
                             variant="outline"
-                            class="flex-1"
+                            class="flex-1 cursor-pointer"
                             wire:click="resetVerification"
+
                         >
                             {{ __('Quay lại') }}
                         </flux:button>
 
                         <flux:button
                             variant="primary"
-                            class="flex-1"
+                            class="flex-1 cursor-pointer"
                             wire:click="confirmTwoFactor"
                             x-bind:disabled="$wire.code.length < 5"
                         >
@@ -142,7 +145,7 @@
                     <flux:button
                         :disabled="$errors->has('setupData')"
                         variant="primary"
-                        class="w-full"
+                        class="w-full cursor-pointer"
                         wire:click="showVerificationIfNecessary"
                     >
                         {{ $this->modalConfig['buttonText'] }}
@@ -193,7 +196,7 @@
                                     <flux:icon.check
                                         x-show="copied"
                                         variant="solid"
-                                        class="text-green-500"
+                                        class="text-green-500 cursor-pointer"
                                     ></flux:icon>
                                 </button>
                             @endempty

@@ -2,6 +2,7 @@
     'locations' => [],
     'seasons' => [],
     'searchPlaceholder' => 'Tìm kiếm...',
+    'count' => 1,
 ])
 
 <!-- Search & Filter -->
@@ -66,18 +67,22 @@
                 @endif
             </div>
 
-            {{-- RIGHT: Per Page --}}
-            <div class="flex-shrink-0">
-                <label for="perPage" class="block text-sm font-medium mb-1 opacity-70 ">
-                    Dòng/trang
-                </label>
-                <select wire:model.live="perPage" id="perPage" class="select-input">
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
-            </div>
+            @if ($count > 10)
+                {{-- RIGHT: Per Page --}}
+                <div class="flex-shrink-0">
+                    <label for="perPage" class="block text-sm font-medium mb-1 opacity-70 ">
+                        Dòng/trang
+                    </label>
+                    <select wire:model.live="perPage" id="perPage" class="select-input">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            @endif
+
+
 
 
 

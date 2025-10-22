@@ -1,0 +1,97 @@
+<div>
+
+    <flux:modal :dismissible="false" name="action-academic-year" class="w-full max-w-[460px] md:max-w-[700px]">
+        <form wire:submit='{{ $isEditAcademicYearMode ? 'updateAcademicYear' : 'createAcademicYear' }}' class="space-y-6">
+            <div>
+                <flux:heading class="font-bold" size="lg">
+                    {{ $isEditAcademicYearMode ? 'Cập nhật niên khoá' : 'Tạo mới niên khoá' }}
+                </flux:heading>
+            </div>
+
+            <flux:separator />
+
+            <div class="flex gap-2">
+                <div class=" w-2/3">
+                    <flux:input readonly variant="filled" label="Tên niên khoá" wire:model='name' />
+                </div>
+                <div class=" w-1/3">
+                    <label for="perPage" class="block text-sm font-medium mb-1 opacity-70 ">
+                        Trạng thái
+                    </label>
+                    <flux:select wire:model="status_academic" placeholder="Chọn trạng thái">
+                        <flux:select.option value="upcoming">Sắp diễn ra</flux:select.option>
+                        <flux:select.option value="ongoing">Đang diễn ra</flux:select.option>
+                        <flux:select.option value="finished">Đã hoàn thành</flux:select.option>
+                    </flux:select>
+                </div>
+            </div>
+
+
+
+            <flux:separator text="Giáo Lý" />
+
+            <div class="flex gap-2">
+                <div class=" w-1/2">
+                    <flux:input type="date" max="2999-12-31" label="Ngày bắt đầu"
+                        wire:model.lazy='catechism_start_date' />
+                </div>
+                <div class=" w-1/2">
+                    <flux:input type="date" max="2999-12-31" label="Ngày kết thúc"
+                        wire:model.lazy='catechism_end_date' />
+                </div>
+            </div>
+
+
+
+            <flux:separator text="Sinh hoạt" />
+
+            <div class="flex gap-2">
+                <div class=" w-1/2">
+                    <flux:input type="date" max="2999-12-31" label="Ngày bắt đầu"
+                        wire:model.lazy='activity_start_date' />
+                </div>
+                <div class=" w-1/2">
+                    <flux:input type="date" max="2999-12-31" label="Ngày kết thúc"
+                        wire:model.lazy='activity_end_date' />
+                </div>
+            </div>
+
+            <flux:separator text="Quy định điểm" />
+
+            <div class="flex gap-2">
+                <div class=" w-1/3">
+                    <flux:input type="number" min="0" max="10" label="Điểm Giáo Lý"
+                        placeholder="Điểm chuẩn" wire:model.lazy='catechism_avg_score' />
+                </div>
+                <div class=" w-1/3">
+                    <flux:input type="number" min="0" max="10" label="Điểm Chuyên Cần"
+                        placeholder="Điểm chuẩn" wire:model.lazy='catechism_training_score' />
+                </div>
+
+                <div class=" w-1/3">
+                    <flux:input type="number" min="0" max="1000" label="Điểm Sinh Hoạt"
+                        placeholder="Điểm chuẩn" wire:model.lazy='activity_score' />
+                </div>
+
+            </div>
+
+
+            <flux:separator />
+            <div class="flex">
+                <flux:spacer />
+                <flux:button type="submit" class="cursor-pointer" variant="primary">
+                    {{ $isEditAcademicYearMode ? 'Cập nhật' : 'Thêm mới' }}
+                </flux:button>
+            </div>
+
+        </form>
+    </flux:modal>
+
+    <x-app-delete-modal name="delete-academic-year" :width="600" title="Xác nhận xóa niên khoá"
+        description="Hành động này sẽ xóa toàn bộ dữ liệu liên quan đến niên khoá." warning-title="Cảnh báo xóa dữ liệu"
+        message="Bạn có chắc chắn muốn xóa niên khoá này không?" :warnings="[
+            'Tất cả thông tin niên khoá sẽ bị xóa vĩnh viễn.',
+            'Hành động này không thể hoàn tác.',
+        ]" action="deleteAcademicYearConfirm" />
+
+</div>

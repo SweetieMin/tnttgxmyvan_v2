@@ -11,4 +11,7 @@ interface AcademicYearRepositoryInterface
     public function create(array $data);
     public function update(int|string $id, array $data);
     public function delete(int|string $id);
+
+
+    public function paginateWithSearch(?string $search = null, int $perPage = 10);
 }
