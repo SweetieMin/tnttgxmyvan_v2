@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\Eloquent\AcademicYearRepository;
+use App\Repositories\Interfaces\AcademicYearRepositoryInterface;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -15,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        
+        $this->app->bind(AcademicYearRepositoryInterface::class, AcademicYearRepository::class);
     }
 
     /**

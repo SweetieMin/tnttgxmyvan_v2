@@ -29,8 +29,16 @@
     --color-accent-content: var(--color-blue-600);
     --color-accent-foreground: var(--color-white);
     --color-accent-text: var(--color-blue-500);
-    --color-accent-background: color-mix(in srgb, var(--color-accent) 20%, white);
-
+    --color-accent-background: color-mix(
+        in srgb,
+        var(--color-accent) 20%,
+        white
+    );
+    --color-accent-background-50: color-mix(
+        in srgb,
+        var(--color-accent) 50%,
+        white
+    );
 }
 
 @layer theme {
@@ -39,8 +47,11 @@
         --color-accent-content: var(--color-blue-400);
         --color-accent-foreground: var(--color-white);
         --color-accent-text: var(--color-white);
-        --color-accent-background: color-mix(in srgb, var(--color-accent) 35%, var(--color-zinc-950));
-
+        --color-accent-background: color-mix(
+            in srgb,
+            var(--color-accent) 35%,
+            var(--color-zinc-950)
+        );
     }
 }
 
@@ -72,55 +83,64 @@ select:focus[data-flux-control] {
     @apply size-4;
 } */
 
-/* Pink Theme - Table */
+.select-input {
+    @apply w-full px-4 py-3 rounded-xl border 
+           bg-white dark:bg-zinc-800
+           text-zinc-900 dark:text-zinc-100
+           ;
+}
+
+.select-input:focus {
+    @apply focus:ring-2 focus:ring-accent focus:outline-none;
+}
+
+.select-input::placeholder {
+    @apply text-zinc-400 dark:text-zinc-500;
+}
+
 .theme-table {
-    @apply bg-accent-background dark:bg-accent-background 
-        rounded-2xl border border-accent/20 
-        overflow-hidden shadow-xl;
+    @apply border border-accent/20 rounded-2xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm;
 }
 
-/* Table chính */
-.theme-table table {
-    @apply w-full divide-y divide-accent/20;
+@layer base {
+    table {
+        @apply w-full border-collapse;
+        border-spacing: 0;
+    }
+
+    thead {
+        @apply bg-accent-background;
+    }
+
+    th {
+        @apply px-6 py-3 text-xs font-medium text-accent-text uppercase tracking-wider text-left;
+    }
+
+    th.text-center {
+        text-align: center !important;
+    }
+
+    tbody tr {
+        @apply border-b border-accent/20  hover:bg-accent-background/30;
+    }
+
+    td {
+        @apply px-6 py-4 text-sm text-accent-text/90;
+    }
+
+    .pagination-container {
+        @apply px-6 py-4 border-t border-accent/20;
+    }
+
+    .empty-state {
+        @apply text-center text-accent-text/70 py-6;
+    }
+
+    .empty-state svg {
+        @apply text-accent-text/50 mx-auto mb-2 size-6;
+    }
 }
 
-/* Header */
-.theme-table thead {
-    @apply bg-accent-background;
-}
 
-.theme-table th {
-    @apply px-6 py-3 text-xs font-medium 
-        text-accent-text uppercase tracking-wider text-left;
-}
 
-.theme-table th.text-center {
-    text-align: center !important;
-}
 
-/* Body */
-.theme-table tbody {
-    @apply bg-white dark:bg-zinc-900 divide-y divide-accent/20;
-}
-
-.theme-table tr {
-    @apply hover:bg-accent-background/50 transition-colors;
-}
-
-.theme-table td {
-    @apply px-6 py-4 text-sm text-accent-text dark:text-accent-text/90;
-}
-
-/* Pagination */
-.theme-table .pagination-container {
-    @apply px-6 py-4 border-t border-accent/20;
-}
-
-/* Empty state */
-.theme-table .empty-state {
-    @apply text-center text-accent-text/70;
-}
-
-.theme-table .empty-state svg {
-    @apply text-accent-text/50;
-}

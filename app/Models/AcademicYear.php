@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class AcademicYear extends Model
@@ -30,6 +31,28 @@ class AcademicYear extends Model
             'activity_score' => 'integer',
             'status_academic' => 'string',
         ];
+    }
+
+    public function getCatechismPeriodAttribute(): string
+    {
+        if (!$this->catechism_start_date || !$this->catechism_end_date) {
+            return '';
+        }
+
+        return Carbon::parse($this->catechism_start_date)->format('d/m/Y') .
+            ' - ' .
+            Carbon::parse($this->catechism_end_date)->format('d/m/Y');
+    }
+
+    public function getActivityPeriodAttribute(): string
+    {
+        if (!$this->activity_start_date || !$this->activity_end_date) {
+            return '';
+        }
+
+        return Carbon::parse($this->activity_start_date)->format('d/m/Y') .
+            ' - ' .
+            Carbon::parse($this->activity_end_date)->format('d/m/Y');
     }
 
     public function sectors()

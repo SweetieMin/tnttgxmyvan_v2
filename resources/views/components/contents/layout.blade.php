@@ -8,7 +8,7 @@
 ])
 
 <div
-    class="bg-accent-background text-accent-text rounded-2xl shadow-sm p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 mb-6 transition-colors">
+    class="bg-accent-background text-accent-text rounded-2xl shadow-sm p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 mb-4 ">
 
     {{-- LEFT: heading, subheading, breadcrumb <flux:heading size="xl" level="1">{{ __('Settings') }}</flux:heading>
     <flux:subheading size="lg" class="mb-6">{{ __('Manage your profile and account settings') }}</flux:subheading> --}}
@@ -38,11 +38,6 @@
 
     {{-- RIGHT: Counter + Button --}}
     <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-        @if ($count)
-            <div class="text-sm font-medium opacity-80">
-                {{ $count }}
-            </div>
-        @endif
 
         @if ($buttonLabel)
             <button
