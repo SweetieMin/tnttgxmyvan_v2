@@ -22,10 +22,11 @@ return new class extends Migration
             $table->string('token')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('status_login', ['active','lock','inactive'])->default('active');
+            $table->enum('status_login', ['active','locked','inactive'])->default('active');
             $table->text('two_factor_secret')->nullable();
             $table->text('two_factor_recovery_codes')->nullable();
             $table->timestamp('two_factor_confirmed_at')->nullable();
+            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
         });

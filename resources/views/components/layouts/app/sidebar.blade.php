@@ -20,6 +20,7 @@
 
                 <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>Trang chủ</flux:sidebar.item>
+                    <flux:separator class="my-2"/>
 
                 <flux:sidebar.item icon="squares-plus" :href="route('admin.management.academic-year')"
                     :current="request()->routeIs('admin.management.academic-year')" wire:navigate>Niên khoá

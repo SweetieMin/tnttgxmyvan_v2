@@ -2,18 +2,18 @@
     @include('partials.settings-heading')
 
     <x-settings.layout
-        :heading="__('Two Factor Authentication')"
-        :subheading="__('Manage your two-factor authentication settings')"
+        :heading="__('Xác thực hai bước (2FA)')"
+        :subheading="__('Quản lý cài đặt xác thực hai bước của bạn')"
     >
         <div class="flex flex-col w-full mx-auto space-y-6 text-sm" wire:cloak>
             @if ($twoFactorEnabled)
                 <div class="space-y-4">
                     <div class="flex items-center gap-3">
-                        <flux:badge color="green">{{ __('Enabled') }}</flux:badge>
+                        <flux:badge color="green">{{ __('Đang bật') }}</flux:badge>
                     </div>
 
                     <flux:text>
-                        {{ __('With two-factor authentication enabled, you will be prompted for a secure, random pin during login, which you can retrieve from the TOTP-supported application on your phone.') }}
+                        {{ __('Khi bật xác thực hai bước, bạn sẽ được yêu cầu nhập mã bảo mật ngẫu nhiên khi đăng nhập. Mã này được lấy từ ứng dụng xác thực (TOTP) trên điện thoại của bạn.') }}
                     </flux:text>
 
                     <livewire:settings.two-factor.recovery-codes :$requiresConfirmation/>
@@ -25,18 +25,18 @@
                             icon:variant="outline"
                             wire:click="disable"
                         >
-                            {{ __('Disable 2FA') }}
+                            {{ __('Tắt xác thực hai bước') }}
                         </flux:button>
                     </div>
                 </div>
             @else
                 <div class="space-y-4">
                     <div class="flex items-center gap-3">
-                        <flux:badge color="red">{{ __('Disabled') }}</flux:badge>
+                        <flux:badge color="red">{{ __('Đang tắt') }}</flux:badge>
                     </div>
 
                     <flux:text variant="subtle">
-                        {{ __('When you enable two-factor authentication, you will be prompted for a secure pin during login. This pin can be retrieved from a TOTP-supported application on your phone.') }}
+                        {{ __('Khi bật xác thực hai bước, bạn sẽ được yêu cầu nhập mã bảo mật khi đăng nhập. Mã này được lấy từ ứng dụng xác thực (TOTP) trên điện thoại của bạn.') }}
                     </flux:text>
 
                     <flux:button
@@ -45,7 +45,7 @@
                         icon:variant="outline"
                         wire:click="enable"
                     >
-                        {{ __('Enable 2FA') }}
+                        {{ __('Bật xác thực hai bước') }}
                     </flux:button>
                 </div>
             @endif
@@ -106,16 +106,16 @@
                             class="flex-1"
                             wire:click="resetVerification"
                         >
-                            {{ __('Back') }}
+                            {{ __('Quay lại') }}
                         </flux:button>
 
                         <flux:button
                             variant="primary"
                             class="flex-1"
                             wire:click="confirmTwoFactor"
-                            x-bind:disabled="$wire.code.length < 6"
+                            x-bind:disabled="$wire.code.length < 5"
                         >
-                            {{ __('Confirm') }}
+                            {{ __('Xác nhận') }}
                         </flux:button>
                     </div>
                 </div>
@@ -153,7 +153,7 @@
                     <div class="relative flex items-center justify-center w-full">
                         <div class="absolute inset-0 w-full h-px top-1/2 bg-stone-200 dark:bg-stone-600"></div>
                         <span class="relative px-2 text-sm bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400">
-                            {{ __('or, enter the code manually') }}
+                            {{ __('hoặc nhập mã thủ công') }}
                         </span>
                     </div>
 
@@ -167,7 +167,7 @@
                                     this.copied = true;
                                     setTimeout(() => this.copied = false, 1500);
                                 } catch (e) {
-                                    console.warn('Could not copy to clipboard');
+                                    console.warn('Không thể sao chép vào clipboard');
                                 }
                             }
                         }"

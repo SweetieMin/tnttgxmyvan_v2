@@ -159,24 +159,34 @@ class TwoFactor extends Component
     {
         if ($this->twoFactorEnabled) {
             return [
-                'title' => __('Two-Factor Authentication Enabled'),
-                'description' => __('Two-factor authentication is now enabled. Scan the QR code or enter the setup key in your authenticator app.'),
-                'buttonText' => __('Close'),
+                'title' => __('Đã bật xác thực hai bước'),
+                'description' => __('Xác thực hai bước (2FA) đã được bật. Hãy quét mã QR hoặc nhập khóa thiết lập vào ứng dụng xác thực trên điện thoại của bạn.'),
+                'buttonText' => __('Đóng'),
             ];
         }
-
+        
         if ($this->showVerificationStep) {
             return [
-                'title' => __('Verify Authentication Code'),
-                'description' => __('Enter the 6-digit code from your authenticator app.'),
-                'buttonText' => __('Continue'),
+                'title' => __('Xác minh mã xác thực'),
+                'description' => __('Nhập mã gồm 6 chữ số từ ứng dụng xác thực của bạn.'),
+                'buttonText' => __('Tiếp tục'),
             ];
         }
-
+        
         return [
-            'title' => __('Enable Two-Factor Authentication'),
-            'description' => __('To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app.'),
-            'buttonText' => __('Continue'),
+            'title' => __('Bật xác thực hai bước'),
+            'description' => __('Để hoàn tất việc bật xác thực hai bước, hãy quét mã QR hoặc nhập khóa thiết lập vào ứng dụng xác thực trên điện thoại của bạn.'),
+            'buttonText' => __('Tiếp tục'),
+        ];
+        
+    }
+
+    public function messages(): array
+    {
+        return [
+            'code.required' => 'Vui lòng nhập mã xác thực.',
+            'code.string'   => 'Mã xác thực không hợp lệ.',
+            'code.size'     => 'Mã xác thực phải gồm đúng 6 chữ số.',
         ];
     }
 }

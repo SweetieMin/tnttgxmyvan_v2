@@ -11,6 +11,14 @@ class AcademicYears extends Component
     protected AcademicYearRepositoryInterface $academicYearRepository;
     use WithPagination;
 
+    public $search = '';
+    public  $perPage = 10;
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
+
     public function boot(AcademicYearRepositoryInterface $academicYearRepository)
     {
         $this->academicYearRepository = $academicYearRepository;
@@ -20,7 +28,7 @@ class AcademicYears extends Component
     {
         // Gọi repository để lấy danh sách có phân trang
         $academic_years = $this->academicYearRepository
-            ->paginate(10); // hoặc có thể dùng hàm custom trong repo
+            ->paginate($this->perPage); // hoặc có thể dùng hàm custom trong repo
 
         return view('livewire.management.academic-year.academic-years', [
             'academic_years' => $academic_years,
