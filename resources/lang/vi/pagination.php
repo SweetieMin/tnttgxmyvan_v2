@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'previous' => '&laquo; Trước1',
+    'previous' => '&laquo; Trước',
     'next' => 'Sau &raquo;',
     'showing' => 'Hiển thị',
     'to' => 'đến',

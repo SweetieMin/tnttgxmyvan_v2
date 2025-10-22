@@ -20,7 +20,7 @@ class AcademicYears extends Component
     {
         // Gọi repository để lấy danh sách có phân trang
         $academic_years = $this->academicYearRepository
-            ->paginate(2); // hoặc có thể dùng hàm custom trong repo
+            ->paginate(10); // hoặc có thể dùng hàm custom trong repo
 
         return view('livewire.management.academic-year.academic-years', [
             'academic_years' => $academic_years,

@@ -1,13 +1,17 @@
 <div>
     <x-contents.layout heading="Niên Khoá" subheading="Quản lý danh sách và thông tin niên khoá" icon="squares-plus"
-        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Niên khoá']]" :count="($academic_years->total() ?? 0)" buttonLabel="Thêm niên khoá" buttonAction="addAcademicYear">
+        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Niên khoá']]" :count="$academic_years->total() ?? 0" buttonLabel="Thêm niên khoá" buttonAction="addAcademicYear">
 
         {{-- Component Search & Filter --}}
-        <div class="flex flex-col sm:flex-row gap-4">
-            <div class="flex-1">
-                <x-contents.search searchPlaceholder="Tìm kiếm niên khoá..." wire:model.live.debounce.300ms="search" />
+        @if ($academic_years->total() > 1)
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <x-contents.search searchPlaceholder="Tìm kiếm niên khoá..."
+                        wire:model.live.debounce.300ms="search" />
+                </div>
             </div>
-        </div>
+        @endif
+
 
         {{-- Main content area --}}
         <div class="mt-2">
