@@ -1,79 +1,62 @@
 @props([
-    'locations' => [],
-    'seasons' => [],
+    'years' => [],
     'searchPlaceholder' => 'Tìm kiếm...',
     'count' => 1,
 ])
 
-<!-- Search & Filter -->
-
-<div class="bg-accent-background text-accent-text rounded-2xl shadow-sm mb-2 ">
+<div class="bg-accent-background text-accent-text rounded-2xl shadow-sm mb-2">
     <div class="p-6">
-
-        {{-- Hàng ngang chính --}}
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
 
-            {{-- LEFT: Search + filters --}}
-            <div
-                class="grid grid-cols-1 md:grid-cols-{{ (!empty($locations) && count($locations) > 0 ? 1 : 0) +
-                    (!empty($seasons) && count($seasons) > 0 ? 1 : 0) +
-                    1 }} gap-6 flex-1">
+            {{-- LEFT: Search + Filters --}}
+            <div class="flex-1">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-                {{-- Search --}}
-                <div>
-                    <label for="search" class="block text-sm font-medium mb-1 opacity-70">
-                        Tìm kiếm
-                    </label>
-                    <input wire:model.live="search" type="text" id="search" placeholder="{{ $searchPlaceholder }}"
-                        class=" w-full md:w-80 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 
-                                   bg-white dark:bg-zinc-900 text-sm 
-                                   focus:ring-2 focus:ring-accent focus:outline-none " />
+                    {{-- Search --}}
+                    <div class="flex flex-col">
+                        <label for="search" class="block text-sm font-medium mb-1 opacity-70">
+                            Tìm kiếm
+                        </label>
+                        <input wire:model.live="search"
+                               type="text"
+                               id="search"
+                               placeholder="{{ $searchPlaceholder }}"
+                               class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 
+                                      bg-white dark:bg-zinc-900 text-sm 
+                                      focus:ring-2 focus:ring-accent focus:outline-none" />
+                    </div>
+
+                    {{-- Filter: Niên khoá --}}
+                    @if (!empty($years) && count($years) > 0)
+                        <div class="flex flex-col">
+                            <label for="yearFilter" class="block text-sm font-medium mb-1 opacity-70">
+                                Niên khoá
+                            </label>
+                            <select wire:model.live="yearFilter" id="yearFilter"
+                                    class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
+                                           bg-white dark:bg-zinc-900 px-4 py-3 text-sm 
+                                           focus:ring-2 focus:ring-accent focus:outline-none">
+                                @foreach ($years as $year)
+                                    <option value="{{ $year->id }}">{{ $year->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
+
                 </div>
-
-                {{-- Location Filter --}}
-                @if (!empty($locations) && count($locations) > 0)
-                    <div>
-                        <label for="locationFilter" class="block text-sm font-medium mb-1 opacity-70">
-                            Lọc theo cơ sở
-                        </label>
-                        <select wire:model.live="locationFilter" id="locationFilter"
-                            class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
-                                       bg-white dark:bg-zinc-900 text-sm 
-                                       focus:ring-2 focus:ring-accent focus:outline-none transition">
-                            <option value="">Tất cả cơ sở</option>
-                            @foreach ($locations as $location)
-                                <option value="{{ $location->id }}">{{ $location->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
-
-                {{-- Season Filter --}}
-                @if (!empty($seasons) && count($seasons) > 0)
-                    <div>
-                        <label for="seasonFilter" class="block text-sm font-medium mb-1 opacity-70">
-                            Lọc theo học kỳ
-                        </label>
-                        <select wire:model.live="seasonFilter" id="seasonFilter"
-                            class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
-                                       bg-white dark:bg-zinc-900 px-4 py-3 text-sm 
-                                       focus:ring-2 focus:ring-accent focus:outline-none transition">
-                            <option value="">Tất cả học kỳ</option>
-                            @foreach ($seasons as $season)
-                                <option value="{{ $season->id }}">{{ $season->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
             </div>
 
+            {{-- RIGHT: Dòng/trang --}}
             @if ($count > 10)
-                {{-- RIGHT: Per Page --}}
-                <div class="flex-shrink-0">
-                    <label for="perPage" class="block text-sm font-medium mb-1 opacity-70 ">
+                <div class="flex-shrink-0 md:w-40">
+                    <label for="perPage" class="block text-sm font-medium mb-1 opacity-70">
                         Dòng/trang
                     </label>
-                    <select wire:model.live="perPage" id="perPage" class="select-input">
+                    <select wire:model.live="perPage" id="perPage"
+                            class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
+                                   bg-white dark:bg-zinc-900 px-4 py-3 text-sm 
+                                   focus:ring-2 focus:ring-accent focus:outline-none transition">
                         <option value="10">10</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
@@ -81,11 +64,6 @@
                     </select>
                 </div>
             @endif
-
-
-
-
-
         </div>
     </div>
 </div>

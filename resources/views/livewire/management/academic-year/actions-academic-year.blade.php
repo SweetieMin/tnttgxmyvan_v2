@@ -4,7 +4,7 @@
         title="{{ $isEditAcademicYearMode ? 'Cập nhật niên khoá' : 'Tạo mới niên khoá' }}"
         subheading="Quản lý niên khoá, thời gian và điểm số" icon="squares-plus" width="700px">
         {{-- Nội dung riêng của form --}}
-        <form wire:submit='{{ $isEditAcademicYearMode ? 'updateAcademicYear' : 'createAcademicYear' }}' class="space-y-6">
+        <form wire:submit.prevent='{{ $isEditAcademicYearMode ? 'updateAcademicYear' : 'createAcademicYear' }}' class="space-y-6">
             <div class="flex gap-2">
                 <div class=" w-2/3">
                     <flux:input readonly variant="filled" label="Tên niên khoá" wire:model='name' />

@@ -4,7 +4,7 @@
         title="{{ $isEdit{{ module }}Mode ? 'Cập nhật {{ vietnameseName }}' : 'Tạo mới {{ vietnameseName }}' }}"
         subheading="Quản lý thông tin {{ vietnameseName }}" icon="squares-plus" width="600px">
         {{-- Nội dung riêng của form --}}
-        <form wire:submit='{{ $isEdit{{ module }}Mode ? 'update{{ module }}' : 'create{{ module }}' }}' class="space-y-6">
+        <form wire:submit.prevent='{{ $isEdit{{ module }}Mode ? 'update{{ module }}' : 'create{{ module }}' }}' class="space-y-6">
             
 
             

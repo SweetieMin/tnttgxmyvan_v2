@@ -3,7 +3,7 @@
 namespace App\Repositories\Interfaces;
 //use Illuminate\Interfaces\Pagination\LengthAwarePaginator;
 
-interface AcademicYearRepositoryInterface
+interface RoleRepositoryInterface
 {
     public function all();
     public function find(int|string $id);
@@ -12,9 +12,4 @@ interface AcademicYearRepositoryInterface
     public function update(int|string $id, array $data);
     public function delete(int|string $id);
 
-    public function getAcademicOngoingAndUpcoming();
-    public function getAcademicOngoingAndFinished();
-    public function getAcademicOngoingNow();
-
-    public function paginateWithSearch(?string $search = null, int $perPage = 10);
 }

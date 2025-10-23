@@ -31,6 +31,16 @@
                     :current="request()->routeIs('admin.management.programs')" wire:navigate>Chương trình học
                 </flux:sidebar.item>
 
+                <flux:sidebar.item icon="academic-cap" :href="route('admin.management.courses')"
+                    :current="request()->routeIs('admin.management.courses')" wire:navigate>Lớp Giáo Lý
+                </flux:sidebar.item>
+
+                <flux:separator class="my-2" />
+
+                <flux:sidebar.item icon="academic-cap" :href="route('admin.access.roles')"
+                    :current="request()->routeIs('admin.access.roles')" wire:navigate>Chức vụ
+                </flux:sidebar.item>
+
 
             </flux:sidebar.nav>
 

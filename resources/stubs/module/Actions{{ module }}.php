@@ -75,7 +75,7 @@ class Actions{{ module }} extends Component
             session()->flash('error', 'Tạo {{ moduleLower }} thất bại.' . $e->getMessage());
         }
         
-        $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
+        $this->redirectRoute('admin.management.{{ moduleKebab }}s', navigate: true);
     }
 
     #[On('edit{{ module }}')]
@@ -97,7 +97,7 @@ class Actions{{ module }} extends Component
         } else {
             // Nếu không tìm thấy
             session()->flash('error', 'Không tìm thấy {{ moduleLower }}');
-            return $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
+            return $this->redirectRoute('admin.management.{{ moduleKebab }}s', navigate: true);
         }
 
     }
@@ -120,7 +120,7 @@ class Actions{{ module }} extends Component
             session()->flash('error', 'Cập nhật {{ moduleLower }} thất bại.' . $e->getMessage());
         }
         
-        $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
+        $this->redirectRoute('admin.management.{{ moduleKebab }}s', navigate: true);
     }
 
     #[On('delete{{ module }}')]
@@ -140,7 +140,7 @@ class Actions{{ module }} extends Component
         } else {
             // Nếu không tìm thấy
             session()->flash('error', 'Không tìm thấy {{ moduleLower }}');
-            return $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
+            return $this->redirectRoute('admin.management.{{ moduleKebab }}s', navigate: true);
         }
 
     }
@@ -157,6 +157,6 @@ class Actions{{ module }} extends Component
             session()->flash('error', 'Xoá {{ moduleLower }} thất bại.' . $e->getMessage());
         }
         
-        $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
+        $this->redirectRoute('admin.management.{{ moduleKebab }}s', navigate: true);
     }
 }

@@ -24,7 +24,7 @@ class ActionsProgram extends Component
 
     public string $sector;
 
-    public string $description;
+    public string $description = '';
 
     public $programID;
 
@@ -87,7 +87,7 @@ class ActionsProgram extends Component
     public function editProgram($id)
     {
         $this->resetForm();
-
+        $this->canSaveData = true;
         $program = $this->programRepository->find($id);
 
         if ($program) {

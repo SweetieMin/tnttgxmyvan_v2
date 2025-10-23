@@ -8,13 +8,18 @@ class Course extends Model
 {
     protected $fillable = [
         'academic_year_id',
+        'program_id',
         'ordering',
-        'name',
-        'description',
+        'course',
     ];
 
     public function academicYear()
     {
         return $this->belongsTo(AcademicYear::class);
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
     }
 }

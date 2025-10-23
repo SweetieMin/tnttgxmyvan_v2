@@ -20,4 +20,9 @@ class Program extends Model
         'ordering' => 'integer',
     ];
 
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
+
 }

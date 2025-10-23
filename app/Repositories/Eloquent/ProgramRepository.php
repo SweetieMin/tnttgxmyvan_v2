@@ -13,19 +13,22 @@ class ProgramRepository extends BaseRepository implements ProgramRepositoryInter
         parent::__construct($model);
     }
 
-    public function prepareDate(array &$data): void
+    protected function prepareData(array $data): array
     {
-        if (isset($data['course'])) {
-            $data['course'] = ucwords(trim($data['course']));
-        }
 
-        if (isset($data['sector'])) {
-            $data['sector'] = ucwords(trim($data['sector']));
-        }
+        return [
+            'course' => ucwords(trim($data['course']) ?? ''),
+            'sector' => ucwords(trim($data['sector']) ?? ''),
+            'description' => ucfirst(trim($data['description'] ?? '')),
+        ];
 
-        if (isset($data['description'])) {
-            $data['description'] = ucfirst(trim($data['description']));
-        }
     }
-    
+
+    public function getIdAndCourse()
+    {
+        return $this->model
+            ->select('id', 'course')
+            ->orderBy('ordering')
+            ->get();
+    }
 }

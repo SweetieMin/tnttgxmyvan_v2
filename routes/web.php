@@ -1,6 +1,8 @@
 <?php
 
+use App\Livewire\Access\Role\Roles;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Management\Course\Courses;
 use App\Livewire\Management\Program\Programs;
 use App\Livewire\Management\AcademicYear\AcademicYears;
 
@@ -24,9 +26,13 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
         Route::get('academic-year', AcademicYears::class)->name('academic-year');
 
         Route::get('programs', Programs::class)->name('programs');
+
+        Route::get('courses', Courses::class)->name('courses');
     });
 
-    Route::prefix('access')->name('access.')->group(function () {});
+    Route::prefix('access')->name('access.')->group(function () {
+        Route::get('roles', Roles::class)->name('roles');
+    });
 
     Route::prefix('finance')->name('finance.')->group(function () {});
 

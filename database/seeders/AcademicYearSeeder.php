@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\AcademicYear;
 use Illuminate\Database\Seeder;
-use App\Repositories\Interfaces\AcademicYearRepositoryInterface;
 
 class AcademicYearSeeder extends Seeder
 {
@@ -71,7 +71,7 @@ class AcademicYearSeeder extends Seeder
         ];
 
         foreach ($years as $year){
-            app(AcademicYearRepositoryInterface::class)->create($year);
+            AcademicYear::create($year);
         }
     }
 }
