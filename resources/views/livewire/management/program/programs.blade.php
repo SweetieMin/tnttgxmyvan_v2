@@ -4,7 +4,6 @@
         buttonAction="addProgram">
         {{-- Main content area --}}
         <div class="mt-2">
-
             <div x-data="{
                 initSortable() {
                     const el = document.getElementById('sortable-programs');
@@ -14,19 +13,14 @@
                             handle: '.drag-handle',
                             onEnd: function() {
                                 let orderedIds = [];
-                                el.querySelectorAll('[data-id]').forEach(item => {
-                                    orderedIds.push(item.getAttribute('data-id'));
-                                });
+                                el.querySelectorAll('[data-id]').forEach(item => { orderedIds.push(item.getAttribute('data-id')); });
                                 $wire.updateProgramsOrdering(orderedIds);
                             }
                         });
                     }
                 }
             }" x-init="initSortable()">
-
-                <div class="theme-table">
-                    {{-- Desktop Table View --}}
-                    <div class="hidden md:block ">
+                <div class="theme-table"> {{-- Desktop Table View --}} <div class="hidden md:block ">
                         <table>
                             <thead>
                                 <tr>
@@ -39,8 +33,9 @@
                             </thead>
                             <tbody id="sortable-programs">
                                 @forelse ($programs as $program)
-                                    <tr data-id="{{ $program->id }}">
-                                        <td class="text-center w-12 drag-handle cursor-move">{{ $program->ordering }}</td>
+                                    <tr wire:key="program-desktop-{{ $program->id }}" data-id="{{ $program->id }}">
+                                        <td class="text-center w-12 drag-handle cursor-move">{{ $program->ordering }}
+                                        </td>
                                         <td class="text-center">{{ $program->course }}</td>
                                         <td class="text-center">{{ $program->sector }}</td>
                                         <td>{{ $program->description }}</td>
@@ -54,42 +49,26 @@
                                                     </flux:menu.item>
                                                     <flux:menu.item class="cursor-pointer" icon="trash"
                                                         variant="danger"
-                                                        wire:click='deleteProgram({{ $program->id }})'>
-                                                        Xoá
+                                                        wire:click='deleteProgram({{ $program->id }})'> Xoá
                                                     </flux:menu.item>
                                                 </flux:menu>
                                             </flux:dropdown>
                                         </td>
-                                    </tr>
-
-                                @empty
-                                    <tr>
+                                </tr> @empty <tr>
                                         <td colspan="6">
-                                            <div class="empty-state flex flex-col items-center">
-                                                <flux:icon.squares-plus class="w-8 h-8 mb-2" />
+                                            <div class="empty-state flex flex-col items-center"> <flux:icon.squares-plus
+                                                    class="w-8 h-8 mb-2" />
                                                 <div class="text-sm">Không có dữ liệu</div>
                                             </div>
                                         </td>
                                     </tr>
                                 @endforelse
                             </tbody>
-
                         </table>
-
-                    </div>
-
-                    {{-- Mobile Card View --}}
-                    <div class="md:hidden space-y-3">
-
-                    </div>
-
-
+                    </div> {{-- Mobile Card View --}} <div class="md:hidden space-y-3"> </div>
                     @if ($programs->hasPages())
-                        <div class="py-4 px-5">
-                            {{ $programs->links('vendor.pagination.tailwind') }}
-                        </div>
+                        <div class="py-4 px-5"> {{ $programs->links('vendor.pagination.tailwind') }} </div>
                     @endif
-
                 </div>
             </div>
         </div>

@@ -20,29 +20,28 @@
                     <table>
                         <thead>
                             <tr>
-                               
+                                
                                 <th class="text-center"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse (${{ moduleLower }}s as ${{ moduleLower }})
-                                <tr>
-                                   
-                                    <td>
-                                        <flux:dropdown position="bottom" align="end">
-                                            <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
-                                                variant="subtle" />
-                                            <flux:menu>
-                                                <flux:menu.item class="cursor-pointer" icon="pencil-square"
-                                                    wire:click='edit{{ module }}({{ ${{ moduleLower }}->id }})'>Sửa
-                                                </flux:menu.item>
-                                                <flux:menu.item class="cursor-pointer" icon="trash" variant="danger" wire:click='delete{{ module }}({{ ${{ moduleLower }}->id }})'>
-                                                    Xoá
-                                                </flux:menu.item>
-                                            </flux:menu>
-                                        </flux:dropdown>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td>
+                                    <flux:dropdown position="bottom" align="end">
+                                        <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
+                                            variant="subtle" />
+                                        <flux:menu>
+                                            <flux:menu.item class="cursor-pointer" icon="pencil-square"
+                                                wire:click='editAcademicYear({{ $moduleLower->id }})'>Sửa
+                                            </flux:menu.item>
+                                            <flux:menu.item class="cursor-pointer" icon="trash" variant="danger" wire:click='deleteAcademicYear({{ $moduleLower->id }})'>
+                                                Xoá
+                                            </flux:menu.item>
+                                        </flux:menu>
+                                    </flux:dropdown>
+                                </td>
+                            </tr>
                             @empty
                                 <tr>
                                     <td colspan="6">

@@ -76,12 +76,10 @@ class ActionsProgram extends Component
             $this->programRepository->create($data);
 
             session()->flash('success', 'Chương trình học tạo thành công.');
-
-            
         } catch (\Exception $e) {
             session()->flash('error', 'Tạo chương trình học thất bại.' . $e->getMessage());
         }
-        
+
         $this->redirectRoute('admin.management.programs', navigate: true);
     }
 
@@ -96,7 +94,7 @@ class ActionsProgram extends Component
             // Gán dữ liệu vào form
             $this->programID = $program->id;
             $this->isEditProgramMode = true;
-    
+
             $this->course = $program->course;
             $this->sector = $program->sector;
             $this->description = $program->description;
@@ -108,7 +106,6 @@ class ActionsProgram extends Component
             session()->flash('error', 'Không tìm thấy program');
             return $this->redirectRoute('admin.management.programs', navigate: true);
         }
-
     }
 
     public function updateProgram()
@@ -122,15 +119,13 @@ class ActionsProgram extends Component
         ]);
 
         try {
-            $this->programRepository->update($this->programID,$data);
+            $this->programRepository->update($this->programID, $data);
 
             session()->flash('success', 'Chương trình học cập nhật thành công.');
-
-            
         } catch (\Exception $e) {
             session()->flash('error', 'Cập nhật chương trình học thất bại.' . $e->getMessage());
         }
-        
+
         $this->redirectRoute('admin.management.programs', navigate: true);
     }
 
@@ -145,7 +140,7 @@ class ActionsProgram extends Component
         if ($program) {
             // Gán dữ liệu vào form
             $this->programID = $program->id;
-                
+
             // Hiển thị modal
             Flux::modal('delete-program')->show();
         } else {
@@ -153,7 +148,6 @@ class ActionsProgram extends Component
             session()->flash('error', 'Không tìm thấy chương trình học');
             return $this->redirectRoute('admin.management.programs', navigate: true);
         }
-
     }
 
     public function deleteProgramConfirm()
@@ -162,22 +156,12 @@ class ActionsProgram extends Component
             $this->programRepository->delete($this->programID);
 
             session()->flash('success', 'Chương trình học xoá thành công.');
-
-            
         } catch (\Exception $e) {
             session()->flash('error', 'Xoá chương trình học thất bại.' . $e->getMessage());
         }
-        
-        $this->redirectRoute('admin.management.programs', navigate: true);
-    }
-
-    //updateProgramsOrdering
-
-    #[On('updateProgramsOrdering')]
-    public function updateProgramsOrdering($ids)
-    {
-        $this->programRepository->updateOrdering($ids);
 
         $this->redirectRoute('admin.management.programs', navigate: true);
     }
+
+
 }

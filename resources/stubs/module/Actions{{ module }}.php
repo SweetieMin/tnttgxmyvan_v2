@@ -68,14 +68,14 @@ class Actions{{ module }} extends Component
         try {
             $this->{{ moduleLower }}Repository->create($data);
 
-            session()->flash('success', '{{ vietnameseName }} tạo thành công.');
+            session()->flash('success', '{{ module }} tạo thành công.');
 
             
         } catch (\Exception $e) {
-            session()->flash('error', 'Tạo {{ vietnameseName }} thất bại.' . $e->getMessage());
+            session()->flash('error', 'Tạo {{ moduleLower }} thất bại.' . $e->getMessage());
         }
         
-        $this->redirectRoute('admin.{{ group }}.{{ moduleKebab }}s', navigate: true);
+        $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
     }
 
     #[On('edit{{ module }}')]
@@ -96,8 +96,8 @@ class Actions{{ module }} extends Component
             Flux::modal('action-{{ moduleKebab }}')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy {{ vietnameseName }}');
-            return $this->redirectRoute('admin.{{ group }}.{{ moduleKebab }}s', navigate: true);
+            session()->flash('error', 'Không tìm thấy {{ moduleLower }}');
+            return $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
         }
 
     }
@@ -113,14 +113,14 @@ class Actions{{ module }} extends Component
         try {
             $this->{{ moduleLower }}Repository->update($this->{{ moduleLower }}ID,$data);
 
-            session()->flash('success', '{{ vietnameseName }} cập nhật thành công.');
+            session()->flash('success', '{{ module }} cập nhật thành công.');
 
             
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật {{ vietnameseName }} thất bại.' . $e->getMessage());
+            session()->flash('error', 'Cập nhật {{ moduleLower }} thất bại.' . $e->getMessage());
         }
         
-        $this->redirectRoute('admin.{{ group }}.{{ moduleKebab }}s', navigate: true);
+        $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
     }
 
     #[On('delete{{ module }}')]
@@ -139,8 +139,8 @@ class Actions{{ module }} extends Component
             Flux::modal('delete-{{ moduleKebab }}')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy {{ vietnameseName }}');
-            return $this->redirectRoute('admin.{{ group }}.{{ moduleKebab }}s', navigate: true);
+            session()->flash('error', 'Không tìm thấy {{ moduleLower }}');
+            return $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
         }
 
     }
@@ -150,13 +150,13 @@ class Actions{{ module }} extends Component
         try {
             $this->{{ moduleLower }}Repository->delete($this->{{ moduleLower }}ID);
 
-            session()->flash('success', '{{ vietnameseName }} xoá thành công.');
+            session()->flash('success', '{{ module }} xoá thành công.');
 
             
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá {{ vietnameseName }} thất bại.' . $e->getMessage());
+            session()->flash('error', 'Xoá {{ moduleLower }} thất bại.' . $e->getMessage());
         }
         
-        $this->redirectRoute('admin.{{ group }}.{{ moduleKebab }}s', navigate: true);
+        $this->redirectRoute('admin.management.{{ moduleKebab }}', navigate: true);
     }
 }

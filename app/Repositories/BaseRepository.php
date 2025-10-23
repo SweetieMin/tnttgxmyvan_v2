@@ -249,18 +249,35 @@ abstract class BaseRepository
     /**
      * Cập nhật lại thứ tự ordering cho model hiện tại (nếu có cột 'ordering')
      */
-    public function updateOrdering(array $orderedIds): void
+    /**
+     * Cập nhật lại thứ tự ordering cho model hiện tại (nếu có cột 'ordering')
+     */
+    public function updateOrdering(array $orderedIds): bool
     {
-        // 🔹 Kiểm tra xem model có cột 'ordering' không
+        // Kiểm tra bảng có cột 'ordering' không
         if (! $this->model->getConnection()
             ->getSchemaBuilder()
             ->hasColumn($this->model->getTable(), 'ordering')) {
-            return; // Nếu không có cột 'ordering' thì bỏ qua
+            return false;
         }
 
-        // 🔹 Cập nhật theo thứ tự mới
-        foreach ($orderedIds as $index => $id) {
-            $this->model->where('id', $id)->update(['ordering' => $index + 1]);
+        try {
+            foreach ($orderedIds as $index => $id) {
+                $updated = $this->model->where('id', $id)->update(['ordering' => $index + 1]);
+                if (!$updated) {
+                    throw new \Exception("Không thể cập nhật bản ghi ID: {$id}");
+                }
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error("Lỗi khi sắp xếp lại thứ tự: " . $e->getMessage(), [
+                'repository' => static::class,
+                'model' => get_class($this->model),
+                'ids' => $orderedIds,
+            ]);
+
+            return false;
         }
     }
 }
