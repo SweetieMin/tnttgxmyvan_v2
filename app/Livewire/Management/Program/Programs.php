@@ -3,17 +3,17 @@
 namespace App\Livewire\Management\Program;
 
 use Livewire\Component;
-use Livewire\Attributes\Title;
 use Livewire\WithPagination;
 use App\Repositories\Interfaces\ProgramRepositoryInterface;
+use Livewire\Attributes\Title;
 
 #[Title('Chương trình học')]
 class Programs extends Component
 {
-
     use WithPagination;
 
     protected ProgramRepositoryInterface $programRepository;
+
 
     public function boot(ProgramRepositoryInterface $programRepository)
     {
@@ -22,11 +22,11 @@ class Programs extends Component
 
     public function render()
     {
+        $programs = $this->programRepository
+            ->paginate(15);
 
-        $programs = $this->programRepository->paginate(15);
-
-        return view('livewire.management.program.programs',[
-            'programs' => $programs
+        return view('livewire.management.program.programs', [
+            'programs' => $programs,
         ]);
     }
 
@@ -42,4 +42,9 @@ class Programs extends Component
     public function deleteProgram($id){
         $this->dispatch('deleteProgram', $id);
     }
+
+    public function updateProgramsOrdering($ids){
+        $this->dispatch('updateProgramsOrdering', $ids);
+    }
+
 }

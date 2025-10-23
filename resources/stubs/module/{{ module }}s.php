@@ -7,7 +7,7 @@ use Livewire\WithPagination;
 use App\Repositories\Interfaces\{{ module }}RepositoryInterface;
 use Livewire\Attributes\Title;
 
-#[Title('{{ module }}')]
+#[Title('{{ vietnameseName }}')]
 class {{ module }}s extends Component
 {
     use WithPagination;

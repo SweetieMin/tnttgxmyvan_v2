@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Exception;
 
 abstract class BaseRepository
@@ -37,12 +38,26 @@ abstract class BaseRepository
     }
 
     /**
-     * Lấy tất cả bản ghi
+     * Lấy tất cả bản ghi với tùy chọn sắp xếp
      */
-    public function all(): Collection
+    public function all(array $orderBy = []): Collection
     {
         return $this->safeExecute(
-            fn() => $this->model->all(),
+            function () use ($orderBy) {
+                $query = $this->model->newQuery();
+
+                // Nếu có orderBy thì áp dụng
+                foreach ($orderBy as $column => $direction) {
+                    $query->orderBy($column, $direction);
+                }
+
+                // Nếu có cột ordering mà chưa orderBy theo thì mặc định sắp xếp theo ordering
+                if (empty($orderBy) && $this->hasOrderingColumn()) {
+                    $query->orderBy('ordering');
+                }
+
+                return $query->get();
+            },
             'Không thể lấy danh sách bản ghi.'
         );
     }
@@ -59,44 +74,114 @@ abstract class BaseRepository
     }
 
     /**
-     * Phân trang
+     * Phân trang với tùy chọn sắp xếp
      */
-    public function paginate(int $perPage = 15): LengthAwarePaginator
+    public function paginate(int $perPage = 15, array $orderBy = []): LengthAwarePaginator
     {
         return $this->safeExecute(
-            fn() => $this->model->paginate($perPage),
+            function () use ($perPage, $orderBy) {
+                $query = $this->model->newQuery();
+
+                foreach ($orderBy as $column => $direction) {
+                    $query->orderBy($column, $direction);
+                }
+
+                if (empty($orderBy) && $this->hasOrderingColumn()) {
+                    $query->orderBy('ordering');
+                }
+
+                return $query->paginate($perPage);
+            },
             'Không thể tải dữ liệu phân trang.'
         );
     }
 
+    /**
+     * Quan hệ
+     */
     public function with(array $relations)
     {
         return $this->model->with($relations);
     }
 
-    public function allWith(array $relations = [])
+    /**
+     * Lấy tất cả bản ghi có quan hệ với tùy chọn sắp xếp
+     */
+    public function allWith(array $relations = [], array $orderBy = []): Collection
     {
         return $this->safeExecute(
-            fn() => $this->model->with($relations)->get(),
+            function () use ($relations, $orderBy) {
+                $query = $this->model->with($relations);
+
+                foreach ($orderBy as $column => $direction) {
+                    $query->orderBy($column, $direction);
+                }
+
+                if (empty($orderBy) && $this->hasOrderingColumn()) {
+                    $query->orderBy('ordering');
+                }
+
+                return $query->get();
+            },
             'Không thể lấy dữ liệu với quan hệ.'
         );
     }
 
-    public function paginateWith(array $relations = [], int $perPage = 15): LengthAwarePaginator
+    /**
+     * Phân trang có quan hệ và sắp xếp
+     */
+    public function paginateWith(array $relations = [], int $perPage = 15, array $orderBy = []): LengthAwarePaginator
     {
         return $this->safeExecute(
-            fn() => $this->model->with($relations)->paginate($perPage),
+            function () use ($relations, $perPage, $orderBy) {
+                $query = $this->model->with($relations);
+
+                foreach ($orderBy as $column => $direction) {
+                    $query->orderBy($column, $direction);
+                }
+
+                if (empty($orderBy) && $this->hasOrderingColumn()) {
+                    $query->orderBy('ordering');
+                }
+
+                return $query->paginate($perPage);
+            },
             'Không thể tải dữ liệu phân trang có quan hệ.'
         );
     }
 
     /**
-     * Tạo bản ghi mới
+     * Kiểm tra model có cột ordering không
+     */
+    protected function hasOrderingColumn(): bool
+    {
+        return Schema::hasColumn($this->model->getTable(), 'ordering');
+    }
+
+    protected function prepareDate(array &$data): void
+    {
+        if (method_exists($this, 'prepareDate')) {
+            $this->prepareDate($data);
+        }
+    }
+
+    /**
+     * Tạo bản ghi mới — nếu có cột ordering thì tự động gán thứ tự
      */
     public function create(array $data): Model
     {
         return $this->safeExecute(
-            fn() => $this->model->create($data),
+            function () use ($data) {
+
+                $this->prepareDate($data);
+
+                if ($this->hasOrderingColumn() && !isset($data['ordering'])) {
+                    $maxOrdering = $this->model->max('ordering') ?? 0;
+                    $data['ordering'] = $maxOrdering + 1;
+                }
+
+                return $this->model->create($data);
+            },
             'Không thể tạo bản ghi mới.'
         );
     }
@@ -108,6 +193,9 @@ abstract class BaseRepository
     {
         return $this->safeExecute(
             function () use ($id, $data) {
+
+                $this->prepareDate($data);
+
                 $record = $this->find($id);
                 if (! $record) {
                     throw new Exception("Không tìm thấy bản ghi để cập nhật (ID: {$id}).");
@@ -120,7 +208,7 @@ abstract class BaseRepository
     }
 
     /**
-     * Xóa bản ghi theo ID
+     * Xóa bản ghi theo ID — nếu có cột ordering thì cập nhật lại thứ tự
      */
     public function delete(int|string $id): bool
     {
@@ -131,9 +219,48 @@ abstract class BaseRepository
                     throw new Exception("Không tìm thấy bản ghi để xóa (ID: {$id}).");
                 }
 
-                return (bool) $record->delete();
+                $deleted = (bool) $record->delete();
+
+                if ($deleted && $this->hasOrderingColumn()) {
+                    $this->reorder();
+                }
+
+                return $deleted;
             },
             'Không thể xóa bản ghi.'
         );
+    }
+
+    /**
+     * Cập nhật lại giá trị ordering từ 1 → n
+     */
+    protected function reorder(): void
+    {
+        $orderedRecords = $this->model->orderBy('ordering')->get();
+
+        foreach ($orderedRecords as $index => $record) {
+            $record->update(['ordering' => $index + 1]);
+        }
+    }
+
+    /**
+     * Sắp xếp vị trí ordering
+     */
+    /**
+     * Cập nhật lại thứ tự ordering cho model hiện tại (nếu có cột 'ordering')
+     */
+    public function updateOrdering(array $orderedIds): void
+    {
+        // 🔹 Kiểm tra xem model có cột 'ordering' không
+        if (! $this->model->getConnection()
+            ->getSchemaBuilder()
+            ->hasColumn($this->model->getTable(), 'ordering')) {
+            return; // Nếu không có cột 'ordering' thì bỏ qua
+        }
+
+        // 🔹 Cập nhật theo thứ tự mới
+        foreach ($orderedIds as $index => $id) {
+            $this->model->where('id', $id)->update(['ordering' => $index + 1]);
+        }
     }
 }

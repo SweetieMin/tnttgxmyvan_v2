@@ -1,12 +1,12 @@
 <div>
-    <x-contents.layout heading="{{ module }}" subheading="Quản lý danh sách và thông tin {{ moduleLower }}" icon="squares-plus"
-        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => '{{ module }}']]" :count="${{ moduleLower }}s->total() ?? 0" buttonLabel="Thêm {{ moduleLower }}" buttonAction="add{{ module }}">
+    <x-contents.layout heading="{{ vietnameseName }}" subheading="Quản lý danh sách và thông tin {{ vietnameseName }}" icon="squares-plus"
+        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => '{{ vietnameseName }}']]" :count="${{ moduleLower }}s->total() ?? 0" buttonLabel="Thêm {{ vietnameseName }}" buttonAction="add{{ module }}">
 
         {{-- Component Search & Filter --}}
 
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
-                <x-contents.search searchPlaceholder="Tìm kiếm {{ moduleLower }}..." wire:model.live.debounce.300ms="search"
+                <x-contents.search searchPlaceholder="Tìm kiếm {{ vietnameseName }}..." wire:model.live.debounce.300ms="search"
                     :count="${{ moduleLower }}s->total() ?? 0" />
             </div>
         </div>
@@ -20,17 +20,29 @@
                     <table>
                         <thead>
                             <tr>
-                                <th class="text-center w-12">STT</th>
-                                <th class="text-center">Tên</th>
-                                <th class="text-center">Mô tả</th>
-                                <th class="text-center">Trạng thái</th>
-                                <th class="text-center">Ngày tạo</th>
+                               
                                 <th class="text-center"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse (${{ moduleLower }}s as ${{ moduleLower }})
-                                
+                                <tr>
+                                   
+                                    <td>
+                                        <flux:dropdown position="bottom" align="end">
+                                            <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
+                                                variant="subtle" />
+                                            <flux:menu>
+                                                <flux:menu.item class="cursor-pointer" icon="pencil-square"
+                                                    wire:click='edit{{ module }}({{ ${{ moduleLower }}->id }})'>Sửa
+                                                </flux:menu.item>
+                                                <flux:menu.item class="cursor-pointer" icon="trash" variant="danger" wire:click='delete{{ module }}({{ ${{ moduleLower }}->id }})'>
+                                                    Xoá
+                                                </flux:menu.item>
+                                            </flux:menu>
+                                        </flux:dropdown>
+                                    </td>
+                                </tr>
                             @empty
                                 <tr>
                                     <td colspan="6">

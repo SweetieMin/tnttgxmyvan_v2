@@ -8,12 +8,13 @@ use Illuminate\Support\Str;
 
 class Module extends Command
 {
-    protected $signature = 'app:module {path : Đường dẫn ví dụ: Management/Program} {--remove : Xóa module thay vì tạo}';
+    protected $signature = 'app:module {path : Đường dẫn ví dụ: Management/Program} {--name= : Tên tiếng Việt cho module} {--remove : Xóa module thay vì tạo}';
     protected $description = 'Tạo hoặc xóa module chuẩn từ stub templates (repository, livewire, view, validation, trait...)';
 
     public function handle()
     {
         $path = $this->argument('path');
+        $vietnameseName = $this->option('name');
 
         // Lấy nhóm (ví dụ Management) và tên module (ví dụ Program)
         $segments = explode('/', $path);
@@ -34,13 +35,13 @@ class Module extends Command
             return;
         }
 
-        $this->createModule($group, $moduleStudly, $moduleLower, $moduleKebab);
+        $this->createModule($group, $moduleStudly, $moduleLower, $moduleKebab, $vietnameseName);
     }
 
     /**
      * Tạo module từ stub
      */
-    protected function createModule(string $group, string $module, string $moduleLower, string $moduleKebab)
+    protected function createModule(string $group, string $module, string $moduleLower, string $moduleKebab, ?string $vietnameseName = null)
     {
         $stubPath = resource_path('stubs/module');
 
@@ -64,7 +65,7 @@ class Module extends Command
             }
 
             $content = File::get($stub->getPathname());
-            $content = $this->replaceStubVariables($content, $group, $module, $moduleLower, $moduleKebab);
+            $content = $this->replaceStubVariables($content, $group, $module, $moduleLower, $moduleKebab, $vietnameseName);
 
             File::put($targetFullPath, $content);
             $this->info("✅ Tạo: {$targetPath}");
@@ -103,11 +104,14 @@ class Module extends Command
     /**
      * Thay placeholder trong nội dung stub
      */
-    protected function replaceStubVariables(string $content, string $group, string $module, string $moduleLower, string $moduleKebab): string
+    protected function replaceStubVariables(string $content, string $group, string $module, string $moduleLower, string $moduleKebab, ?string $vietnameseName = null): string
     {
+        $groupLower = strtolower($group);
+        $vietnameseName = $vietnameseName ?? $module; // Nếu không có tên tiếng Việt, dùng tên module
+        
         return str_replace(
-            ['{{ group }}', '{{ module }}', '{{ moduleLower }}', '{{ moduleKebab }}'],
-            [$group, $module, $moduleLower, $moduleKebab],
+            ['{{ group }}', '{{ module }}', '{{ moduleLower }}', '{{ moduleKebab }}', '{{ groupLower }}', '{{ vietnameseName }}'],
+            [$group, $module, $moduleLower, $moduleKebab, $groupLower, $vietnameseName],
             $content
         );
     }

@@ -1,71 +1,34 @@
 <div>
-    <x-app-action-modal name="action-academic-year" :dismissible="false"
-        title="{{ $isEditProgramMode ? 'Cập nhật niên khoá' : 'Tạo mới niên khoá' }}"
-        subheading="Quản lý niên khoá, thời gian và điểm số" icon="squares-plus" width="700px">
+
+    <x-app-action-modal name="action-program" :dismissible="false"
+        title="{{ $isEditProgramMode ? 'Cập nhật Chương trình học' : 'Tạo mới Chương trình học' }}"
+        subheading="Quản lý thông tin Chương trình học" icon="squares-plus" width="600px">
         {{-- Nội dung riêng của form --}}
         <form wire:submit='{{ $isEditProgramMode ? 'updateProgram' : 'createProgram' }}' class="space-y-6">
-            <div class="flex gap-2">
-                <div class=" w-2/3">
-                    <flux:input readonly variant="filled" label="Tên niên khoá" wire:model='name' />
-                </div>
-                <div class=" w-1/3"> <label for="perPage" class="block text-sm font-medium mb-1 opacity-70 "> Trạng
-                        thái </label>
-                    <flux:select wire:model="status_academic" placeholder="Chọn trạng thái">
-                        <flux:select.option value="upcoming">Sắp diễn ra</flux:select.option>
-                        <flux:select.option value="ongoing">Đang diễn ra</flux:select.option>
-                        <flux:select.option value="finished">Đã hoàn thành</flux:select.option>
-                    </flux:select>
-                </div>
-            </div>
-            <flux:separator text="Giáo Lý" />
-            <div class="flex gap-2">
-                <div class=" w-1/2">
-                    <flux:input type="date" max="2999-12-31" label="Ngày bắt đầu"
-                        wire:model.lazy='catechism_start_date' />
-                </div>
-                <div class=" w-1/2">
-                    <flux:input type="date" max="2999-12-31" label="Ngày kết thúc"
-                        wire:model.lazy='catechism_end_date' />
-                </div>
-            </div>
-            <flux:separator text="Sinh hoạt" />
-            <div class="flex gap-2">
-                <div class=" w-1/2">
-                    <flux:input type="date" max="2999-12-31" label="Ngày bắt đầu"
-                        wire:model.lazy='activity_start_date' />
-                </div>
-                <div class=" w-1/2">
-                    <flux:input type="date" max="2999-12-31" label="Ngày kết thúc"
-                        wire:model.lazy='activity_end_date' />
-                </div>
-            </div>
-            <flux:separator text="Quy định điểm" />
-            <div class="flex gap-2">
-                <div class=" w-1/3">
-                    <flux:input type="number" min="0" max="10" label="Điểm Giáo Lý"
-                        placeholder="Điểm chuẩn" wire:model.lazy='catechism_avg_score' />
-                </div>
-                <div class=" w-1/3">
-                    <flux:input type="number" min="0" max="10" label="Điểm Chuyên Cần"
-                        placeholder="Điểm chuẩn" wire:model.lazy='catechism_training_score' />
-                </div>
-                <div class=" w-1/3">
-                    <flux:input type="number" min="0" max="1000" label="Điểm Sinh Hoạt"
-                        placeholder="Điểm chuẩn" wire:model.lazy='activity_score' />
-                </div>
-            </div>
+
+
+            <flux:input type="text" label="Lớp Giáo Lý" wire:model='course' autocomplete="off"/>
+
+            <flux:input type="text" label="Ngành sinh hoạt" wire:model='sector' autocomplete="off"/>
+
+
+            <flux:textarea label="Mô tả" placeholder="Phù hợp cho lứa tuổi" wire:model='description' />
+
             <flux:separator />
             <div class="flex">
                 <flux:spacer />
                 <flux:button type="submit" class="cursor-pointer" variant="primary">
-                    {{ $isEditProgramMode ? 'Cập nhật' : 'Thêm mới' }} </flux:button>
+                    {{ $isEditProgramMode ? 'Cập nhật' : 'Thêm mới' }}
+                </flux:button>
             </div>
         </form>
 
     </x-app-action-modal>
 
 
-    <x-app-delete-modal name="delete-academic-year" :width="600" title="Xác nhận xóa niên khoá"
-        description="Hành động này sẽ xóa toàn bộ dữ liệu liên quan đến niên khoá." warning-title="Cảnh báo xóa dữ liệu"
-        message="Bạn có chắc chắn muốn xóa niên khoá này không?" :warnings="['Tất cả thông tin niên khoá sẽ bị xóa vĩnh viễn.', 'Hành động này không thể hoàn tác.']" action="deleteProgramConfirm" />
+    <x-app-delete-modal name="delete-program" :width="600" title="Xác nhận xóa Chương trình học"
+        description="Hành động này sẽ xóa toàn bộ dữ liệu liên quan đến Chương trình học."
+        warning-title="Cảnh báo xóa dữ liệu" message="Bạn có chắc chắn muốn xóa Chương trình học này không?"
+        :warnings="['Tất cả thông tin Chương trình học sẽ bị xóa vĩnh viễn.', 'Hành động này không thể hoàn tác.']" action="deleteProgramConfirm" />
+
 </div>

@@ -28,7 +28,7 @@
     --color-accent: var(--color-blue-500);
     --color-accent-content: var(--color-blue-600);
     --color-accent-foreground: var(--color-white);
-    --color-accent-text: var(--color-blue-500);
+    --color-accent-text: var(--color-blue-600);
     --color-accent-background: color-mix(
         in srgb,
         var(--color-accent) 20%,
@@ -104,20 +104,16 @@ select:focus[data-flux-control] {
 
 @layer base {
     table {
-        @apply w-full border-collapse;
+        @apply w-full border-collapse text-sm;
         border-spacing: 0;
     }
 
     thead {
-        @apply bg-accent-background;
+        @apply bg-accent-background uppercase ;
     }
 
     th {
-        @apply px-6 py-3 text-xs font-medium text-accent-text uppercase tracking-wider text-left;
-    }
-
-    th.text-center {
-        text-align: center !important;
+        @apply px-6 py-3 font-medium text-accent-text  tracking-wider text-left;
     }
 
     tbody tr {
@@ -125,7 +121,7 @@ select:focus[data-flux-control] {
     }
 
     td {
-        @apply px-6 py-4 text-sm text-accent-text/90;
+        @apply px-6 py-4  text-accent-text/90;
     }
 
     .pagination-container {
@@ -140,6 +136,34 @@ select:focus[data-flux-control] {
         @apply text-accent-text/50 mx-auto mb-2 size-6;
     }
 }
+
+/* Sortable styles */
+.sortable-ghost {
+    opacity: 0.5;
+    background: #f3f4f6 !important;
+}
+
+.sortable-chosen {
+    background: #fef3c7 !important;
+}
+
+.sortable-drag {
+    background: #fbbf24 !important;
+}
+
+.dark .sortable-ghost {
+    background: #374151 !important;
+}
+
+.dark .sortable-chosen {
+    background: #92400e !important;
+}
+
+.dark .sortable-drag {
+    background: #f59e0b !important;
+}
+
+/* End Sortable styles */
 
 
 
