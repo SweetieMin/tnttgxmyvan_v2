@@ -49,7 +49,6 @@ abstract class BaseRepository
                 $query->orderBy($col, $dir);
             }
 
-
             return $query->get();
         }, 'Không thể lấy danh sách bản ghi.');
     }
@@ -68,7 +67,6 @@ abstract class BaseRepository
                 $query->orderBy($col, $dir);
             }
 
-
             return $query->paginate($perPage);
         }, 'Không thể tải dữ liệu phân trang.');
     }
@@ -86,7 +84,6 @@ abstract class BaseRepository
             foreach ($orderBy as $col => $dir) {
                 $query->orderBy($col, $dir);
             }
-
 
             return $query->get();
         }, 'Không thể lấy dữ liệu với quan hệ.');
@@ -147,6 +144,10 @@ abstract class BaseRepository
 
             $deleted = (bool) $record->delete();
 
+            // Sau khi xoá: reorder theo group nếu có
+            if ($deleted && Schema::hasColumn($this->model->getTable(), 'ordering')) {
+                $this->reorder($this->groupColumn);
+            }
 
             return $deleted;
         }, 'Không thể xóa bản ghi.');

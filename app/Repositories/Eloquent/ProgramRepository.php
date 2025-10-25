@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Repositories\Interfaces\ProgramRepositoryInterface;
 use App\Models\Program;
 use App\Repositories\BaseRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProgramRepository extends BaseRepository implements ProgramRepositoryInterface
 {
@@ -30,5 +31,19 @@ class ProgramRepository extends BaseRepository implements ProgramRepositoryInter
             ->select('id', 'course')
             ->orderBy('ordering')
             ->get();
+    }
+
+    public function paginate(int $perPage = 15, array $orderBy = []): LengthAwarePaginator
+    {
+        return $this->safeExecute(function () use ($perPage, $orderBy) {
+            $query = $this->model->newQuery();
+
+            foreach ($orderBy as $col => $dir) {
+                $query->orderBy($col, $dir);
+            }
+
+
+            return $query->orderBy('ordering')->paginate($perPage);
+        }, 'Không thể tải dữ liệu phân trang.');
     }
 }
