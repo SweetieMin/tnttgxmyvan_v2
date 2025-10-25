@@ -38,7 +38,7 @@ class Courses extends Component
     {
         $courses = $this->courseRepository->courseWithSearchAndYear($this->search, $this->yearFilter);
 
-        $years = $this->academicYearRepository->getAcademicOngoingAndFinished();
+        $years = $this->academicYearRepository->all();
 
         return view('livewire.management.course.courses', [
             'courses' => $courses,

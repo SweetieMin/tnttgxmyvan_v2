@@ -11,6 +11,8 @@ class Module extends Command
     protected $signature = 'app:module {path : Đường dẫn ví dụ: Management/Program} {--name= : Tên tiếng Việt cho module} {--remove : Xóa module thay vì tạo}';
     protected $description = 'Tạo hoặc xóa module chuẩn từ stub templates (repository, livewire, view, validation, trait...)';
 
+    //php artisan app:module Management/Course --name="Khóa học"
+
     public function handle()
     {
         $path = $this->argument('path');

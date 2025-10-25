@@ -35,6 +35,10 @@
                     :current="request()->routeIs('admin.management.courses')" wire:navigate>Lớp Giáo Lý
                 </flux:sidebar.item>
 
+                <flux:sidebar.item icon="ferris-wheel" :href="route('admin.management.sectors')"
+                    :current="request()->routeIs('admin.management.sectors')" wire:navigate>Ngành Sinh Hoạt
+                </flux:sidebar.item>
+
                 <flux:separator class="my-2" />
 
                 <flux:sidebar.item icon="academic-cap" :href="route('admin.access.roles')"

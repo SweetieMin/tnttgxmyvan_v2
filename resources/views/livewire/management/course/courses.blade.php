@@ -63,7 +63,7 @@
                                 <tr>
                                     <th class="text-center w-12">STT</th>
                                     <th class="text-center">Tên lớp</th>
-                                    <th class="text-center">Năm học</th>
+                                    <th class="text-center">Niên khoá</th>
                                     <th class="text-center">Chương trình</th>
                                     <th class="text-center">Thao tác</th>
                                 </tr>

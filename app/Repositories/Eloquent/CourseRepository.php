@@ -37,6 +37,11 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
         return $this->safeExecute(function () use ($search, $year) {
             $query = $this->model->with(['academicYear', 'program']);
 
+            // Filter theo năm học
+            if ($year) {
+                $query->where('academic_year_id', $year);
+            }
+
             // Search theo tên course
             if ($search) {
                 $query->where(function ($q) use ($search) {
@@ -44,15 +49,12 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
                 });
             }
 
-            // Filter theo năm học
-            if ($year) {
-                $query->where('academic_year_id', $year);
-            }
+
 
             // Sắp xếp theo ordering trong từng năm học
             return $query->orderBy('academic_year_id')
-                        ->orderBy('ordering')
-                        ->paginate(15);
+                ->orderBy('ordering')
+                ->paginate(15);
         }, 'Không thể lấy danh sách course với tìm kiếm và lọc.');
     }
 
@@ -63,8 +65,8 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
     {
         return $this->safeExecute(function () use ($academicYearId) {
             return $this->model->where('academic_year_id', $academicYearId)
-                              ->orderBy('ordering')
-                              ->get();
+                ->orderBy('ordering')
+                ->get();
         }, "Không thể lấy danh sách course theo năm học {$academicYearId}.");
     }
 
@@ -85,10 +87,10 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
     {
         return $this->safeExecute(function () use ($data) {
             $data = $this->prepareData($data);
-            
+
             // Tự động gán ordering trong năm học
             $data = $this->autoOrdering($data, $this->groupColumn);
-            
+
             return $this->model->create($data);
         }, 'Không thể tạo course mới.');
     }
@@ -100,7 +102,7 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
     {
         return $this->safeExecute(function () use ($id, $data) {
             $data = $this->prepareData($data);
-            
+
             $course = $this->find($id);
             if (!$course) {
                 throw new \Exception("Không tìm thấy course để cập nhật (ID: {$id}).");
@@ -109,14 +111,14 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
             // Nếu thay đổi academic_year_id, cần reorder
             $oldAcademicYearId = $course->academic_year_id;
             $newAcademicYearId = $data['academic_year_id'] ?? $oldAcademicYearId;
-            
+
             $updated = $course->update($data);
-            
+
             // Nếu thay đổi năm học, reorder cả 2 năm
             if ($updated && $oldAcademicYearId != $newAcademicYearId) {
                 $this->reorder($this->groupColumn);
             }
-            
+
             return $updated;
         }, 'Không thể cập nhật course.');
     }
@@ -159,8 +161,8 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
     {
         $this->safeExecute(function () use ($academicYearId) {
             $courses = $this->model->where('academic_year_id', $academicYearId)
-                                  ->orderBy('ordering')
-                                  ->get();
+                ->orderBy('ordering')
+                ->get();
 
             foreach ($courses as $index => $course) {
                 $course->update(['ordering' => $index + 1]);
@@ -175,7 +177,7 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
     {
         return $this->safeExecute(function () use ($academicYearId) {
             $maxOrdering = $this->model->where('academic_year_id', $academicYearId)
-                                      ->max('ordering') ?? 0;
+                ->max('ordering') ?? 0;
             return $maxOrdering + 1;
         }, "Không thể lấy ordering tiếp theo cho năm học {$academicYearId}.");
     }
@@ -187,12 +189,12 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
     {
         return $this->safeExecute(function () use ($course, $academicYearId, $excludeId) {
             $query = $this->model->where('course', $course)
-                                ->where('academic_year_id', $academicYearId);
-            
+                ->where('academic_year_id', $academicYearId);
+
             if ($excludeId) {
                 $query->where('id', '!=', $excludeId);
             }
-            
+
             return $query->exists();
         }, 'Không thể kiểm tra course tồn tại.');
     }
@@ -216,8 +218,8 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
     {
         return $this->safeExecute(function () use ($academicYearId) {
             return $this->model->where('academic_year_id', $academicYearId)
-                              ->orderBy('ordering')
-                              ->get(['id', 'course', 'ordering', 'academic_year_id']);
+                ->orderBy('ordering')
+                ->get(['id', 'course', 'ordering', 'academic_year_id']);
         }, "Không thể lấy danh sách course để sortable cho năm học {$academicYearId}.");
     }
 
@@ -251,11 +253,11 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
     public function validateAndFixOrdering(int $academicYearId): array
     {
         $issues = $this->validateOrdering($academicYearId);
-        
+
         if (!empty($issues)) {
             $this->fixOrdering($academicYearId);
         }
-        
+
         return $issues;
     }
 }
