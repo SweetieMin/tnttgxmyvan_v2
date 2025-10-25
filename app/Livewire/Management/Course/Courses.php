@@ -43,6 +43,7 @@ class Courses extends Component
         return view('livewire.management.course.courses', [
             'courses' => $courses,
             'years' => $years,
+            'selectedYear' => $this->yearFilter,
         ]);
     }
 
@@ -69,5 +70,24 @@ class Courses extends Component
     public function deleteCourse($id)
     {
         $this->dispatch('deleteCourse', $id);
+    }
+
+    /**
+     * Cập nhật ordering sau drag-drop
+     */
+    public function updateCourseOrdering(array $orderedIds, int $academicYearId)
+    {
+        try {
+            $success = $this->courseRepository->updateCourseOrdering($orderedIds, $academicYearId);
+            
+            if ($success) {
+                session()->flash('success', 'Thứ tự lớp học đã được cập nhật.');
+            } else {
+                session()->flash('error', 'Không thể cập nhật thứ tự lớp học.');
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'Lỗi khi cập nhật thứ tự: ' . $e->getMessage());
+        }
+        $this->redirectRoute('admin.management.courses', navigate: true);
     }
 }

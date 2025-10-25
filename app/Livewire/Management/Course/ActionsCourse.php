@@ -85,6 +85,12 @@ class ActionsCourse extends Component
         ]);
 
         try {
+            // Kiểm tra course đã tồn tại trong năm học chưa
+            if ($this->courseRepository->existsInAcademicYear($data['course'], $data['academic_year_id'])) {
+                $this->addError('course', 'Lớp này đã tồn tại trong niên khoá.');
+                return;
+            }
+
             $this->courseRepository->create($data);
 
             session()->flash('success', 'Lớp giáo lý tạo thành công.');
@@ -131,6 +137,12 @@ class ActionsCourse extends Component
         ]);
 
         try {
+            // Kiểm tra course đã tồn tại trong năm học chưa (trừ chính nó)
+            if ($this->courseRepository->existsInAcademicYear($data['course'], $data['academic_year_id'], $this->courseID)) {
+                $this->addError('course', 'Lớp này đã tồn tại trong niên khoá.');
+                return;
+            }
+
             $this->courseRepository->update($this->courseID, $data);
 
             session()->flash('success', 'Course cập nhật thành công.');
@@ -173,4 +185,5 @@ class ActionsCourse extends Component
 
         $this->redirectRoute('admin.management.courses', navigate: true);
     }
+
 }
