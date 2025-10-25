@@ -2,6 +2,7 @@
 
 use App\Livewire\Access\Role\Roles;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Access\Role\ActionsRole;
 use App\Livewire\Management\Course\Courses;
 use App\Livewire\Management\Sector\Sectors;
 use App\Livewire\Management\Program\Programs;
@@ -35,6 +36,8 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
 
     Route::prefix('access')->name('access.')->group(function () {
         Route::get('roles', Roles::class)->name('roles');
+
+        Route::get('roles/action', ActionsRole::class)->name('roles.action');
     });
 
     Route::prefix('finance')->name('finance.')->group(function () {});

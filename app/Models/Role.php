@@ -50,7 +50,12 @@ class Role extends Model
      */
     public function roleHierarchies()
     {
-        return $this->hasMany(RoleHierarchy::class, 'role_id');
+        return $this->belongsToMany(
+            Role::class,
+            'role_hierarchies',     // tên bảng pivot
+            'role_id',              // khóa ngoại trỏ từ vai trò hiện tại
+            'manages_role_id'       // khóa ngoại trỏ đến vai trò mà nó quản lý
+        )->withTimestamps();
     }
 
     public function managedByHierarchies()

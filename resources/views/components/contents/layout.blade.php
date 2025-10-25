@@ -4,6 +4,8 @@
     'breadcrumb' => [],         {{-- Mảng breadcrumb --}}
     'buttonLabel' => null,      {{-- Nút thêm --}}
     'buttonAction' => null,     {{-- Livewire action hoặc route --}}
+    'buttonLabelBack' => null,      {{-- Nút thêm --}}
+    'buttonBackAction' => null,     {{-- Livewire action hoặc route --}}
 ])
 
 <div
@@ -44,6 +46,15 @@
                 class="inline-flex items-center justify-center gap-2 bg-accent text-white px-4 py-2 rounded-xl font-semibold shadow hover:shadow-md transition w-full sm:w-auto cursor-pointer">
                 <flux:icon.plus class="w-5 h-5" />
                 <span>{{ $buttonLabel }}</span>
+            </button>
+        @endif
+
+        @if ($buttonLabelBack)
+            <button
+                @if ($buttonBackAction) wire:click="{{ $buttonBackAction }}" @endif
+                class="inline-flex items-center justify-center gap-2 bg-accent text-white px-4 py-2 rounded-xl font-semibold shadow hover:shadow-md transition w-full sm:w-auto cursor-pointer">
+                <flux:icon.arrow-uturn-left class="w-5 h-5" />
+                <span>{{ $buttonLabelBack }}</span>
             </button>
         @endif
     </div>

@@ -14,4 +14,6 @@ interface RoleRepositoryInterface
 
     public function updateOrdering(array $orderedIds): bool;
 
+    public function getRoleExceptCurrentRole(?int $id = null );
+
 }

@@ -1,6 +1,6 @@
 <div>
     <x-contents.layout heading="Lớp Giáo Lý" subheading="Quản lý danh sách và thông tin Lớp Giáo Lý" icon="squares-plus"
-        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Lớp Giáo Lý']]" :count="$courses->total() ?? 0" buttonLabel="Thêm Lớp Giáo Lý" buttonAction="addCourse">
+        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Lớp Giáo Lý']]"  buttonLabel="Thêm Lớp Giáo Lý" buttonAction="addCourse">
 
         {{-- Component Search & Filter --}}
 

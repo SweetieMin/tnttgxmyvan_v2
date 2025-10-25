@@ -42,7 +42,7 @@
                 <flux:separator class="my-2" />
 
                 <flux:sidebar.item icon="academic-cap" :href="route('admin.access.roles')"
-                    :current="request()->routeIs('admin.access.roles')" wire:navigate>Chức vụ
+                    :current="request()->routeIs('admin.access.roles*')" wire:navigate>Chức vụ
                 </flux:sidebar.item>
 
 

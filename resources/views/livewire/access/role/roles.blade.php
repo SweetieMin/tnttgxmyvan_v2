@@ -1,13 +1,13 @@
 <div>
     <x-contents.layout heading="Chức vụ" subheading="Quản lý danh sách và thông tin Chức vụ" icon="squares-plus"
-        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Chức vụ']]" :count="$roles->total() ?? 0" buttonLabel="Thêm Chức vụ" buttonAction="addRole">
+        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Chức vụ']]"  buttonLabel="Thêm Chức vụ" buttonAction="addRole">
 
         {{-- Component Search & Filter --}}
 
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <x-contents.search searchPlaceholder="Tìm kiếm Chức vụ..." wire:model.live.debounce.300ms="search"
-                    :count="$roles->total() ?? 0" />
+                     />
             </div>
         </div>
 
@@ -100,6 +100,8 @@
 
     </x-contents.layout>
 
-    <livewire:access.role.actions-role />
+    <x-app-delete-modal name="delete-role" :width="600" title="Xác nhận xóa chức vụ"
+    description="Hành động này sẽ xóa toàn bộ dữ liệu liên quan đến chức vụ." warning-title="Cảnh báo xóa dữ liệu"
+    message="Bạn có chắc chắn muốn xóa chức vụ này không?" :warnings="['Tất cả thông tin chức vụ sẽ bị xóa vĩnh viễn.', 'Hành động này không thể hoàn tác.']" action="deleteRoleConfirm" />
 
 </div>

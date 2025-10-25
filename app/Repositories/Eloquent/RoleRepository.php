@@ -13,5 +13,13 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
         parent::__construct($model);
     }
 
+    public function getRoleExceptCurrentRole(?int $id = null)
+    {
+        return $this->model->with('subRoles')
+        ->when($id, fn($query) => $query->where('id', '!=', $id))
+        ->orderBy('ordering')
+        ->get();
+    }
+
     
 }

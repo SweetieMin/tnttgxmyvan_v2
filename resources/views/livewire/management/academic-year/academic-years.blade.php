@@ -1,6 +1,6 @@
 <div>
     <x-contents.layout heading="Niên Khoá" subheading="Quản lý danh sách và thông tin niên khoá" icon="squares-plus"
-        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Niên khoá']]" :count="$academic_years->total() ?? 0" buttonLabel="Thêm niên khoá" buttonAction="addAcademicYear">
+        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Niên khoá']]"  buttonLabel="Thêm niên khoá" buttonAction="addAcademicYear">
 
         {{-- Component Search & Filter --}}
 

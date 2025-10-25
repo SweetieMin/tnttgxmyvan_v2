@@ -1,6 +1,6 @@
 <div>
     <x-contents.layout heading="Chương trình học" subheading="Quản lý danh sách và thông tin chương trình học"
-        icon="squares-plus" :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Chương trình học']]" :count="$programs->total() ?? 0" buttonLabel="Thêm Chương trình học"
+        icon="squares-plus" :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Chương trình học']]"  buttonLabel="Thêm Chương trình học"
         buttonAction="addProgram">
         {{-- Main content area --}}
         <div class="mt-2">

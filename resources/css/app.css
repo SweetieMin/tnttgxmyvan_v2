@@ -39,6 +39,12 @@
         var(--color-accent) 50%,
         white
     );
+
+    --color-accent-card: color-mix(
+        in srgb,
+        var(--color-accent) 5%,
+        white
+    );
 }
 
 @layer theme {
@@ -52,6 +58,11 @@
             var(--color-accent) 35%,
             var(--color-zinc-950)
         );
+        --color-accent-card: color-mix(
+        in srgb,
+        var(--color-blue-900) 95%,
+        white
+    );
     }
 }
 

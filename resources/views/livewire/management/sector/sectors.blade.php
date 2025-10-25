@@ -1,6 +1,6 @@
 <div>
     <x-contents.layout heading="Ngành Sinh Hoạt" subheading="Quản lý danh sách và thông tin ngành sinh hoạt" icon="squares-plus"
-        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Ngành Sinh Hoạt']]" :count="$sectors->total() ?? 0" buttonLabel="Thêm ngành sinh hoạt" buttonAction="addSector">
+        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Ngành Sinh Hoạt']]"  buttonLabel="Thêm ngành sinh hoạt" buttonAction="addSector">
 
         {{-- Component Search & Filter --}}
 
