@@ -12,4 +12,6 @@ interface RoleRepositoryInterface
     public function update(int|string $id, array $data);
     public function delete(int|string $id);
 
+    public function updateOrdering(array $orderedIds): bool;
+
 }

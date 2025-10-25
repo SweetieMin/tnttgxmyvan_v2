@@ -42,4 +42,17 @@ class Roles extends Component
     public function deleteRole($id){
         $this->dispatch('deleteRole', $id);
     }
+
+    public function updateRolesOrdering($ids)
+    {
+        $success = $this->roleRepository->updateOrdering($ids);
+
+        if ($success) {
+            session()->flash('success', 'Sắp xếp chương trình học thành công!');
+        } else {
+            session()->flash('error', 'Sắp xếp thất bại! Vui lòng thử lại.');
+        }
+
+        $this->redirectRoute('admin.access.roles', navigate: true);
+    }
 }

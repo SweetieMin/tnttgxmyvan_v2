@@ -75,7 +75,7 @@ class ActionsRole extends Component
             session()->flash('error', 'Tạo role thất bại.' . $e->getMessage());
         }
         
-        $this->redirectRoute('admin.management.role', navigate: true);
+        $this->redirectRoute('admin.access.roles', navigate: true);
     }
 
     #[On('editRole')]
@@ -97,7 +97,7 @@ class ActionsRole extends Component
         } else {
             // Nếu không tìm thấy
             session()->flash('error', 'Không tìm thấy role');
-            return $this->redirectRoute('admin.management.role', navigate: true);
+            return $this->redirectRoute('admin.access.roles', navigate: true);
         }
 
     }
@@ -120,7 +120,7 @@ class ActionsRole extends Component
             session()->flash('error', 'Cập nhật role thất bại.' . $e->getMessage());
         }
         
-        $this->redirectRoute('admin.management.role', navigate: true);
+        $this->redirectRoute('admin.access.roles', navigate: true);
     }
 
     #[On('deleteRole')]
@@ -140,7 +140,7 @@ class ActionsRole extends Component
         } else {
             // Nếu không tìm thấy
             session()->flash('error', 'Không tìm thấy role');
-            return $this->redirectRoute('admin.management.role', navigate: true);
+            return $this->redirectRoute('admin.access.roles', navigate: true);
         }
 
     }
@@ -157,6 +157,6 @@ class ActionsRole extends Component
             session()->flash('error', 'Xoá role thất bại.' . $e->getMessage());
         }
         
-        $this->redirectRoute('admin.management.role', navigate: true);
+        $this->redirectRoute('admin.access.roles', navigate: true);
     }
 }

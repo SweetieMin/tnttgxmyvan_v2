@@ -56,7 +56,7 @@
                     <select wire:model.live="perPage" id="perPage"
                             class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
                                    bg-white dark:bg-zinc-900 px-4 py-3 text-sm 
-                                   focus:ring-2 focus:ring-accent focus:outline-none transition">
+                                   focus:ring-2 focus:ring-accent focus:outline-none ">
                         <option value="10">10</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
