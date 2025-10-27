@@ -63,14 +63,12 @@
                                         <td class="text-center w-12 drag-handle cursor-move">{{ $sector->ordering }}</td>
                                         <td class="text-center">{{ $sector->sector }}</td>
                                         <td class="text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                {{ $sector->academicYear->name ?? 'N/A' }}
-                                            </span>
+
+                                            <flux:badge variant="solid" color="green"> {{ $sector->academicYear->name ?? 'N/A' }}</flux:badge>
                                         </td>
                                         <td class="text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                {{ $sector->program->sector ?? 'N/A' }}
-                                            </span>
+
+                                            <flux:badge variant="solid" color="green"> {{ $sector->program->sector ?? 'N/A' }}</flux:badge>
                                         </td>
                                         <td>
                                             <flux:dropdown position="bottom" align="end">

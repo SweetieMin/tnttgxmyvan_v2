@@ -67,13 +67,13 @@ class Role extends Model
      * Mỗi vai trò có thể có nhiều quy định
      */
 
-    public function regulations()
-    {
-        return $this->belongsToMany(
-            Regulation::class,
-            'regulation_role',
-            'role_id',
-            'regulation_id'
-        );
-    }
+     public function regulations()
+     {
+         return $this->belongsToMany(
+             Regulation::class,   // model liên quan
+             'regulation_roles',  // tên bảng pivot
+             'role_id',           // khóa ngoại trỏ từ bảng role
+             'regulation_id'      // khóa ngoại trỏ tới bảng regulation
+         )->withTimestamps();
+     }
 }

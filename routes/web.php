@@ -6,7 +6,9 @@ use App\Livewire\Access\Role\ActionsRole;
 use App\Livewire\Management\Course\Courses;
 use App\Livewire\Management\Sector\Sectors;
 use App\Livewire\Management\Program\Programs;
+use App\Livewire\Management\Regulation\Regulations;
 use App\Livewire\Management\AcademicYear\AcademicYears;
+use App\Livewire\Management\Regulation\ActionsRegulation;
 
 
 Route::get('/', function () {
@@ -26,6 +28,10 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
 
     Route::prefix('management')->name('management.')->group(function () {
         Route::get('academic-year', AcademicYears::class)->name('academic-year');
+
+        Route::get('regulations', Regulations::class)->name('regulations');
+
+        Route::get('regulations/action', ActionsRegulation::class)->name('regulations.action');
 
         Route::get('programs', Programs::class)->name('programs');
 

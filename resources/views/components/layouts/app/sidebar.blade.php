@@ -27,6 +27,10 @@
                     :current="request()->routeIs('admin.management.academic-year')" wire:navigate>Niên khoá
                 </flux:sidebar.item>
 
+                <flux:sidebar.item icon="clipboard-document-list" :href="route('admin.management.regulations')"
+                    :current="request()->routeIs('admin.management.regulations')" wire:navigate>Nội quy
+                </flux:sidebar.item>
+
                 <flux:sidebar.item icon="bookmark-square" :href="route('admin.management.programs')"
                     :current="request()->routeIs('admin.management.programs')" wire:navigate>Chương trình học
                 </flux:sidebar.item>

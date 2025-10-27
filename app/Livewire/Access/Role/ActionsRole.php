@@ -5,14 +5,13 @@ namespace App\Livewire\Access\Role;
 use Flux\Flux;
 
 use Livewire\Component;
-use Livewire\Attributes\On;
 
 use App\Validation\Access\RoleRules;
 use App\Traits\Access\HandlesRoleForm;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use Livewire\Attributes\Title;
 
-#[Title('Thêm chức vụ')]
+#[Title('Chức vụ')]
 class ActionsRole extends Component
 {
     use HandlesRoleForm;

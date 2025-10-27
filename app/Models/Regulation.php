@@ -28,10 +28,20 @@ class Regulation extends Model
     {
         return $this->belongsToMany(
             Role::class,
-            'regulation_role',
+            'regulation_roles',
+            'regulation_id',   // khóa ngoại của Regulation trong pivot
+            'role_id'          // khóa ngoại của Role trong pivot
+        )->withTimestamps();
+    }
+
+    public function regulationApplyRole()
+    {
+        return $this->belongsToMany(
+            Role::class,
+            'regulation_roles',    
             'regulation_id',
-            'role_id'
-        );
+            'role_id',         
+        )->withTimestamps();
     }
 
     public function regulationRoles()
