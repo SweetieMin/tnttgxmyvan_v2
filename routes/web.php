@@ -5,12 +5,17 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\Access\Role\ActionsRole;
 use App\Livewire\Management\Course\Courses;
 use App\Livewire\Management\Sector\Sectors;
+use App\Livewire\Personnel\Scouter\Scouters;
 use App\Livewire\Management\Program\Programs;
+use App\Livewire\Personnel\Children\Children;
+use App\Livewire\Personnel\Catechist\Catechists;
+use App\Livewire\Personnel\Spiritual\Spirituals;
 use App\Livewire\Finance\Transaction\Transactions;
 use App\Livewire\Management\Regulation\Regulations;
 use App\Livewire\Management\AcademicYear\AcademicYears;
 use App\Livewire\Management\Regulation\ActionsRegulation;
 use App\Livewire\Finance\TransactionItem\TransactionItems;
+use App\Livewire\Personnel\ChildrenInactive\ChildrenInactive;
 
 
 Route::get('/', function () {
@@ -55,7 +60,13 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
         Route::get('transactions', Transactions::class)->name('transactions');
     });
 
-    Route::prefix('personnel')->name('personnel.')->group(function () {});
+    Route::prefix('personnel')->name('personnel.')->group(function () {
+        Route::get('spirituals', Spirituals::class)->name('spirituals');
+        Route::get('catechists', Catechists::class)->name('catechists');
+        Route::get('scouters', Scouters::class)->name('scouters');
+        Route::get('children', Children::class)->name('children');
+        Route::get('children-inactive', ChildrenInactive::class)->name('children-inactive');
+    });
 });
 
 require __DIR__ . '/auth.php';

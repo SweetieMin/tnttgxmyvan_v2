@@ -59,6 +59,28 @@
                     :current="request()->routeIs('admin.finance.transactions')" wire:navigate>Tiền quỹ
                 </flux:sidebar.item>
 
+                <flux:separator class="my-2" />
+
+                <flux:sidebar.item icon="church" :href="route('admin.personnel.spirituals')"
+                    :current="request()->routeIs('admin.personnel.spirituals')" wire:navigate>Linh hướng
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="book-plus" :href="route('admin.personnel.catechists')"
+                    :current="request()->routeIs('admin.personnel.catechists')" wire:navigate>Giáo Lý Viên
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="user-star" :href="route('admin.personnel.scouters')"
+                    :current="request()->routeIs('admin.personnel.scouters')" wire:navigate>Huynh-Dự-Đội Trưởng
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="user-group" :href="route('admin.personnel.children')"
+                    :current="request()->routeIs('admin.personnel.children')" wire:navigate>Thiếu Nhi
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="user-round-check" :href="route('admin.personnel.children-inactive')"
+                    :current="request()->routeIs('admin.personnel.children-inactive')" wire:navigate>Đã Tốt Nghiệp
+                </flux:sidebar.item>
+
 
             </flux:sidebar.nav>
 

@@ -10,18 +10,28 @@ use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\CourseRepository;
 use App\Repositories\Eloquent\SectorRepository;
 use App\Repositories\Eloquent\ProgramRepository;
+use App\Repositories\Eloquent\ScouterRepository;
+use App\Repositories\Eloquent\ChildrenRepository;
+use App\Repositories\Eloquent\CatechistRepository;
+use App\Repositories\Eloquent\SpiritualRepository;
 use App\Repositories\Eloquent\RegulationRepository;
 use App\Repositories\Eloquent\TransactionRepository;
 use App\Repositories\Eloquent\AcademicYearRepository;
 use App\Repositories\Eloquent\TransactionItemRepository;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
+use App\Repositories\Eloquent\ChildrenInactiveRepository;
 use App\Repositories\Interfaces\CourseRepositoryInterface;
 use App\Repositories\Interfaces\SectorRepositoryInterface;
 use App\Repositories\Interfaces\ProgramRepositoryInterface;
+use App\Repositories\Interfaces\ScouterRepositoryInterface;
+use App\Repositories\Interfaces\ChildrenRepositoryInterface;
+use App\Repositories\Interfaces\CatechistRepositoryInterface;
+use App\Repositories\Interfaces\SpiritualRepositoryInterface;
 use App\Repositories\Interfaces\RegulationRepositoryInterface;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
 use App\Repositories\Interfaces\AcademicYearRepositoryInterface;
 use App\Repositories\Interfaces\TransactionItemRepositoryInterface;
+use App\Repositories\Interfaces\ChildrenInactiveRepositoryInterface;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -41,6 +51,12 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(TransactionItemRepositoryInterface::class, TransactionItemRepository::class);
         $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
+
+        $this->app->bind(SpiritualRepositoryInterface::class, SpiritualRepository::class);
+        $this->app->bind(CatechistRepositoryInterface::class, CatechistRepository::class);
+        $this->app->bind(ScouterRepositoryInterface::class, ScouterRepository::class);
+        $this->app->bind(ChildrenRepositoryInterface::class, ChildrenRepository::class);
+        $this->app->bind(ChildrenInactiveRepositoryInterface::class, ChildrenInactiveRepository::class);
     }
 
     /**
