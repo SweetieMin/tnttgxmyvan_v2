@@ -42,7 +42,7 @@
                                         <td class="text-center">
 
                                             <flux:badge color="{{ $transaction_item->is_system ? 'amber' : 'zinc' }}">
-                                                {{ $transaction_item->title }}</flux:badge>
+                                                {{ $transaction_item->name }}</flux:badge>
                                         </td>
                                         <td>{{ $transaction_item->description }}</td>
                                         <td class="text-center">

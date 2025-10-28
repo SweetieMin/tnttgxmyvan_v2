@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('transaction_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('ordering')->default(1000);
-            $table->string('title')->unique();
+            $table->string('name')->unique();
             $table->text('description')->nullable();
             $table->boolean('is_system')->default(false);
             $table->timestamps();
@@ -23,8 +23,8 @@ return new class extends Migration
 
         DB::table('transaction_items')->insert([
             'id' => 1,
-            'title' => 'Khác',
-            'description' => 'Các thu chi phát sinh đột xuất / không nằm trong danh mục cố định.',
+            'name' => 'Khác',
+            'description' => 'Thu / chi phát sinh đột xuất.',
             'ordering' => 1,
             'is_system' => 1,
             'created_at' => now(),

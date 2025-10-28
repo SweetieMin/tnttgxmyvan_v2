@@ -10,7 +10,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                <flux:input type="text" label="Email" wire:model="title" placeholder="Nhập tên hạng mục" />
+                <flux:input type="text" label="Hạng mục" wire:model="name" placeholder="Nhập tên hạng mục" />
 
                 {{-- Cộng / Trừ --}}
                 <div>

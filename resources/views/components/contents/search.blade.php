@@ -1,5 +1,6 @@
 @props([
     'years' => [],
+    'items' => [], // Hạng mục cho tiền quỹ
     'searchPlaceholder' => 'Tìm kiếm...',
     'count' => 1,
 ])
@@ -17,14 +18,30 @@
                         <label for="search" class="block text-sm font-medium mb-1 opacity-70">
                             Tìm kiếm
                         </label>
-                        <input wire:model.live="search"
-                               type="text"
-                               id="search"
-                               placeholder="{{ $searchPlaceholder }}"
-                               class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 
+                        <input wire:model.live="search" type="text" id="search"
+                            placeholder="{{ $searchPlaceholder }}"
+                            class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 
                                       bg-white dark:bg-zinc-900 text-sm 
                                       focus:ring-2 focus:ring-accent focus:outline-none" />
                     </div>
+
+
+                    @if (!empty($items) && count($items) > 0)
+                        <div class="flex flex-col">
+                            <label for="yearFilter" class="block text-sm font-medium mb-1 opacity-70">
+                               Hạng mục
+                            </label>
+                            <select wire:model.live="itemFilter" id="itemFilter"
+                                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
+                                           bg-white dark:bg-zinc-900 px-4 py-3 text-sm 
+                                           focus:ring-2 focus:ring-accent focus:outline-none">
+                                           <option value="">Chọn tất cả  </option>
+                                @foreach ($items as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }} - {{ $item->description }}    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
 
                     {{-- Filter: Niên khoá --}}
                     @if (!empty($years) && count($years) > 0)
@@ -33,9 +50,9 @@
                                 Niên khoá
                             </label>
                             <select wire:model.live="yearFilter" id="yearFilter"
-                                    class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
-                                           bg-white dark:bg-zinc-900 px-4 py-3 text-sm 
-                                           focus:ring-2 focus:ring-accent focus:outline-none">
+                                class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
+                                                           bg-white dark:bg-zinc-900 px-4 py-3 text-sm 
+                                                           focus:ring-2 focus:ring-accent focus:outline-none">
                                 @foreach ($years as $year)
                                     <option value="{{ $year->id }}">{{ $year->name }}</option>
                                 @endforeach
@@ -54,13 +71,14 @@
                         Dòng/trang
                     </label>
                     <select wire:model.live="perPage" id="perPage"
-                            class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
+                        class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
                                    bg-white dark:bg-zinc-900 px-4 py-3 text-sm 
                                    focus:ring-2 focus:ring-accent focus:outline-none ">
                         <option value="10">10</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
                         <option value="100">100</option>
+                        <option value="">Tất cả</option>
                     </select>
                 </div>
             @endif

@@ -7,16 +7,23 @@
         <form wire:submit.prevent='{{ $isEditTransactionMode ? 'updateTransaction' : 'createTransaction' }}'
             class="space-y-6">
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="transaction_item_id" class="block text-sm font-medium mb-1">Hạng mục</label>
+                    <flux:select wire:model.lazy="transaction_item_id" placeholder="Chọn hạng mục">
+                        @foreach ($items as $item)
+                            <flux:select.option value="{{ $item->id }}">{{ $item->name }} -
+                                {{ $item->description }} </flux:select.option>
+                        @endforeach
 
-            <div>
-                <label for="category" class="block text-sm font-medium mb-1">Hạng mục</label>
-                <flux:select wire:model.lazy="category" placeholder="Chọn hạng mục">
-                    <flux:select.option value="plus">Cộng điểm</flux:select.option>
-                    <flux:select.option value="minus">Trừ điểm</flux:select.option>
-                </flux:select>
-                @error('category')
-                    <x-app-error-message :message="$message" />
-                @enderror
+                    </flux:select>
+                    @error('transaction_item_id')
+                        <x-app-error-message :message="$message" />
+                    @enderror
+                </div>
+                <div>
+                    <flux:input type="date" max="2999-12-31" label="Ngày" wire:model.lazy='transaction_date' />
+                </div>
             </div>
 
             <flux:textarea label="Mô tả chi tiết" placeholder="Chi tiền Tết 2026" wire:model='description' />
@@ -26,8 +33,8 @@
                 <div>
                     <label for="type" class="block text-sm font-medium mb-1">Thu / Chi</label>
                     <flux:select wire:model.lazy="type" placeholder="Chọn loại">
-                        <flux:select.option value="income">Thu</flux:select.option>
                         <flux:select.option value="expense">Chi</flux:select.option>
+                        <flux:select.option value="income">Thu</flux:select.option>
                     </flux:select>
                     @error('type')
                         <x-app-error-message :message="$message" />
@@ -36,7 +43,7 @@
 
                 {{-- Điểm --}}
                 <div>
-                    <label for="points" class="block text-sm font-medium mb-1">Tổng số tiền</label>
+                    <label for="amount" class="block text-sm font-medium mb-1">Tổng số tiền</label>
                     <flux:input mask:dynamic="$money($input)" wire:model="amount" placeholder="Nhập số tiền" />
                     @error('amount')
                         <x-app-error-message :message="$message" />
@@ -46,9 +53,20 @@
 
             {{-- <flux:input type="file" wire:model="attachments" label="File PDF" multiple /> --}}
 
-            <livewire:dropzone wire:model="files" :rules="['mimes:pdf']" :multiple="true" :key="'dropzone-two'" />
+            <livewire:dropzone wire:model="file" :rules="['mimes:pdf']" :multiple="false" :key="'dropzone-two'" />
 
+            @if ($existingFile)
+                <div
+                    class="mt-3 flex items-center justify-between rounded-lg border border-accent/20 bg-accent-card/10 p-3">
+                    <div class="flex items-center gap-3">
 
+                        <a href="{{ $existingFile['url'] }}" target="_blank" class="text-accent hover:underline">
+                            {{ $existingFile['name'] }}
+                        </a>
+                    </div>
+                    <span class="text-xs text-accent-text/60">File đã lưu</span>
+                </div>
+            @endif
 
             <flux:separator />
             <div class="flex">

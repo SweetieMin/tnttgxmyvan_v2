@@ -20,7 +20,7 @@ class ActionsTransactionItem extends Component
 
     public $isEditTransactionItemMode = false;
 
-    public $title;
+    public $name;
 
     public $is_system = false;
 
@@ -31,7 +31,7 @@ class ActionsTransactionItem extends Component
     public function resetForm()
     {
         $this->reset([
-            'title',
+            'name',
             'transaction_itemID',
             'description',
         ]);
@@ -81,7 +81,7 @@ class ActionsTransactionItem extends Component
         $this->validate();
 
         $data = $this->only([
-            'title',
+            'name',
             'description',
             'is_system',
         ]);
@@ -109,7 +109,7 @@ class ActionsTransactionItem extends Component
             $this->transaction_itemID = $transaction_item->id;
             $this->isEditTransactionItemMode = true;
 
-            $this->title = $transaction_item->title;
+            $this->name = $transaction_item->name;
             $this->description = $transaction_item->description;
             $this->is_system = $transaction_item->is_system;
 
@@ -129,7 +129,7 @@ class ActionsTransactionItem extends Component
         $this->validate();
 
         $data = $this->only([
-            'title',
+            'name',
             'description',
             'is_system',
         ]);

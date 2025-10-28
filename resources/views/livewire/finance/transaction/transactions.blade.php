@@ -1,13 +1,13 @@
 <div>
     <x-contents.layout heading="Tiền Quỹ" subheading="Quản lý danh sách và thông tin Tiền Quỹ" icon="squares-plus"
-        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Tiền Quỹ']]" :count="$transactions->total() ?? 0" buttonLabel="Thêm Tiền Quỹ" buttonAction="addTransaction">
+        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Tiền Quỹ']]" buttonLabel="Thêm Tiền Quỹ" buttonAction="addTransaction">
 
         {{-- Component Search & Filter --}}
 
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <x-contents.search searchPlaceholder="Tìm kiếm Tiền Quỹ..." wire:model.live.debounce.300ms="search"
-                    :count="$transactions->total() ?? 0" />
+                    :items="$items" :count="$transactions->total() ?? 0"/>
             </div>
         </div>
 
@@ -20,35 +20,61 @@
                     <table>
                         <thead>
                             <tr>
-                                
+                                <th class="text-center w-12">Ngày</th>
+                                <th class="text-center">Hạng mục</th>
+                                <th>Mô tả</th>
+                                <th class="text-center">Thu</th>
+                                <th class="text-center">Chi</th>
+                                <th class="text-center">File đính kèm</th>
                                 <th class="text-center"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($transactions as $transaction)
-                            <tr>
-                                <td>
-                                    <flux:dropdown position="bottom" align="end">
-                                        <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
-                                            variant="subtle" />
-                                        <flux:menu>
-                                            <flux:menu.item class="cursor-pointer" icon="pencil-square"
-                                                wire:click='editTransaction({{ $transaction->id }})'>
-                                                Sửa
-                                            </flux:menu.item>
+                                <tr>
 
-                                            <flux:menu.item class="cursor-pointer" icon="trash" variant="danger"
-                                                wire:click='deleteTransaction({{ $transaction->id }})'>
-                                                Xoá
-                                            </flux:menu.item>
+                                    <td>{{ $transaction->formatted_transaction_date }}</td>
+                                    <td class="text-center">
+                                        <flux:badge color="amber">{{ $transaction->item->name ?? '—' }}</flux:badge>
+                                    </td>
+                                    <td>{{ $transaction->description }}</td>
+                                    <td class="text-center {{ $transaction->type === 'income' ? 'text-green-500' : 'text-muted' }}">
+                                        {{ $transaction->type === 'income' ? $transaction->formatted_amount : '-' }}
+                                    </td>
+                                    <td class="text-center {{ $transaction->type === 'expense' ? 'text-red-500' : 'text-muted' }}">
+                                        {{ $transaction->type === 'expense' ? $transaction->formatted_amount : '-' }}
+                                    </td>
+                                    
+                                    <td class="text-center">
+                                        @if ($transaction->file_name)
+                                            <flux:link href="{{ $transaction->file_name }}" target="_blank" variant="ghost">Xem file</flux:link>
+                                        @else
+                                            -
+                                        @endif
+                                        
+                                    </td>
+                                    <td>
+                                        <flux:dropdown position="bottom" align="end">
+                                            <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
+                                                variant="subtle" />
+                                            <flux:menu>
+                                                <flux:menu.item class="cursor-pointer" icon="pencil-square"
+                                                    wire:click='editTransaction({{ $transaction->id }})'>
+                                                    Sửa
+                                                </flux:menu.item>
 
-                                        </flux:menu>
-                                    </flux:dropdown>
-                                </td>
-                            </tr>
+                                                <flux:menu.item class="cursor-pointer" icon="trash" variant="danger"
+                                                    wire:click='deleteTransaction({{ $transaction->id }})'>
+                                                    Xoá
+                                                </flux:menu.item>
+
+                                            </flux:menu>
+                                        </flux:dropdown>
+                                    </td>
+                                </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6">
+                                    <td colspan="7">
                                         <div class="empty-state flex flex-col items-center">
                                             <flux:icon.squares-plus class="w-8 h-8 mb-2" />
                                             <div class="text-sm">Không có dữ liệu</div>
@@ -64,7 +90,7 @@
 
                 {{-- Mobile Card View --}}
                 <div class="md:hidden space-y-3">
-                    
+
                 </div>
 
 

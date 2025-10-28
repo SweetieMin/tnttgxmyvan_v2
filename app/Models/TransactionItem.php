@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TransactionItem extends Model
 {
     protected $fillable = [
-        'title',
+        'name',
         'description',
         'ordering',
         'is_system',

@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             RoleHierarchySeeder::class,
             RegulationSeeder::class,
+            TransactionItemSeeder::class,
         ]);
     }
 }
