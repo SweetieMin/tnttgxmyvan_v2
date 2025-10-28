@@ -11,13 +11,17 @@ use App\Repositories\Eloquent\CourseRepository;
 use App\Repositories\Eloquent\SectorRepository;
 use App\Repositories\Eloquent\ProgramRepository;
 use App\Repositories\Eloquent\RegulationRepository;
+use App\Repositories\Eloquent\TransactionRepository;
 use App\Repositories\Eloquent\AcademicYearRepository;
+use App\Repositories\Eloquent\TransactionItemRepository;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Repositories\Interfaces\CourseRepositoryInterface;
 use App\Repositories\Interfaces\SectorRepositoryInterface;
 use App\Repositories\Interfaces\ProgramRepositoryInterface;
 use App\Repositories\Interfaces\RegulationRepositoryInterface;
+use App\Repositories\Interfaces\TransactionRepositoryInterface;
 use App\Repositories\Interfaces\AcademicYearRepositoryInterface;
+use App\Repositories\Interfaces\TransactionItemRepositoryInterface;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -34,6 +38,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SectorRepositoryInterface::class, SectorRepository::class);
 
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
+
+        $this->app->bind(TransactionItemRepositoryInterface::class, TransactionItemRepository::class);
+        $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
     }
 
     /**

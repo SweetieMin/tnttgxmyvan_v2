@@ -74,7 +74,7 @@
                         @foreach ($roles as $role)
                             <label
                                 class="block p-2 bg-accent-card rounded-lg border border-accent/20 hover:border-accent cursor-pointer ">
-                                <flux:checkbox value="{{ $role->id }}" label="{{ $role->name }}"
+                                <flux:checkbox label-class="text-red-600" value="{{ $role->id }}" label="{{ $role->name }}"
                                     description="{{ $role->description }}" />
                             </label>
                         @endforeach

@@ -28,7 +28,7 @@
                 </flux:sidebar.item>
 
                 <flux:sidebar.item icon="clipboard-document-list" :href="route('admin.management.regulations')"
-                    :current="request()->routeIs('admin.management.regulations')" wire:navigate>Nội quy
+                    :current="request()->routeIs('admin.management.regulations*')" wire:navigate>Nội quy
                 </flux:sidebar.item>
 
                 <flux:sidebar.item icon="bookmark-square" :href="route('admin.management.programs')"
@@ -47,6 +47,16 @@
 
                 <flux:sidebar.item icon="academic-cap" :href="route('admin.access.roles')"
                     :current="request()->routeIs('admin.access.roles*')" wire:navigate>Chức vụ
+                </flux:sidebar.item>
+
+                <flux:separator class="my-2" />
+
+                <flux:sidebar.item icon="clipboard-document-check" :href="route('admin.finance.transaction-items')"
+                    :current="request()->routeIs('admin.finance.transaction-items')" wire:navigate>Hạng mục thu chi
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="banknotes" :href="route('admin.finance.transactions')"
+                    :current="request()->routeIs('admin.finance.transactions')" wire:navigate>Tiền quỹ
                 </flux:sidebar.item>
 
 

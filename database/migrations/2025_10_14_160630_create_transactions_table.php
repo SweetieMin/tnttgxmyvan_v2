@@ -14,12 +14,20 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->date('transaction_date');
-            $table->string('title');
+
+            $table->foreignId('transaction_item_id')
+                ->nullable() // cho phép null
+                ->constrained('transaction_items')
+                ->onDelete('set null');
+
             $table->text('description')->nullable();
             $table->enum('type', ['income', 'expense']);
             $table->unsignedBigInteger('amount');
             $table->string('file_name')->nullable();
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->foreignId('created_by')
+                ->nullable()
+                ->constrained('users')
+                ->onDelete('set null');
             $table->timestamps();
         });
     }
