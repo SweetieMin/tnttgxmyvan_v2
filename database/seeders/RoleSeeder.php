@@ -29,30 +29,31 @@ class RoleSeeder extends Seeder
             // Cấp điều hành xứ đoàn
             ['name' => 'Xứ Đoàn Trưởng', 'description' => 'Đứng đầu xứ đoàn, quản lý và điều hành mọi hoạt động mục vụ, giáo lý và sinh hoạt thiếu nhi.', 'ordering' => 7],
             ['name' => 'Xứ Đoàn Phó', 'description' => 'Hỗ trợ Xứ Đoàn Trưởng trong công tác điều hành và đại diện khi được ủy quyền.', 'ordering' => 8],
+            ['name' => 'Thủ Quỹ', 'description' => 'Quản lý thu chi trong Đoàn. Cân đối ngân sách. Báo cáo quỹ theo mùa..', 'ordering' => 9],
         
             // Cấp ngành Nghĩa
-            ['name' => 'Trưởng Ngành Nghĩa', 'description' => 'Phụ trách và điều hành toàn bộ ngành Nghĩa trong xứ đoàn.', 'ordering' => 9],
-            ['name' => 'Phó Ngành Nghĩa', 'description' => 'Hỗ trợ Trưởng Ngành Nghĩa trong việc quản lý, sinh hoạt và đào tạo huynh trưởng ngành.', 'ordering' => 10],
+            ['name' => 'Trưởng Ngành Nghĩa', 'description' => 'Phụ trách và điều hành toàn bộ ngành Nghĩa trong xứ đoàn.', 'ordering' => 10],
+            ['name' => 'Phó Ngành Nghĩa', 'description' => 'Hỗ trợ Trưởng Ngành Nghĩa trong việc quản lý, sinh hoạt và đào tạo huynh trưởng ngành.', 'ordering' => 11],
         
             // Cấp ngành Thiếu
-            ['name' => 'Trưởng Ngành Thiếu', 'description' => 'Phụ trách và điều hành toàn bộ ngành Thiếu trong xứ đoàn.', 'ordering' => 11],
-            ['name' => 'Phó Ngành Thiếu', 'description' => 'Hỗ trợ Trưởng Ngành Thiếu trong công tác tổ chức và quản lý huynh trưởng ngành.', 'ordering' => 12],
+            ['name' => 'Trưởng Ngành Thiếu', 'description' => 'Phụ trách và điều hành toàn bộ ngành Thiếu trong xứ đoàn.', 'ordering' => 12],
+            ['name' => 'Phó Ngành Thiếu', 'description' => 'Hỗ trợ Trưởng Ngành Thiếu trong công tác tổ chức và quản lý huynh trưởng ngành.', 'ordering' => 13],
         
             // Cấp ngành Ấu
-            ['name' => 'Trưởng Ngành Ấu', 'description' => 'Phụ trách và điều hành toàn bộ ngành Ấu trong xứ đoàn.', 'ordering' => 13],
-            ['name' => 'Phó Ngành Ấu', 'description' => 'Hỗ trợ Trưởng Ngành Ấu trong việc điều hành sinh hoạt và chăm sóc các em.', 'ordering' => 14],
+            ['name' => 'Trưởng Ngành Ấu', 'description' => 'Phụ trách và điều hành toàn bộ ngành Ấu trong xứ đoàn.', 'ordering' => 14],
+            ['name' => 'Phó Ngành Ấu', 'description' => 'Hỗ trợ Trưởng Ngành Ấu trong việc điều hành sinh hoạt và chăm sóc các em.', 'ordering' => 15],
         
             // Cấp ngành Tiền Ấu
-            ['name' => 'Trưởng Ngành Tiền Ấu', 'description' => 'Phụ trách và điều hành toàn bộ ngành Tiền Ấu trong xứ đoàn.', 'ordering' => 15],
-            ['name' => 'Phó Ngành Tiền Ấu', 'description' => 'Hỗ trợ Trưởng Ngành Tiền Ấu trong công tác giảng dạy và tổ chức sinh hoạt.', 'ordering' => 16],
+            ['name' => 'Trưởng Ngành Tiền Ấu', 'description' => 'Phụ trách và điều hành toàn bộ ngành Tiền Ấu trong xứ đoàn.', 'ordering' => 16],
+            ['name' => 'Phó Ngành Tiền Ấu', 'description' => 'Hỗ trợ Trưởng Ngành Tiền Ấu trong công tác giảng dạy và tổ chức sinh hoạt.', 'ordering' => 17],
         
             // Cấp huynh trưởng
-            ['name' => 'Huynh Trưởng', 'description' => 'Phụ trách hướng dẫn, sinh hoạt và đồng hành với thiếu nhi trong ngành.', 'ordering' => 17],
-            ['name' => 'Dự Trưởng', 'description' => 'Huynh trưởng dự bị, hỗ trợ huynh trưởng chính và học hỏi thêm kỹ năng lãnh đạo.', 'ordering' => 18],
+            ['name' => 'Huynh Trưởng', 'description' => 'Phụ trách hướng dẫn, sinh hoạt và đồng hành với thiếu nhi trong ngành.', 'ordering' => 18],
+            ['name' => 'Dự Trưởng', 'description' => 'Huynh trưởng dự bị, hỗ trợ huynh trưởng chính và học hỏi thêm kỹ năng lãnh đạo.', 'ordering' => 19],
         
             // Cấp đội trưởng và thiếu nhi
-            ['name' => 'Đội Trưởng', 'description' => 'Phụ trách một đội nhỏ trong ngành, dẫn dắt các thành viên trong các buổi sinh hoạt và rèn luyện.', 'ordering' => 19],
-            ['name' => 'Thiếu Nhi', 'description' => 'Thành viên của xứ đoàn, tham gia học tập, sinh hoạt và rèn luyện nhân bản – đức tin.', 'ordering' => 20],
+            ['name' => 'Đội Trưởng', 'description' => 'Phụ trách một đội nhỏ trong ngành, dẫn dắt các thành viên trong các buổi sinh hoạt và rèn luyện.', 'ordering' => 20],
+            ['name' => 'Thiếu Nhi', 'description' => 'Thành viên của xứ đoàn, tham gia học tập, sinh hoạt và rèn luyện nhân bản – đức tin.', 'ordering' => 21],
         ];
         
 

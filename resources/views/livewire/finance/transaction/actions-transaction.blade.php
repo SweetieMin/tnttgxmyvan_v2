@@ -12,8 +12,7 @@
                     <label for="transaction_item_id" class="block text-sm font-medium mb-1">Hạng mục</label>
                     <flux:select wire:model.lazy="transaction_item_id" placeholder="Chọn hạng mục">
                         @foreach ($items as $item)
-                            <flux:select.option value="{{ $item->id }}">{{ $item->name }} -
-                                {{ $item->description }} </flux:select.option>
+                            <flux:select.option value="{{ $item->id }}">{{ $item->name }}</flux:select.option>
                         @endforeach
 
                     </flux:select>
@@ -44,7 +43,7 @@
                 {{-- Điểm --}}
                 <div>
                     <label for="amount" class="block text-sm font-medium mb-1">Tổng số tiền</label>
-                    <flux:input mask:dynamic="$money($input)" wire:model="amount" placeholder="Nhập số tiền" />
+                    <flux:input mask:dynamic="$money($input)" wire:model="amount" placeholder="Nhập số tiền" autocomplete="off"/>
                     @error('amount')
                         <x-app-error-message :message="$message" />
                     @enderror

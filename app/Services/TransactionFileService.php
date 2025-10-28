@@ -16,28 +16,43 @@ class TransactionFileService
      */
     public function store($file): ?string
     {
-        // Nếu Livewire Dropzone trả về array
-        if (is_array($file) && isset($file['path'])) {
-            $sourcePath = $file['path'];
-        }
-        // Nếu là UploadedFile thật (trường hợp dùng <input type="file">)
-        elseif ($file instanceof UploadedFile) {
+        // 🎯 Xác định đường dẫn gốc
+        if (is_array($file)) {
+            if (isset($file[0]['path'])) {
+                // Dropzone upload
+                $sourcePath = $file[0]['path'];
+            } elseif (isset($file['path'])) {
+                // Một mảng đơn
+                $sourcePath = $file['path'];
+            } else {
+                throw new \InvalidArgumentException('File không hợp lệ (thiếu path).');
+            }
+        } elseif ($file instanceof UploadedFile) {
+            // Input type="file"
             $sourcePath = $file->getRealPath();
         } else {
             throw new \InvalidArgumentException('File không hợp lệ.');
         }
-
-        // ✅ Tạo tên file duy nhất
+    
+        // 🔒 Chỉ cho phép PDF
+        if (strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION)) !== 'pdf') {
+            throw new \InvalidArgumentException('Chỉ cho phép file PDF.');
+        }
+    
+        // ✅ Tạo tên file duy nhất và lưu
         $uniqueName = (string) Str::uuid() . '.pdf';
         $destination = 'transactions/' . $uniqueName;
+    
         Storage::disk('public')->put($destination, file_get_contents($sourcePath));
-
-        if (is_array($file) && isset($file['path']) && file_exists($file['path'])) {
-            @unlink($file['path']);
+    
+        // ✅ Xóa file tạm nếu tồn tại (để dọn livewire-tmp)
+        if (file_exists($sourcePath)) {
+            @unlink($sourcePath);
         }
-
-        return $uniqueName; // Trả về path để lưu DB
+    
+        return $uniqueName;
     }
+    
 
 
     /**

@@ -43,6 +43,30 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
         });
 
         // 🔽 Sắp xếp mới nhất trước
-        return $query->orderByDesc('transaction_date')->paginate($perPage);
+        return $query
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
+    }
+
+    public function getTotals(?string $search = null, $item = null): array
+    {
+        $query = $this->model->query();
+
+        // Nếu lọc theo hạng mục
+        $query->when($item, fn($q) => $q->where('transaction_item_id', $item));
+
+        // Nếu có search
+        $query->when($search, fn($q) => $q->where('description', 'like', "%{$search}%"));
+
+        // Tổng thu và chi
+        $totalIncome = (clone $query)->where('type', 'income')->sum('amount');
+        $totalExpense = (clone $query)->where('type', 'expense')->sum('amount');
+
+        return [
+            'income'  => $totalIncome,
+            'expense' => $totalExpense,
+            'balance' => $totalIncome - $totalExpense,
+        ];
     }
 }

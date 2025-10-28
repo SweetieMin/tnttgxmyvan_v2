@@ -23,6 +23,11 @@ class Transactions extends Component
 
     public $perPage = 10;
 
+    public $totalIncome;
+
+    public $totalExpense;
+
+    public $balance;
 
     public function boot(TransactionRepositoryInterface $transactionRepository, TransactionItemRepositoryInterface $transactionItemRepository)
     {
@@ -36,7 +41,13 @@ class Transactions extends Component
             ->paginateWithSearch($this->search, $this->perPage, $this->itemFilter);
 
         $items = $this->transactionItemRepository
-        ->all();
+            ->all();
+
+        $totals = $this->transactionRepository->getTotals($this->search, $this->itemFilter);
+
+        $this->totalIncome  = $totals['income'];
+        $this->totalExpense = $totals['expense'];
+        $this->balance      = $totals['balance'];
 
         return view('livewire.finance.transaction.transactions', [
             'transactions' => $transactions,

@@ -14,4 +14,6 @@ interface TransactionRepositoryInterface
 
 
     public function paginateWithSearch(?string $search = null, int $perPage = 10);
+
+    public function getTotals(?string $search = null, $item = null): array;
 }

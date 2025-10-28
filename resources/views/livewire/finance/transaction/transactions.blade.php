@@ -20,6 +20,11 @@
                     <table>
                         <thead>
                             <tr>
+                                <td colspan="7" class="font-black text-xl text-red-500">
+                                    Số tiền hiện tại: {{ number_format($balance, 0, ',', '.') }} ₫
+                                </td>
+                            </tr>
+                            <tr>
                                 <th class="text-center w-12">Ngày</th>
                                 <th class="text-center">Hạng mục</th>
                                 <th>Mô tả</th>
@@ -30,6 +35,14 @@
                             </tr>
                         </thead>
                         <tbody>
+
+                            <tr class="bg-green-100 ">
+                                <td colspan="3" class="text-right font-black text-xl dark:text-black">Tổng cộng:</td>
+                                <td class="text-center font-black text-xl text-green-500 ">{{ number_format($totalIncome, 0, ',', '.') }} ₫</td>
+                                <td class="text-center font-black text-xl text-red-500">{{ number_format($totalExpense, 0, ',', '.') }} ₫</td>
+                                <td colspan="2"></td>
+                            </tr>
+
                             @forelse ($transactions as $transaction)
                                 <tr>
 
