@@ -6,8 +6,8 @@
 
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
-                <x-contents.search searchPlaceholder="Tìm kiếm Tiền Quỹ..." wire:model.live.debounce.300ms="search"
-                    :items="$items" :count="$transactions->total() ?? 0"/>
+                <x-contents.search searchPlaceholder="Tìm kiếm Tiền Quỹ..." wire:model.live.debounce.500ms="search"
+                    :items="$items" :count="$transactions->total() ?? 0" :startDate=true :endDate=true :exportData="$transactions->total() > 0"/>
             </div>
         </div>
 
@@ -20,7 +20,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <td colspan="7" class="font-black text-xl text-red-500">
+                                <td colspan="9" class="font-black text-xl text-red-500">
                                     Số tiền hiện tại: {{ number_format($balance, 0, ',', '.') }} ₫
                                 </td>
                             </tr>
@@ -30,6 +30,8 @@
                                 <th>Mô tả</th>
                                 <th class="text-center">Thu</th>
                                 <th class="text-center">Chi</th>
+                                <th class="text-center">Người phụ trách</th>
+                                <th class="text-center">Trạng thái</th>
                                 <th class="text-center">File đính kèm</th>
                                 <th class="text-center"></th>
                             </tr>
@@ -40,7 +42,7 @@
                                 <td colspan="3" class="text-right font-black text-xl dark:text-black">Tổng cộng:</td>
                                 <td class="text-center font-black text-xl text-green-500 ">{{ number_format($totalIncome, 0, ',', '.') }} ₫</td>
                                 <td class="text-center font-black text-xl text-red-500">{{ number_format($totalExpense, 0, ',', '.') }} ₫</td>
-                                <td colspan="2"></td>
+                                <td colspan="4"></td>
                             </tr>
 
                             @forelse ($transactions as $transaction)
@@ -48,7 +50,7 @@
 
                                     <td>{{ $transaction->formatted_transaction_date }}</td>
                                     <td class="text-center">
-                                        <flux:badge color="amber">{{ $transaction->item->name ?? '—' }}</flux:badge>
+                                        <flux:badge color="{{ $transaction->item->is_system  ?  'amber' : 'zinc' }}">{{ $transaction->item->name ?? '—' }}</flux:badge>
                                     </td>
                                     <td>{{ $transaction->description }}</td>
                                     <td class="text-center {{ $transaction->type === 'income' ? 'text-green-500' : 'text-muted' }}">
@@ -56,6 +58,12 @@
                                     </td>
                                     <td class="text-center {{ $transaction->type === 'expense' ? 'text-red-500' : 'text-muted' }}">
                                         {{ $transaction->type === 'expense' ? $transaction->formatted_amount : '-' }}
+                                    </td>
+
+                                    <td class="text-center">{{ $transaction->in_charge }}</td>
+
+                                    <td class="text-center">
+                                        <flux:badge color="{{ $transaction->status === 'pending' ?  'red' : 'green' }}">{{ $transaction->status === 'pending' ?  'Chưa chi' : 'Đã chi' }}</flux:badge>
                                     </td>
                                     
                                     <td class="text-center">

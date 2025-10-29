@@ -36,6 +36,10 @@ class ActionsTransaction extends Component
 
     public $amount;
 
+    public $status = 'paid';
+
+    public $in_charge;
+
     public $file;
 
     public $transaction_date;
@@ -52,6 +56,8 @@ class ActionsTransaction extends Component
             'description',
             'type',
             'amount',
+            'status',
+            'in_charge',
         ]);
 
         $this->isEditTransactionMode = false;
@@ -114,7 +120,8 @@ class ActionsTransaction extends Component
             'type',
             'amount',
             'file_name',
-            'created_by',
+            'status',
+            'in_charge',
         ]);
 
         try {
@@ -180,7 +187,8 @@ class ActionsTransaction extends Component
             'type',
             'amount',
             'file_name',
-            'created_by',
+            'status',
+            'in_charge',
         ]);
 
         try {

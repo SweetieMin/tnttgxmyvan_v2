@@ -13,7 +13,8 @@ class Transaction extends Model
         'type',
         'amount',
         'file_name',
-        'created_by',
+        'in_charge',
+        'status',
     ];
 
     protected $casts = [
@@ -61,11 +62,6 @@ class Transaction extends Model
     public function getTypeColorAttribute(): string
     {
         return $this->type === 'income' ? 'text-green-600' : 'text-red-600';
-    }
-
-    public function createdByUser()
-    {
-        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function item()

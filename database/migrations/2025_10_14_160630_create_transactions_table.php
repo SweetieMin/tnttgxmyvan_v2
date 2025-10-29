@@ -24,10 +24,8 @@ return new class extends Migration
             $table->enum('type', ['income', 'expense']);
             $table->unsignedBigInteger('amount');
             $table->string('file_name')->nullable();
-            $table->foreignId('created_by')
-                ->nullable()
-                ->constrained('users')
-                ->onDelete('set null');
+            $table->string('in_charge')->nullable();
+            $table->enum('status', ['pending', 'paid'])->default('pending');
             $table->timestamps();
         });
     }

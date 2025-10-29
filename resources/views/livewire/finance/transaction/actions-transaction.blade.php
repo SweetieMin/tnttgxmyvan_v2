@@ -40,11 +40,34 @@
                     @enderror
                 </div>
 
-                {{-- Điểm --}}
+
                 <div>
                     <label for="amount" class="block text-sm font-medium mb-1">Tổng số tiền</label>
                     <flux:input mask:dynamic="$money($input)" wire:model="amount" placeholder="Nhập số tiền" autocomplete="off"/>
                     @error('amount')
+                        <x-app-error-message :message="$message" />
+                    @enderror
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {{-- Cộng / Trừ --}}
+                <div>
+                    <label for="status" class="block text-sm font-medium mb-1">Thu / Chi</label>
+                    <flux:select wire:model.lazy="status" placeholder="Chọn loại">
+                        <flux:select.option value="paid">Đã chi</flux:select.option>
+                        <flux:select.option value="pending">Chưa chi</flux:select.option>
+                    </flux:select>
+                    @error('status')
+                        <x-app-error-message :message="$message" />
+                    @enderror
+                </div>
+
+
+                <div>
+                    <label for="in_charge" class="block text-sm font-medium mb-1">Người phụ trách</label>
+                    <flux:input wire:model="in_charge" placeholder="Tên người phụ trách" autocomplete="off"/>
+                    @error('in_charge')
                         <x-app-error-message :message="$message" />
                     @enderror
                 </div>

@@ -5,6 +5,9 @@ namespace App\Livewire\Finance\Transaction;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
+use App\Exports\TransactionExport;
+
+use Maatwebsite\Excel\Facades\Excel;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
 use App\Repositories\Interfaces\TransactionItemRepositoryInterface;
 
@@ -20,6 +23,10 @@ class Transactions extends Component
     public $search;
 
     public $itemFilter = null;
+
+    public $startDate;
+
+    public $endDate;
 
     public $perPage = 10;
 
@@ -38,7 +45,13 @@ class Transactions extends Component
     public function render()
     {
         $transactions = $this->transactionRepository
-            ->paginateWithSearch($this->search, $this->perPage, $this->itemFilter);
+            ->paginateWithSearch(
+                $this->search,
+                $this->perPage,
+                $this->itemFilter,
+                $this->startDate,
+                $this->endDate
+            );
 
         $items = $this->transactionItemRepository
             ->all();
@@ -68,5 +81,18 @@ class Transactions extends Component
     public function deleteTransaction($id)
     {
         $this->dispatch('deleteTransaction', $id);
+    }
+
+    public function exportData()
+    {
+        return Excel::download(
+            new TransactionExport(
+                $this->search,
+                $this->itemFilter,
+                $this->startDate,
+                $this->endDate
+            ),
+            'bao-cao-giao-dich.xlsx'
+        );
     }
 }

@@ -76,6 +76,11 @@
     }
 }
 
+[data-flux-control][type="date"] {
+    @apply h-11 ;
+  }
+  
+
 /* ✅ Đổi màu chữ chính của label trong checkbox Flux */
 [data-flux-label] {
     @apply text-accent-text font-semibold;

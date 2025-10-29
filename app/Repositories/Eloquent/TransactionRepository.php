@@ -18,14 +18,13 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
     public function create(array $data): Model
     {
         return $this->safeExecute(function () use ($data) {
-            $data['created_by'] = $data['created_by'] ?? Auth::id();
 
             $data['amount'] = (int) str_replace([',', '.', ' '], '', $data['amount']);
             return $this->model->create($data);
         }, 'Không thể tạo bản ghi mới.');
     }
 
-    public function paginateWithSearch(?string $search = null, int $perPage = 10, $item = null)
+    public function paginateWithSearch(?string $search = null, int $perPage = 10, $item = null, ?string $startDate = null, ?string $endDate = null)
 
     {
         $query = $this->model->query();
@@ -41,6 +40,15 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
         $query->when($item, function ($q) use ($item) {
             $q->where('transaction_item_id', $item);
         });
+
+        // 📅 Lọc theo ngày bắt đầu / kết thúc
+        if ($startDate && $endDate) {
+            $query->whereBetween('transaction_date', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->whereDate('transaction_date', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('transaction_date', '<=', $endDate);
+        }
 
         // 🔽 Sắp xếp mới nhất trước
         return $query

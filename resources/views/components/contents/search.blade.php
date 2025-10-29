@@ -2,6 +2,9 @@
     'years' => [],
     'items' => [], // Hạng mục cho tiền quỹ
     'searchPlaceholder' => 'Tìm kiếm...',
+    'startDate' => false,
+    'endDate' => false,
+    'exportData' => false,
     'count' => 1,
 ])
 
@@ -29,15 +32,16 @@
                     @if (!empty($items) && count($items) > 0)
                         <div class="flex flex-col">
                             <label for="yearFilter" class="block text-sm font-medium mb-1 opacity-70">
-                               Hạng mục
+                                Hạng mục
                             </label>
                             <select wire:model.live="itemFilter" id="itemFilter"
                                 class="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 
                                            bg-white dark:bg-zinc-900 px-4 py-3 text-sm 
                                            focus:ring-2 focus:ring-accent focus:outline-none">
-                                           <option value="">Chọn tất cả  </option>
+                                <option value="">Chọn tất cả </option>
                                 @foreach ($items as $item)
-                                    <option value="{{ $item->id }}">{{ $item->name }} - {{ $item->description }}    </option>
+                                    <option value="{{ $item->id }}">{{ $item->name }} - {{ $item->description }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -57,6 +61,20 @@
                                     <option value="{{ $year->id }}">{{ $year->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                    @endif
+
+                    @if ($startDate)
+                        <div class="flex flex-col">
+                            <flux:input wire:model.live='startDate' type="date" max="2999-12-31"
+                                label="Ngày bắt đầu" />
+                        </div>
+                    @endif
+
+                    @if ($endDate)
+                        <div class="flex flex-col">
+                            <flux:input wire:model.live='endDate' type="date" max="2999-12-31"
+                                label="Ngày kết thúc" />
                         </div>
                     @endif
 
@@ -81,6 +99,10 @@
                         <option value="">Tất cả</option>
                     </select>
                 </div>
+            @endif
+
+            @if ($exportData)
+                <flux:button wire:click='exportData' icon="arrow-down-tray">Xuất Excel</flux:button>
             @endif
         </div>
     </div>

@@ -13,7 +13,7 @@ interface TransactionRepositoryInterface
     public function delete(int|string $id);
 
 
-    public function paginateWithSearch(?string $search = null, int $perPage = 10);
+    public function paginateWithSearch(?string $search = null, int $perPage = 10, $item = null ,?string $startDate = null, ?string $endDate = null);
 
     public function getTotals(?string $search = null, $item = null): array;
 }

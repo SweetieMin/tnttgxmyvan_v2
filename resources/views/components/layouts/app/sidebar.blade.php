@@ -13,7 +13,7 @@
             <flux:sidebar.header>
                 <flux:sidebar.brand logo="/storage/images/sites/logo.png" name="TNTT Giáo xứ Mỹ Vân"
                     class="text-pink-500" />
-                <flux:sidebar.collapse />
+                <flux:sidebar.collapse tooltip="Nút sidebar"/>
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
