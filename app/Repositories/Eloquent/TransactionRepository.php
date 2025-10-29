@@ -25,9 +25,8 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
     }
 
     public function paginateWithSearch(?string $search = null, int $perPage = 10, $item = null, ?string $startDate = null, ?string $endDate = null)
-
     {
-        $query = $this->model->query();
+        $query = $this->model->with(['item']);
 
         // 🔍 Nếu có từ khóa tìm kiếm (mô tả)
         if ($search) {
