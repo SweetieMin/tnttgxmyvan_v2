@@ -4,7 +4,6 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Transaction;
 use App\Repositories\BaseRepository;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
 
