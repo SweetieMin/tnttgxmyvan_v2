@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Title;
 use App\Exports\TransactionExport;
 
+use App\Services\TransactionService;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
 use App\Repositories\Interfaces\TransactionItemRepositoryInterface;
@@ -83,8 +84,10 @@ class Transactions extends Component
         $this->dispatch('deleteTransaction', $id);
     }
 
-    public function exportData()
+    public function exportData(TransactionService $transactionService)
     {
+        $fileName = $transactionService->generateName($this->itemFilter);
+
         return Excel::download(
             new TransactionExport(
                 $this->search,
@@ -92,7 +95,7 @@ class Transactions extends Component
                 $this->startDate,
                 $this->endDate
             ),
-            'bao-cao-giao-dich.xlsx'
+            $fileName
         );
     }
 }

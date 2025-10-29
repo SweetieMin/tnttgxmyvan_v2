@@ -6,7 +6,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class TransactionFileService
+use Carbon\Carbon;
+use App\Models\TransactionItem;
+
+class TransactionService
 {
     /**
      * Lưu file PDF giao dịch vào storage
@@ -63,5 +66,50 @@ class TransactionFileService
         if ($fileName && Storage::disk('public')->exists('transactions/' . $fileName)) {
             Storage::disk('public')->delete('transactions/' . $fileName);
         }
+    }
+
+    public function generateName(?string $itemId = null): string
+    {
+        // 🔹 Lấy tên hạng mục (nếu có)
+        $itemName = 'Tat-ca'; // mặc định
+
+        if (!empty($itemId)) {
+            $item = TransactionItem::find($itemId);
+            if ($item) {
+                // Chuyển tiếng Việt có dấu → không dấu, snake-case
+                $itemName = $this->slugify($item->name);
+            }
+        }
+
+        // 🔹 Ngày hiện tại
+        $date = Carbon::now()->format('dmY');
+
+        // 🔹 Ghép tên chuẩn
+        return "Thong-ke-tien-quy-{$itemName}-{$date}.xlsx";
+    }
+
+    protected function slugify(string $text): string
+    {
+        $text = strtolower($text);
+        $text = str_replace(
+            ['à','á','ạ','ả','ã','â','ầ','ấ','ậ','ẩ','ẫ','ă','ằ','ắ','ặ','ẳ','ẵ',
+             'è','é','ẹ','ẻ','ẽ','ê','ề','ế','ệ','ể','ễ',
+             'ì','í','ị','ỉ','ĩ',
+             'ò','ó','ọ','ỏ','õ','ô','ồ','ố','ộ','ổ','ỗ','ơ','ờ','ớ','ợ','ở','ỡ',
+             'ù','ú','ụ','ủ','ũ','ư','ừ','ứ','ự','ử','ữ',
+             'ỳ','ý','ỵ','ỷ','ỹ',
+             'đ'],
+            ['a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a',
+             'e','e','e','e','e','e','e','e','e','e','e',
+             'i','i','i','i','i',
+             'o','o','o','o','o','o','o','o','o','o','o','o','o','o','o','o','o','o',
+             'u','u','u','u','u','u','u','u','u','u','u',
+             'y','y','y','y','y',
+             'd'],
+            $text
+        );
+        $text = preg_replace('/[^a-z0-9]+/i', '-', $text);
+        $text = trim($text, '-');
+        return $text;
     }
 }

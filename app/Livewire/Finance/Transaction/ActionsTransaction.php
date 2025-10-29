@@ -8,7 +8,7 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use Livewire\WithFileUploads;
 
-use App\Services\TransactionFileService;
+use App\Services\TransactionService;
 use App\Validation\Finance\TransactionRules;
 use App\Traits\Finance\HandlesTransactionForm;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
@@ -20,7 +20,7 @@ class ActionsTransaction extends Component
     use HandlesTransactionForm;
     use WithFileUploads;
 
-    protected TransactionFileService $fileService;
+    protected TransactionService $fileService;
 
     protected TransactionRepositoryInterface $transactionRepository;
 
@@ -80,7 +80,7 @@ class ActionsTransaction extends Component
         return TransactionRules::messages();
     }
 
-    public function boot(TransactionRepositoryInterface $transactionRepository, TransactionItemRepositoryInterface $transactionItemRepository, TransactionFileService $fileService,)
+    public function boot(TransactionRepositoryInterface $transactionRepository, TransactionItemRepositoryInterface $transactionItemRepository, TransactionService $fileService,)
     {
         $this->fileService = $fileService;
         $this->transactionRepository = $transactionRepository;
