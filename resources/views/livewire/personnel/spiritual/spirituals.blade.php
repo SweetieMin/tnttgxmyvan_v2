@@ -79,6 +79,6 @@
 
     </x-contents.layout>
 
-    <livewire:personnel.spiritual.actions-spiritual />
+
 
 </div>

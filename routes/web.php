@@ -12,6 +12,7 @@ use App\Livewire\Personnel\Catechist\Catechists;
 use App\Livewire\Personnel\Spiritual\Spirituals;
 use App\Livewire\Finance\Transaction\Transactions;
 use App\Livewire\Management\Regulation\Regulations;
+use App\Livewire\Personnel\Spiritual\ActionsSpiritual;
 use App\Livewire\Management\AcademicYear\AcademicYears;
 use App\Livewire\Management\Regulation\ActionsRegulation;
 use App\Livewire\Finance\TransactionItem\TransactionItems;
@@ -62,6 +63,9 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
 
     Route::prefix('personnel')->name('personnel.')->group(function () {
         Route::get('spirituals', Spirituals::class)->name('spirituals');
+
+        Route::get('spiritual/action', ActionsSpiritual::class)->name('spiritual.action');
+
         Route::get('catechists', Catechists::class)->name('catechists');
         Route::get('scouters', Scouters::class)->name('scouters');
         Route::get('children', Children::class)->name('children');

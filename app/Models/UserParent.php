@@ -20,8 +20,7 @@ class UserParent extends Model
         'christian_name_mother',
         'name_mother',
         'phone_mother',
-        'christian_name_god_parent',
-        'phone_god_parent',
+
     ];
 
     /**

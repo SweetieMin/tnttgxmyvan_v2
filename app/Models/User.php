@@ -71,7 +71,7 @@ class User extends Authenticatable
         ];
     }
 
-        /**
+    /**
      * Get the user's initials
      */
     public function initials(): string
@@ -79,7 +79,7 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -128,5 +128,20 @@ class User extends Authenticatable
     public function parents()
     {
         return $this->hasOne(UserParent::class);
+    }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class)->withTimestamps();
+    }
+
+    public function sectors()
+    {
+        return $this->belongsToMany(Sector::class)->withTimestamps();
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class)->withTimestamps();
     }
 }

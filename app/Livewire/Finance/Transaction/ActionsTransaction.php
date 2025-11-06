@@ -96,7 +96,7 @@ class ActionsTransaction extends Component
     public function render()
     {
         $items = $this->transactionItemRepository
-            ->all();
+            ->all(['ordering' => 'asc']);
         return view('livewire.finance.transaction.actions-transaction', [
             'items' => $items
         ]);

@@ -55,7 +55,7 @@ class Transactions extends Component
             );
 
         $items = $this->transactionItemRepository
-            ->all();
+            ->all(['ordering' => 'asc']);
 
         $totals = $this->transactionRepository->getTotals($this->search, $this->itemFilter);
 

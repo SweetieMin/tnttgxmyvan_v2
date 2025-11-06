@@ -22,4 +22,9 @@ class Sector extends Model
     {
         return $this->belongsTo(Program::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
 }

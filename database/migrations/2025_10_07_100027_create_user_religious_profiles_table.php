@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('baptism_place')->nullable();
             $table->string('baptismal_sponsor')->nullable();
 
+            $table->string('christian_name_god_parent')->nullable();
+            $table->string('name_god_parent')->nullable();
+
             $table->date('first_communion')->nullable();
             $table->string('first_communion_place')->nullable();
 
