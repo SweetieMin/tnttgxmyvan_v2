@@ -1,7 +1,8 @@
-@import "tailwindcss";
-@import "../../vendor/livewire/flux/dist/flux.css";
+@import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
 
-@import "./livewire-dropzone-flux.css";
+@flux;
+@flux-pro;
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -11,62 +12,35 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: "Be Vietnam Pro", "Inter", "Manrope", ui-sans-serif, system-ui,
-        sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-    --color-zinc-50: var(--color-slate-50);
-    --color-zinc-100: var(--color-slate-100);
-    --color-zinc-200: var(--color-slate-200);
-    --color-zinc-300: var(--color-slate-300);
-    --color-zinc-400: var(--color-slate-400);
-    --color-zinc-500: var(--color-slate-500);
-    --color-zinc-600: var(--color-slate-600);
-    --color-zinc-700: var(--color-slate-700);
-    --color-zinc-800: var(--color-slate-800);
-    --color-zinc-900: var(--color-slate-900);
-    --color-zinc-950: var(--color-slate-950);
+    --color-zinc-50: var(--color-gray-50);
+    --color-zinc-100: var(--color-gray-100);
+    --color-zinc-200: var(--color-gray-200);
+    --color-zinc-300: var(--color-gray-300);
+    --color-zinc-400: var(--color-gray-400);
+    --color-zinc-500: var(--color-gray-500);
+    --color-zinc-600: var(--color-gray-600);
+    --color-zinc-700: var(--color-gray-700);
+    --color-zinc-800: var(--color-gray-800);
+    --color-zinc-900: var(--color-gray-900);
+    --color-zinc-950: var(--color-gray-950);
 
-    --color-accent: var(--color-blue-500);
-    --color-accent-content: var(--color-blue-600);
+    --color-accent: var(--color-emerald-600);
+    --color-accent-content: var(--color-emerald-600);
     --color-accent-foreground: var(--color-white);
-    --color-accent-text: var(--color-blue-600);
-    --color-accent-background: color-mix(
-        in srgb,
-        var(--color-accent) 20%,
-        white
-    );
-    --color-accent-background-50: color-mix(
-        in srgb,
-        var(--color-accent) 50%,
-        white
-    );
-
-    --color-accent-card: color-mix(in srgb, var(--color-accent) 5%, white);
 }
-
-
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-blue-500);
-        --color-accent-content: var(--color-blue-400);
+        --color-accent: var(--color-emerald-600);
+        --color-accent-content: var(--color-emerald-400);
         --color-accent-foreground: var(--color-white);
-        --color-accent-text: var(--color-white);
-        --color-accent-background: color-mix(
-            in srgb,
-            var(--color-accent) 35%,
-            var(--color-zinc-950)
-        );
-        --color-accent-card: color-mix(
-            in srgb,
-            var(--color-blue-900) 95%,
-            white
-        );
     }
 }
 
 @layer base {
+
     *,
     ::after,
     ::before,
@@ -76,137 +50,20 @@
     }
 }
 
-[data-flux-control][type="date"] {
-    @apply h-11 ;
-  }
-  
-
-/* ✅ Đổi màu chữ chính của label trong checkbox Flux */
-[data-flux-label] {
-    @apply text-accent-text font-semibold;
-}
-
-/* ✅ Đổi màu chữ phần mô tả nhỏ */
-[data-flux-description] {
-    @apply text-accent-text opacity-50;
-}
-
-/* ✅ Khi checkbox được tick — dùng attribute [data-checked] để chọn đúng state */
-[ui-checkbox][data-checked] ~ [data-flux-label] {
-    @apply text-pink-700;
-}
-
-[data-flux-control] {
-    @apply text-accent-text ;
-}
-
 [data-flux-field]:not(ui-radio, ui-checkbox) {
     @apply grid gap-2;
 }
 
 [data-flux-label] {
-    @apply !mb-0 !leading-tight;
+    @apply  !mb-0 !leading-tight;
 }
-
-[data-flux-heading] {
-    @apply text-accent-text;
-}
-
-
 
 input:focus[data-flux-control],
 textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-accent ring-offset-accent-foreground;
+    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
-
-.select-input {
-    @apply w-full px-4 py-3 rounded-xl border 
-           bg-white dark:bg-zinc-800
-           text-zinc-900 dark:text-zinc-100;
-}
-
-.select-input:focus {
-    @apply focus:ring-2 focus:ring-accent focus:outline-none;
-}
-
-.select-input::placeholder {
-    @apply text-zinc-400 dark:text-zinc-500;
-}
-
-.theme-table {
-    @apply border border-accent/20 rounded-2xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm;
-}
-
-@layer base {
-    table {
-        @apply w-full border-collapse text-sm;
-        border-spacing: 0;
-    }
-
-    thead {
-        @apply bg-accent-background uppercase;
-    }
-
-    th {
-        @apply px-6 py-3 font-medium text-accent-text  tracking-wider text-left;
-    }
-
-    tbody tr {
-        @apply border-b border-accent/20  hover:bg-accent-background/30;
-    }
-
-    td {
-        @apply px-6 py-4  text-accent-text/90;
-    }
-
-    .pagination-container {
-        @apply px-6 py-4 border-t border-accent/20;
-    }
-
-    .empty-state {
-        @apply text-center text-accent-text/70 py-6;
-    }
-
-    .empty-state svg {
-        @apply text-accent-text/50 mx-auto mb-2 size-6;
-    }
-}
-
-/* Sortable styles */
-.sortable-ghost {
-    opacity: 0.5;
-    background: #f3f4f6 !important;
-}
-
-.sortable-chosen {
-    background: #fef3c7 !important;
-}
-
-.sortable-drag {
-    background: #fbbf24 !important;
-}
-
-.dark .sortable-ghost {
-    background: #374151 !important;
-}
-
-.dark .sortable-chosen {
-    background: #92400e !important;
-}
-
-.dark .sortable-drag {
-    background: #f59e0b !important;
-}
-
-/* End Sortable styles */
-
-/* Label form chung */
-label{
-    @apply text-[var(--color-accent-text)] font-semibold;
-}
-

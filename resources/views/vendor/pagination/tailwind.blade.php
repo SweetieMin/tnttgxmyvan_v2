@@ -17,7 +17,7 @@
         @endif
 
         {{-- Danh sách số trang --}}
-        <div class="hidden sm:flex items-center space-x-1">
+        <div class=" sm:flex items-center space-x-1">
             @foreach ($elements as $element)
                 {{-- Dấu "..." --}}
                 @if (is_string($element))

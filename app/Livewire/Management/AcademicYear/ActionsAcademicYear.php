@@ -19,6 +19,7 @@ class ActionsAcademicYear extends Component
     protected AcademicYearRepositoryInterface $academicYearRepository;
 
     public $isEditAcademicYearMode = false;
+    public $isEditAcademicYearBulk = false;
 
     public string $name = '';
     public ?string $catechism_start_date = null;
@@ -85,13 +86,23 @@ class ActionsAcademicYear extends Component
         try {
             $this->academicYearRepository->create($data);
 
-            session()->flash('success', 'Niên khoá tạo thành công.');
-
-            
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Niên khoá mới đã được thêm vào hệ thống.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Tạo niên khoá thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: app()->environment('local')
+                    ? $e->getMessage()
+                    : 'Rất tiếc, hệ thống không thể tạo niên khoá.',
+                variant: 'error',
+            );
         }
-        
+
+        Flux::modal('action-academic-year')->close();
+
         $this->redirectRoute('admin.management.academic-year', navigate: true);
     }
 
@@ -106,7 +117,7 @@ class ActionsAcademicYear extends Component
             // Gán dữ liệu vào form
             $this->academicYearID = $academicYear->id;
             $this->isEditAcademicYearMode = true;
-    
+
             $this->name                     = $academicYear->name;
             $this->catechism_start_date     = $academicYear->formatted_catechism_start_date;
             $this->catechism_end_date       = $academicYear->formatted_catechism_end_date;
@@ -125,7 +136,6 @@ class ActionsAcademicYear extends Component
             session()->flash('error', 'Không tìm thấy niên khoá');
             return $this->redirectRoute('admin.management.academic-year', navigate: true);
         }
-
     }
 
     public function updateAcademicYear()
@@ -145,15 +155,25 @@ class ActionsAcademicYear extends Component
         ]);
 
         try {
-            $this->academicYearRepository->update($this->academicYearID,$data);
+            $this->academicYearRepository->update($this->academicYearID, $data);
 
-            session()->flash('success', 'Niên khoá cập nhật thành công.');
-
-            
+            Flux::toast(
+                heading: 'Đã lưu thay đổi.',
+                text: 'Niên khoá cập nhật thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật niên khoá thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: app()->environment('local')
+                    ? $e->getMessage()
+                    : 'Rất tiếc, hệ thống không thể cập nhật niên khoá.',
+                variant: 'error',
+            );
         }
-        
+
+        Flux::modal('action-academic-year')->close();
+
         $this->redirectRoute('admin.management.academic-year', navigate: true);
     }
 
@@ -168,7 +188,7 @@ class ActionsAcademicYear extends Component
         if ($academicYear) {
             // Gán dữ liệu vào form
             $this->academicYearID = $academicYear->id;
-                
+
             // Hiển thị modal
             Flux::modal('delete-academic-year')->show();
         } else {
@@ -176,7 +196,6 @@ class ActionsAcademicYear extends Component
             session()->flash('error', 'Không tìm thấy niên khoá');
             return $this->redirectRoute('admin.management.academic-year', navigate: true);
         }
-
     }
 
     public function deleteAcademicYearConfirm()
@@ -184,13 +203,20 @@ class ActionsAcademicYear extends Component
         try {
             $this->academicYearRepository->delete($this->academicYearID);
 
-            session()->flash('success', 'Niên khoá xoá thành công.');
-
-            
+            Flux::toast(
+                heading: 'Thành công!',
+                text: 'Niên khoá đã được xoá khỏi hệ thống.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá niên khoá thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Xoá thất bại!',
+                text: 'Không thể xoá niên khoá. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
-        
+
+
         $this->redirectRoute('admin.management.academic-year', navigate: true);
     }
 }

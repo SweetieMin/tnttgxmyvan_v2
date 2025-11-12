@@ -5,6 +5,7 @@ namespace App\Livewire\Management\AcademicYear;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Repositories\Interfaces\AcademicYearRepositoryInterface;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 
 #[Title('Niên khoá')]
@@ -17,30 +18,16 @@ class AcademicYears extends Component
     public $search = '';
     public $perPage = 10;
 
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingPerPage()
-    {
-        $this->resetPage();
-    }
-
-
     public function boot(AcademicYearRepositoryInterface $academicYearRepository)
     {
         $this->academicYearRepository = $academicYearRepository;
     }
 
-    public function render()
+    #[Computed]
+    public function academicYears()
     {
-        $academic_years = $this->academicYearRepository
+        return $this->academicYearRepository
             ->paginateWithSearch($this->search, $this->perPage);
-
-        return view('livewire.management.academic-year.academic-years', [
-            'academic_years' => $academic_years,
-        ]);
     }
 
     public function addAcademicYear()
@@ -48,11 +35,20 @@ class AcademicYears extends Component
         $this->dispatch('addAcademicYear');
     }
 
-    public function editAcademicYear($id){
+    public function editAcademicYear(int $id)
+    {
         $this->dispatch('editAcademicYear', $id);
     }
 
-    public function deleteAcademicYear($id){
+    public function deleteAcademicYear(int $id)
+    {
         $this->dispatch('deleteAcademicYear', $id);
+    }
+
+    public function render()
+    {
+        return view('livewire.management.academic-year.academic-years', [
+            'academic_years' => $this->academicYears,
+        ]);
     }
 }

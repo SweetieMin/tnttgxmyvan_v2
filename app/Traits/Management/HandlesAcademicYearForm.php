@@ -35,9 +35,13 @@ trait HandlesAcademicYearForm
         $this->resetErrorBag('catechism_start_date');
 
         $this->activity_start_date = $value;
-        $this->catechism_end_date = $this->activity_end_date = Carbon::parse($value)
+        if($value)
+        {
+            $this->catechism_end_date = $this->activity_end_date = Carbon::parse($value)
             ->addDays(250)
             ->format('Y-m-d');
+        }
+
         $this->generateAcademicYearName();
         $this->checkOngoingStatus();
     }

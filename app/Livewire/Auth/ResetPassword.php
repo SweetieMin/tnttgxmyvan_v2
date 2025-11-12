@@ -11,6 +11,10 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
+use Livewire\Attributes\Title;
+
+#[Title('Đăng nhập')]
+
 #[Layout('components.layouts.auth')]
 class ResetPassword extends Component
 {

@@ -7,11 +7,11 @@
         <form wire:submit.prevent='{{ $isEditAcademicYearMode ? 'updateAcademicYear' : 'createAcademicYear' }}' class="space-y-6">
             <div class="flex gap-2">
                 <div class=" w-2/3">
-                    <flux:input readonly variant="filled" label="Tên niên khoá" wire:model='name' />
+                    <flux:input disabled variant="filled" label="Tên niên khoá" wire:model='name' />
                 </div>
                 <div class=" w-1/3"> <label for="perPage" class="block text-sm font-medium mb-1 opacity-70 "> Trạng
                         thái </label>
-                    <flux:select wire:model="status_academic" placeholder="Chọn trạng thái">
+                    <flux:select variant="listbox" wire:model="status_academic" placeholder="Chọn trạng thái">
                         <flux:select.option value="upcoming">Sắp diễn ra</flux:select.option>
                         <flux:select.option value="ongoing">Đang diễn ra</flux:select.option>
                         <flux:select.option value="finished">Đã hoàn thành</flux:select.option>
@@ -21,23 +21,23 @@
             <flux:separator text="Giáo Lý" />
             <div class="flex gap-2">
                 <div class=" w-1/2">
-                    <flux:input type="date" max="2999-12-31" label="Ngày bắt đầu"
-                        wire:model.lazy='catechism_start_date' />
+                    <flux:date-picker type="date" max="2999-12-31" label="Ngày bắt đầu"
+                        wire:model.lazy='catechism_start_date' placeholder="Chọn ngày" locale="vi-VN" selectable-header clearable/>
                 </div>
                 <div class=" w-1/2">
-                    <flux:input type="date" max="2999-12-31" label="Ngày kết thúc"
-                        wire:model.lazy='catechism_end_date' />
+                    <flux:date-picker type="date" max="2999-12-31" label="Ngày kết thúc"
+                        wire:model.lazy='catechism_end_date' placeholder="Chọn ngày" locale="vi-VN" selectable-header clearable />
                 </div>
             </div>
             <flux:separator text="Sinh hoạt" />
             <div class="flex gap-2">
                 <div class=" w-1/2">
-                    <flux:input type="date" max="2999-12-31" label="Ngày bắt đầu"
-                        wire:model.lazy='activity_start_date' />
+                    <flux:date-picker type="date" max="2999-12-31" label="Ngày bắt đầu"
+                        wire:model.lazy='activity_start_date' placeholder="Chọn ngày" locale="vi-VN" selectable-header clearable/>
                 </div>
                 <div class=" w-1/2">
-                    <flux:input type="date" max="2999-12-31" label="Ngày kết thúc"
-                        wire:model.lazy='activity_end_date' />
+                    <flux:date-picker type="date" max="2999-12-31" label="Ngày kết thúc"
+                        wire:model.lazy='activity_end_date' placeholder="Chọn ngày" locale="vi-VN" selectable-header clearable/>
                 </div>
             </div>
             <flux:separator text="Quy định điểm" />

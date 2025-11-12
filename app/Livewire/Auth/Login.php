@@ -14,6 +14,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
+use Livewire\Attributes\Title;
+
+#[Title('Đăng nhập')]
 #[Layout('components.layouts.auth')]
 class Login extends Component
 {

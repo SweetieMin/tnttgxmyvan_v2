@@ -1,6 +1,6 @@
 @props([
     'name' => 'confirm-delete',      {{-- Tên modal (dùng cho Flux) --}}
-    'width' => 500,                  {{-- Chiều rộng modal --}}
+    'width' => 80,                  {{-- Chiều rộng modal --}}
     'title' => 'Xác nhận xóa dữ liệu',
     'description' => 'Hành động này không thể hoàn tác.',
     'warningTitle' => 'Cảnh báo xóa dữ liệu',
@@ -10,10 +10,10 @@
         'Các dữ liệu phụ thuộc có thể bị ảnh hưởng.',
         'Hành động này không thể hoàn tác.'
     ],
-    'action' => null,                {{-- wire:submit action --}}
+    'action' => null,         
 ])
 
-<flux:modal name="{{ $name }}" class="md:w-[{{ $width }}px]">
+<flux:modal name="{{ $name }}" class="min-w-[22rem]">
     <div class="bg-gradient-to-br from-red-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl">
         <!-- Header -->
         <div class="relative px-8 py-6 bg-gradient-to-r from-red-500 via-pink-500 to-red-600 rounded-t-2xl">
