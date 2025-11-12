@@ -6,30 +6,26 @@
         {{-- Nội dung riêng của form --}}
         <form wire:submit.prevent='{{ $isEditProgramMode ? 'updateProgram' : 'createProgram' }}' class="space-y-6">
 
-
             <flux:input type="text" label="Lớp Giáo Lý" name="course" wire:model.lazy='course' autocomplete="off" />
 
             <flux:input type="text" label="Ngành sinh hoạt" wire:model.lazy='sector' autocomplete="off" />
 
+            <flux:textarea label="Mô tả" placeholder="Phù hợp cho lứa tuổi" wire:model='description' class="min-h-[120px]"/>
 
-            <flux:textarea label="Mô tả" placeholder="Phù hợp cho lứa tuổi" wire:model='description' />
-            @if ($canSaveData)
-                <flux:separator />
-                <div class="flex">
+            <flux:separator />
+            <div class="flex">
 
+                <flux:spacer />
 
-                    <flux:spacer />
-                    <flux:button type="submit" class="cursor-pointer" variant="primary">
-                        {{ $isEditProgramMode ? 'Cập nhật' : 'Thêm mới' }}
-                    </flux:button>
+                <flux:button type="submit" class="cursor-pointer" variant="primary" :disabled="!$canSaveData">
+                    {{ $isEditProgramMode ? 'Cập nhật' : 'Thêm mới' }}
+                </flux:button>
 
+            </div>
 
-                </div>
-            @endif
         </form>
 
     </x-app-action-modal>
-
 
     <x-app-delete-modal name="delete-program" :width="600" title="Xác nhận xóa Chương trình học"
         description="Hành động này sẽ xóa toàn bộ dữ liệu liên quan đến Chương trình học."

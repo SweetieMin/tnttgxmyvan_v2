@@ -12,8 +12,6 @@
         <form wire:submit.prevent='{{ $isEditRegulationMode ? 'updateRegulation' : 'createRegulation' }}'
             class=" bg-accent-background rounded-2xl p-4">
 
-
-
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
 
                 <div class="space-y-4">
@@ -67,7 +65,7 @@
                 <flux:checkbox.group wire:model="regulationApplyRole" variant="cards" class="max-sm:flex-col">
 
                     <div
-                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-h-[350px] overflow-y-auto p-1 custom-scrollbar">
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-h-[350px]  overflow-y-auto p-1 custom-scrollbar">
 
                         <flux:checkbox.all label="Chọn tất cả" class="cursor-pointer" />
 
@@ -75,8 +73,6 @@
                             <flux:checkbox value="{{ $role->id }}" label="{{ $role->name }}"
                                 description="{{ $role->description }}" class="cursor-pointer" />
                         @endforeach
-
-
 
                     </div>
                 </flux:checkbox.group>
@@ -91,7 +87,5 @@
         </form>
 
     </x-contents.layout>
-
-
 
 </div>
