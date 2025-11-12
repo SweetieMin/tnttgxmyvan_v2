@@ -14,5 +14,7 @@ interface ProgramRepositoryInterface
 
     public function getIdAndCourse();
 
+    public function getIdAndSector();
+
     public function updateOrdering(array $orderedIds): bool;
 }

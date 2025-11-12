@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Course;
+use App\Models\Sector;
 use App\Repositories\Interfaces\ProgramRepositoryInterface;
 
 class CourseSectorNameService
@@ -42,6 +43,41 @@ class CourseSectorNameService
         }
 
         $existingNames = $query->pluck('course')->toArray();
+
+        if (! in_array($baseName, $existingNames, true)) {
+            return $baseName;
+        }
+
+        $suffixes = $this->buildSuffixCandidates();
+
+        foreach ($suffixes as $suffix) {
+            $candidate = $baseName . $suffix;
+            if (! in_array($candidate, $existingNames, true)) {
+                return $candidate;
+            }
+        }
+
+        // Nếu vẫn trùng, fallback bằng cách thêm timestamp tránh lỗi.
+        return $baseName . ' ' . now()->format('His');
+    }
+
+    /**
+     * Sinh tên ngành không trùng trong cùng niên khoá & chương trình.
+     */
+    public function generateUniqueSectorName(string $baseName, ?int $academicYearId, ?int $programId, ?int $excludeSectorId = null): string
+    {
+        if (empty($academicYearId) || empty($programId)) {
+            return $baseName;
+        }
+
+        $query = Sector::where('academic_year_id', $academicYearId)
+            ->where('program_id', $programId);
+
+        if ($excludeSectorId) {
+            $query->where('id', '!=', $excludeSectorId);
+        }
+
+        $existingNames = $query->pluck('sector')->toArray();
 
         if (! in_array($baseName, $existingNames, true)) {
             return $baseName;

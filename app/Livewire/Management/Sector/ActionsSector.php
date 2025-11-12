@@ -56,7 +56,7 @@ class ActionsSector extends Component
     public function render()
     {
         $years = $this->academicYearRepository->getAcademicOngoingAndUpcoming();
-        $programs = $this->programRepository->getIdAndCourse();
+        $programs = $this->programRepository->getIdAndSector();
 
         return view('livewire.management.sector.actions-sector', [
             'years' => $years,

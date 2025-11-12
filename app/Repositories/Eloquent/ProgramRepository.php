@@ -33,6 +33,14 @@ class ProgramRepository extends BaseRepository implements ProgramRepositoryInter
             ->get();
     }
 
+    public function getIdAndSector()
+    {
+        return $this->model
+            ->select('id', 'sector')
+            ->orderBy('ordering')
+            ->get();
+    }
+
     public function paginate(int $perPage = 15, array $orderBy = []): LengthAwarePaginator
     {
         return $this->safeExecute(function () use ($perPage, $orderBy) {

@@ -2,8 +2,8 @@
 
 namespace App\Traits\Management;
 
-use App\Models\Sector;
 use App\Models\Program;
+use App\Services\CourseSectorNameService;
 
 trait HandlesSectorForm
 {
@@ -21,7 +21,7 @@ trait HandlesSectorForm
     }
 
     /**
-     * Khi chọn niên khoá hoặc chương trình → thử sinh tên ngành tự động
+     * Khi chọn niên khoá → kiểm tra lại tên ngành.
      */
     public function updatedAcademicYearId($value)
     {
@@ -30,6 +30,7 @@ trait HandlesSectorForm
         } else {
             $this->resetErrorBag('academic_year_id');
         }
+
         $this->checkSectorName();
     }
 
@@ -43,9 +44,18 @@ trait HandlesSectorForm
 
         // Lấy sector từ program
         $program = Program::find($value);
-        if ($program) {
-            $this->sector = $program->sector;
+        if ($program && !empty($program->sector)) {
+            $service = $this->sectorNameService();
+            $baseName = $program->sector;
+
+            $this->sector = $service->generateUniqueSectorName(
+                $baseName,
+                $this->academic_year_id,
+                $this->program_id,
+                $this->sectorID ?? null
+            );
         }
+
         $this->checkSectorName();
     }
 
@@ -59,17 +69,25 @@ trait HandlesSectorForm
         if (empty($this->academic_year_id) || empty($this->program_id) || empty($this->sector)) {
             return;
         }
-        
-        $existingSectors = Sector::where('academic_year_id', $this->academic_year_id)
-            ->where('program_id', $this->program_id)
-            ->where('sector', $this->sector)
-            ->exists();
 
-        if ($existingSectors) {
-            $this->addError('sector', 'Ngành sinh hoạt này đã tồn tại trong niên khoá.');
-            return;
+        $service = $this->sectorNameService();
+
+        $uniqueName = $service->generateUniqueSectorName(
+            $this->sector,
+            $this->academic_year_id,
+            $this->program_id,
+            $this->sectorID ?? null
+        );
+
+        if ($uniqueName !== $this->sector) {
+            $this->sector = $uniqueName;
         } else {
             $this->resetErrorBag('sector');
         }
+    }
+
+    protected function sectorNameService(): CourseSectorNameService
+    {
+        return app(CourseSectorNameService::class);
     }
 }
