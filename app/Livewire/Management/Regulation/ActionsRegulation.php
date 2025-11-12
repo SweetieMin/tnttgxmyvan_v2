@@ -109,7 +109,7 @@ class ActionsRegulation extends Component
 
     public function createRegulation()
     {
-        //$this->validate();
+        $this->validate();
 
         $data = $this->only([
             'type',
@@ -125,22 +125,32 @@ class ActionsRegulation extends Component
                 $regulation->regulationApplyRole()->sync($this->regulationApplyRole);
             }
 
-            session()->flash('success', 'Regulation tạo thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Nội quy mới đã được tạo.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
 
             Log::error('Lỗi khi tạo regulation: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            session()->flash('error', 'Tạo regulation thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: app()->environment('local')
+                    ? ('Tạo nội quy thất bại: ' . $e->getMessage())
+                    : 'Rất tiếc, hệ thống không thể tạo nội quy.',
+                variant: 'error',
+            );
         }
 
-        $this->redirectRoute('admin.management.regulations', navigate: true);
+        $this->redirectRoute('admin.management.regulations', ['yearFilter' => $this->academic_year_id], navigate: true);
     }
 
     public function editRegulation($id)
     {
-        //$this->resetForm();
+        $this->resetForm();
 
         $regulation = $this->regulationRepository->find($id);
 
@@ -157,14 +167,18 @@ class ActionsRegulation extends Component
             $this->regulationApplyRole = $regulation->roles()->pluck('roles.id')->toArray();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy regulation');
-            return $this->redirectRoute('admin.management.regulations', navigate: true);
+            Flux::toast(
+                heading: 'Không tìm thấy!',
+                text: 'Không tìm thấy nội quy.',
+                variant: 'error',
+            );
+            return  $this->redirectRoute('admin.management.regulations', ['yearFilter' => $this->academic_year_id], navigate: true);
         }
     }
 
     public function updateRegulation()
     {
-        //$this->validate();
+        $this->validate();
 
         $data = $this->only([
             'type',
@@ -182,12 +196,20 @@ class ActionsRegulation extends Component
                 $regulation->regulationApplyRole()->sync($this->regulationApplyRole);
             }
 
-            session()->flash('success', 'Regulation cập nhật thành công.');
+            Flux::toast(
+                heading: 'Đã lưu thay đổi.',
+                text: 'Nội quy cập nhật thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật regulation thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Cập nhật thất bại!',
+                text: 'Không thể cập nhật nội quy. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
-        $this->redirectRoute('admin.management.regulations', navigate: true);
+        return $this->redirectRoute('admin.management.regulations', ['yearFilter' => $this->academic_year_id], navigate: true);
     }
 
 

@@ -4,9 +4,10 @@
         :breadcrumb="[
             ['label' => 'Bảng điều khiển', 'url' => route('dashboard')],
             ['label' => 'Nội quy', 'url' => route('admin.management.regulations')],
-            ['label' => 'Thêm nội quy'],
+            ['label' => 'Thêm / Chỉnh sửa nội quy'],
         ]" buttonLabelBack="Quay lại" buttonBackAction="backRegulation">
 
+        <flux:separator text="Thông tin nội quy" />
 
         <form wire:submit.prevent='{{ $isEditRegulationMode ? 'updateRegulation' : 'createRegulation' }}'
             class=" bg-accent-background rounded-2xl p-4">
@@ -19,7 +20,7 @@
                     {{-- Hàng 1: Niên khoá --}}
                     <div>
                         <label for="academic_year_id" class="block text-sm font-medium mb-1">Niên khoá</label>
-                        <flux:select wire:model.lazy="academic_year_id" placeholder="Chọn niên khoá">
+                        <flux:select variant="listbox" wire:model.lazy="academic_year_id" placeholder="Chọn niên khoá">
                             @foreach ($years as $year)
                                 <flux:select.option value="{{ $year->id }}">{{ $year->name }}</flux:select.option>
                             @endforeach
@@ -28,13 +29,13 @@
                             <x-app-error-message :message="$message" />
                         @enderror
                     </div>
-                
+
                     {{-- Hàng 2: Cộng/Trừ và Điểm --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {{-- Cộng / Trừ --}}
                         <div>
                             <label for="type" class="block text-sm font-medium mb-1">Cộng / Trừ</label>
-                            <flux:select wire:model.lazy="type" placeholder="Chọn loại">
+                            <flux:select wire:model="type" placeholder="Chọn loại" variant="listbox">
                                 <flux:select.option value="plus">Cộng điểm</flux:select.option>
                                 <flux:select.option value="minus">Trừ điểm</flux:select.option>
                             </flux:select>
@@ -42,7 +43,7 @@
                                 <x-app-error-message :message="$message" />
                             @enderror
                         </div>
-                
+
                         {{-- Điểm --}}
                         <div>
                             <label for="points" class="block text-sm font-medium mb-1">Điểm</label>
@@ -53,30 +54,26 @@
                         </div>
                     </div>
                 </div>
-                
-                
-
-
 
                 <div>
-                    <flux:textarea label="Mô tả chức vụ" placeholder="Cộng tác, Giáo viên, Học sinh,..."
-                        wire:model='description' />
+                    <flux:textarea label="Mô tả nội quy" placeholder="Tham dự thánh lễ,...." wire:model='description'
+                        class="min-h-[120px]" />
                 </div>
 
             </div>
 
             <flux:separator text="Áp dụng các chức vụ" />
-            <div class='mb-4'>
-                <flux:checkbox.group wire:model="regulationApplyRole">
-                    <flux:checkbox.all label="Chọn tất cả" />
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class='my-4'>
+                <flux:checkbox.group wire:model="regulationApplyRole" variant="cards" class="max-sm:flex-col">
+
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-h-[350px] overflow-y-auto p-1 custom-scrollbar">
+
+                        <flux:checkbox.all label="Chọn tất cả" class="cursor-pointer" />
 
                         @foreach ($roles as $role)
-                            <label
-                                class="block p-2 bg-accent-card rounded-lg border border-accent/20 hover:border-accent cursor-pointer ">
-                                <flux:checkbox label-class="text-red-600" value="{{ $role->id }}" label="{{ $role->name }}"
-                                    description="{{ $role->description }}" />
-                            </label>
+                            <flux:checkbox value="{{ $role->id }}" label="{{ $role->name }}"
+                                description="{{ $role->description }}" class="cursor-pointer" />
                         @endforeach
 
 

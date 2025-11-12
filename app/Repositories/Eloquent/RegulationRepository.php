@@ -8,8 +8,8 @@ use App\Repositories\Traits\HasSortableOrdering;
 use App\Repositories\Interfaces\RegulationRepositoryInterface;
 
 class RegulationRepository extends BaseRepository implements RegulationRepositoryInterface
-
 {
+    protected ?string $groupColumn = 'academic_year_id';
 
     use HasSortableOrdering;
 

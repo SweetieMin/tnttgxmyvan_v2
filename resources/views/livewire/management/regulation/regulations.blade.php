@@ -6,14 +6,13 @@
 
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
-                <x-contents.search searchPlaceholder="Tìm kiếm Nội quy / điểm..." wire:model.live.debounce.300ms="search"
+                <x-contents.search searchPlaceholder="Tìm kiếm Nội quy / điểm..."
                     :years="$years" />
             </div>
         </div>
-
-
+        
         {{-- Main content area --}}
-        <div class="mt-2">
+
             <div x-data="{
                 initSortable() {
                     // Desktop sortable
@@ -55,76 +54,110 @@
                     }
                 }
             }" x-init="initSortable()">
-                <div class="theme-table">
+
                     {{-- Desktop Table View --}}
                     <div class="hidden md:block ">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th class="text-center">STT</th>
-                                    <th>Mô tả</th>
-                                    <th class="text-center">Điểm</th>
-                                    <th class="text-center"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="sortable-regulations" data-academic-year-id="{{ $selectedYear ?? null }}">
-                                @forelse ($regulations as $regulation)
-                                    <tr  wire:key="regulation-desktop-{{ $regulation->id }}" data-id="{{ $regulation->id }}">
+                        <flux:card class="overflow-hidden border border-accent/20 rounded-xl shadow-sm">
+                            <flux:table container:class="max-h-[55vh] overflow-y-auto custom-scrollbar"
+                                class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
+                                {{-- ===== HEADER ===== --}}
+                                <flux:table.columns sticky class="bg-white dark:bg-zinc-700">
+                                    <flux:table.column class="w-12 text-center">STT</flux:table.column>
+                                    <flux:table.column>Mô tả</flux:table.column>
+                                    <flux:table.column align="center" class="w-32">Điểm</flux:table.column>
+                                    <flux:table.column class="w-16"></flux:table.column>
+                                </flux:table.columns>
 
-                                        <td class="text-center w-12 drag-handle cursor-move"> {{ $regulation->ordering }} </td>
-                                        <td> {{ $regulation->description }} </td>
-                                        <td class="text-center">
-
-                                            <flux:badge variant="solid"
-                                                color="{{ $regulation->type === 'plus' ? 'green' : 'red' }}">
-                                                {{ $regulation->points }} </flux:badge>
-                                        </td>
-                                        <td>
-                                            <flux:dropdown position="bottom" align="end">
-                                                <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
-                                                    variant="subtle" />
-                                                <flux:menu>
-                                                    <flux:menu.item class="cursor-pointer" icon="pencil-square"
-                                                        wire:click='editRegulation({{ $regulation->id }})'>
-                                                        Sửa
-                                                    </flux:menu.item>
-
-                                                    <flux:menu.item class="cursor-pointer" icon="trash"
-                                                        variant="danger"
-                                                        wire:click='deleteRegulation({{ $regulation->id }})'>
-                                                        Xoá
-                                                    </flux:menu.item>
-
-                                                </flux:menu>
-                                            </flux:dropdown>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6">
-                                            <div class="empty-state flex flex-col items-center">
-                                                <flux:icon.squares-plus class="w-8 h-8 mb-2" />
-                                                <div class="text-sm">Không có dữ liệu</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-
-                        </table>
-
+                                {{-- ===== BODY ===== --}}
+                                <flux:table.rows id="sortable-regulations" data-academic-year-id="{{ $selectedYear ?? null }}">
+                                    @forelse ($regulations as $regulation)
+                                        <flux:table.row wire:key="regulation-desktop-{{ $regulation->id }}" data-id="{{ $regulation->id }}">
+                                            <flux:table.cell align="center" class="drag-handle cursor-move">
+                                                {{ $regulation->ordering }}
+                                            </flux:table.cell>
+                                            <flux:table.cell>
+                                                {{ $regulation->description }}
+                                            </flux:table.cell>
+                                            <flux:table.cell align="center">
+                                                <flux:badge variant="solid"
+                                                    color="{{ $regulation->type === 'plus' ? 'green' : 'red' }}">
+                                                    {{ $regulation->points }}
+                                                </flux:badge>
+                                            </flux:table.cell>
+                                            <flux:table.cell class="text-right">
+                                                <flux:dropdown position="bottom" align="end">
+                                                    <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
+                                                        variant="subtle" />
+                                                    <flux:menu>
+                                                        <flux:menu.item class="cursor-pointer" icon="pencil-square"
+                                                            wire:click='editRegulation({{ $regulation->id }})'>
+                                                            Sửa
+                                                        </flux:menu.item>
+                                                        <flux:menu.item class="cursor-pointer" icon="trash"
+                                                            variant="danger"
+                                                            wire:click='deleteRegulation({{ $regulation->id }})'>
+                                                            Xoá
+                                                        </flux:menu.item>
+                                                    </flux:menu>
+                                                </flux:dropdown>
+                                            </flux:table.cell>
+                                        </flux:table.row>
+                                    @empty
+                                        <flux:table.row>
+                                            <flux:table.cell colspan="4">
+                                                <div class="empty-state flex flex-col items-center py-6">
+                                                    <flux:icon.squares-plus class="w-8 h-8 mb-2" />
+                                                    <div class="text-sm">Không có dữ liệu</div>
+                                                </div>
+                                            </flux:table.cell>
+                                        </flux:table.row>
+                                    @endforelse
+                                </flux:table.rows>
+                            </flux:table>
+                        </flux:card>
                     </div>
 
                     {{-- Mobile Card View --}}
-                    <div class="md:hidden space-y-3">
+                    <div class="md:hidden space-y-3" id="sortable-regulations-mobile" data-academic-year-id="{{ $selectedYear ?? null }}">
+                        @forelse ($regulations as $regulation)
+                            <flux:accordion wire:key="regulation-mobile-{{ $regulation->id }}" transition variant="reverse" data-id="{{ $regulation->id }}">
+                                <flux:card class="space-y-6">
+                                    <flux:accordion.item>
+                                        <flux:accordion.heading>
+                                            <div class="flex items-center justify-between gap-3">
+                                                <span class="font-semibold text-accent-text">{{ $regulation->ordering }}. {{ $regulation->description }}</span>
+                                                <flux:badge variant="solid" class="drag-handle cursor-move"
+                                                    color="{{ $regulation->type === 'plus' ? 'green' : 'red' }}">
+                                                    {{ $regulation->points }}
+                                                </flux:badge>
+                                            </div>
+                                        </flux:accordion.heading>
 
+                                        <flux:accordion.content>
+                                            <div class="space-y-3 text-sm text-accent-text/90 mt-2">
+                                                <div class="pt-3 border-t border-accent/10 flex gap-2">
+                                                    <flux:button wire:click='editRegulation({{ $regulation->id }})'
+                                                        icon="pencil-square" variant="filled" class="flex-1">
+                                                        Sửa
+                                                    </flux:button>
+                                                    <flux:button wire:click='deleteRegulation({{ $regulation->id }})' icon="trash"
+                                                        variant="danger" class="flex-1">
+                                                        Xoá
+                                                    </flux:button>
+                                                </div>
+                                            </div>
+                                        </flux:accordion.content>
+                                    </flux:accordion.item>
+                                </flux:card>
+                            </flux:accordion>
+                        @empty
+                            <flux:card class="p-6 text-center">
+                                <flux:icon.squares-plus class="w-8 h-8 mb-2 text-muted-foreground" />
+                                <flux:text>Không có dữ liệu</flux:text>
+                            </flux:card>
+                        @endforelse
                     </div>
-
-
-
-                </div>
             </div>
-        </div>
 
     </x-contents.layout>
 

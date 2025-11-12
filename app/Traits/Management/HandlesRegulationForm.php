@@ -8,8 +8,8 @@ trait HandlesRegulationForm
     protected function resetForm()
     {
         $this->reset([
-            
-
+            'points',
+            'description'
         ]);
 
         $this->isEditRegulationMode=false;

@@ -18,7 +18,7 @@
                 {{-- Search --}}
                 <div class="flex flex-col">
                     <flux:input icon="magnifying-glass" wire:model.live.debounce.500ms="search" type="text"
-                        placeholder="{{ $searchPlaceholder }}" label="Tìm kiếm" />
+                        placeholder="{{ $searchPlaceholder }}" label="Tìm kiếm" clearable/>
                 </div>
 
 

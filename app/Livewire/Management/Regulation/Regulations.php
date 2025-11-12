@@ -6,6 +6,7 @@ use Flux\Flux;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Computed;
 use App\Repositories\Interfaces\RegulationRepositoryInterface;
 use App\Repositories\Interfaces\AcademicYearRepositoryInterface;
 
@@ -24,10 +25,17 @@ class Regulations extends Component
 
     public $regulationID;
 
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'yearFilter' => ['except' => null],
+    ];
+
     public function mount()
     {
-        $ongoing = $this->academicYearRepository->getAcademicOngoingNow();
-        $this->yearFilter = $ongoing?->id;
+        if (! $this->yearFilter) {
+            $ongoing = $this->academicYearRepository->getAcademicOngoingNow();
+            $this->yearFilter = $ongoing?->id;
+        }
     }
 
     public function boot(RegulationRepositoryInterface $regulationRepository, AcademicYearRepositoryInterface $academicYearRepository)
@@ -36,16 +44,24 @@ class Regulations extends Component
         $this->academicYearRepository = $academicYearRepository;
     }
 
+    #[Computed]
+    public function regulations()
+    {
+        return $this->regulationRepository
+            ->regulationWithSearchAndYear($this->search, $this->yearFilter);
+    }
+
+    #[Computed]
+    public function years()
+    {
+        return $this->academicYearRepository->all();
+    }
+
     public function render()
     {
-        $regulations = $this->regulationRepository
-            ->regulationWithSearchAndYear($this->search, $this->yearFilter);
-
-            $years = $this->academicYearRepository->all();
-
         return view('livewire.management.regulation.regulations', [
-            'regulations' => $regulations,
-            'years' => $years,
+            'regulations' => $this->regulations,
+            'years' => $this->years,
             'selectedYear' => $this->yearFilter,
         ]);
     }
@@ -65,14 +81,28 @@ class Regulations extends Component
             $success = $this->regulationRepository->updateRegulationOrdering($orderedIds, $academicYearId);
             
             if ($success) {
-                session()->flash('success', 'Thứ tự nội quy đã được cập nhật.');
+                Flux::toast(
+                    heading: 'Thành công',
+                    text: 'Thứ tự nội quy đã được cập nhật.',
+                    variant: 'success',
+                );
             } else {
-                session()->flash('error', 'Không thể cập nhật thứ tự nội quy.');
+                Flux::toast(
+                    heading: 'Đã xảy ra lỗi!',
+                    text: 'Không thể cập nhật thứ tự nội quy.',
+                    variant: 'error',
+                );
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Lỗi khi cập nhật thứ tự: ' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: app()->environment('local')
+                    ? ('Lỗi khi cập nhật thứ tự: ' . $e->getMessage())
+                    : 'Rất tiếc, hệ thống không thể cập nhật thứ tự nội quy.',
+                variant: 'error',
+            );
         }
-        $this->redirectRoute('admin.management.regulations', navigate: true);
+        $this->redirectRoute('admin.management.regulations', ['yearFilter' => $this->yearFilter], navigate: true);
     }
 
     public function deleteRegulation($id)
@@ -88,8 +118,12 @@ class Regulations extends Component
             Flux::modal('delete-regulation')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy regulation');
-            return $this->redirectRoute('admin.management.regulations', navigate: true);
+            Flux::toast(
+                heading: 'Không tìm thấy!',
+                text: 'Không tìm thấy nội quy.',
+                variant: 'error',
+            );
+            return $this->redirectRoute('admin.management.regulations', ['yearFilter' => $this->yearFilter], navigate: true);
         }
     }
 
@@ -98,11 +132,19 @@ class Regulations extends Component
         try {
             $this->regulationRepository->delete($this->regulationID);
 
-            session()->flash('success', 'Regulation xoá thành công.');
+            Flux::toast(
+                heading: 'Thành công!',
+                text: 'Nội quy đã được xoá khỏi hệ thống.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá regulation thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Xoá thất bại!',
+                text: 'Không thể xoá nội quy. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
-        $this->redirectRoute('admin.management.regulations', navigate: true);
+        $this->redirectRoute('admin.management.regulations', ['yearFilter' => $this->yearFilter], navigate: true);
     }
 }
