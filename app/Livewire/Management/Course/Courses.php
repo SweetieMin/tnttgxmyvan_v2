@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Management\Course;
 
+use Flux\Flux;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
@@ -88,12 +89,24 @@ class Courses extends Component
             $success = $this->courseRepository->updateCourseOrdering($orderedIds, $academicYearId);
 
             if ($success) {
-                session()->flash('success', 'Thứ tự lớp học đã được cập nhật.');
+                Flux::toast(
+                    heading: 'Thành công',
+                    text: 'Thứ tự lớp học đã được cập nhật.',
+                    variant: 'success',
+                );
             } else {
-                session()->flash('error', 'Không thể cập nhật thứ tự lớp học.');
+                Flux::toast(
+                    heading: 'Đã xảy ra lỗi!',
+                    text: 'Không thể cập nhật thứ tự lớp học.',
+                    variant: 'error',
+                );
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Lỗi khi cập nhật thứ tự: ' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Lỗi khi cập nhật thứ tự: ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
         $this->redirectRoute('admin.management.courses', ['yearFilter' => $this->yearFilter], navigate: true);
     }

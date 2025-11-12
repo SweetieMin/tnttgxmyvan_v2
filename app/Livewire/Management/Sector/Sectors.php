@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Management\Sector;
 
+use Flux\Flux;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Repositories\Interfaces\SectorRepositoryInterface;
@@ -20,16 +21,28 @@ class Sectors extends Component
     
     public $yearFilter = null;
 
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'yearFilter' => ['except' => null],
+    ];
+
     public function mount()
     {
-        $ongoing = $this->academicYearRepository->getAcademicOngoingNow();
-        $this->yearFilter = $ongoing?->id;
+        if (! $this->yearFilter) {
+            $ongoing = $this->academicYearRepository->getAcademicOngoingNow();
+            $this->yearFilter = $ongoing?->id;
+        }
     }
 
     public function boot(SectorRepositoryInterface $sectorRepository, AcademicYearRepositoryInterface $academicYearRepository)
     {
         $this->sectorRepository = $sectorRepository;
         $this->academicYearRepository = $academicYearRepository;
+    }
+
+    public function updatingYearFilter()
+    {
+        $this->resetPage();
     }
 
     public function updatingSearch()
@@ -65,14 +78,30 @@ class Sectors extends Component
 
     public function updateSectorsOrdering($ids)
     {
-        $success = $this->sectorRepository->updateOrdering($ids);
+        try {
+            $success = $this->sectorRepository->updateOrdering($ids);
 
-        if ($success) {
-            session()->flash('success', 'Sắp xếp ngành sinh hoạt thành công!');
-        } else {
-            session()->flash('error', 'Sắp xếp thất bại! Vui lòng thử lại.');
+            if ($success) {
+                Flux::toast(
+                    heading: 'Thành công',
+                    text: 'Thứ tự ngành sinh hoạt đã được cập nhật.',
+                    variant: 'success',
+                );
+            } else {
+                Flux::toast(
+                    heading: 'Đã xảy ra lỗi!',
+                    text: 'Không thể cập nhật thứ tự ngành sinh hoạt.',
+                    variant: 'error',
+                );
+            }
+        } catch (\Exception $e) {
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Lỗi khi cập nhật thứ tự: ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
-        $this->redirectRoute('admin.management.sectors', navigate: true);
+        $this->redirectRoute('admin.management.sectors', ['yearFilter' => $this->yearFilter], navigate: true);
     }
 }

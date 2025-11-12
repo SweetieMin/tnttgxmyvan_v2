@@ -25,10 +25,11 @@ class ActionsSector extends Component
     public $isEditSectorMode = false;
 
     public string $sector = '';
-    public int $academic_year_id;
-    public int $program_id;
 
-    public $sectorID;
+    public ?int $academic_year_id = null;
+    public ?int $program_id = null;
+
+    public ?int $sectorID = null;
 
     /**
      * Quy tắc xác thực
@@ -84,12 +85,20 @@ class ActionsSector extends Component
         try {
             $this->sectorRepository->create($data);
 
-            session()->flash('success', 'Ngành sinh hoạt tạo thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Ngành sinh hoạt mới đã được tạo.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Tạo ngành sinh hoạt thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không thể tạo ngành sinh hoạt. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
-        $this->redirectRoute('admin.management.sectors', navigate: true);
+        $this->redirectRoute('admin.management.sectors', ['yearFilter' => $this->academic_year_id], navigate: true);
     }
 
     #[On('editSector')]
@@ -111,8 +120,12 @@ class ActionsSector extends Component
             Flux::modal('action-sector')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy ngành sinh hoạt');
-            return $this->redirectRoute('admin.management.sectors', navigate: true);
+            Flux::toast(
+                heading: 'Không tìm thấy!',
+                text: 'Không tìm thấy ngành sinh hoạt.',
+                variant: 'error',
+            );
+            return $this->redirectRoute('admin.management.sectors', ['yearFilter' => $this->academic_year_id], navigate: true);
         }
 
     }
@@ -130,12 +143,20 @@ class ActionsSector extends Component
         try {
             $this->sectorRepository->update($this->sectorID, $data);
 
-            session()->flash('success', 'Ngành sinh hoạt cập nhật thành công.');
+            Flux::toast(
+                heading: 'Đã lưu thay đổi.',
+                text: 'Ngành sinh hoạt cập nhật thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật ngành sinh hoạt thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Cập nhật thất bại!',
+                text: 'Không thể cập nhật ngành sinh hoạt. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
         
-        $this->redirectRoute('admin.management.sectors', navigate: true);
+        $this->redirectRoute('admin.management.sectors', ['yearFilter' => $this->academic_year_id], navigate: true);
     }
 
     #[On('deleteSector')]
@@ -154,8 +175,12 @@ class ActionsSector extends Component
             Flux::modal('delete-sector')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy ngành sinh hoạt');
-            return $this->redirectRoute('admin.management.sectors', navigate: true);
+            Flux::toast(
+                heading: 'Không tìm thấy!',
+                text: 'Không tìm thấy ngành sinh hoạt.',
+                variant: 'error',
+            );
+            return $this->redirectRoute('admin.management.sectors', ['yearFilter' => $this->academic_year_id], navigate: true);
         }
 
     }
@@ -165,13 +190,19 @@ class ActionsSector extends Component
         try {
             $this->sectorRepository->delete($this->sectorID);
 
-            session()->flash('success', 'Ngành sinh hoạt xoá thành công.');
-
-            
+            Flux::toast(
+                heading: 'Thành công!',
+                text: 'Ngành sinh hoạt đã được xoá.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá ngành sinh hoạt thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Xoá thất bại!',
+                text: 'Không thể xoá ngành sinh hoạt. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
         
-        $this->redirectRoute('admin.management.sectors', navigate: true);
+        $this->redirectRoute('admin.management.sectors', ['yearFilter' => $this->academic_year_id], navigate: true);
     }
 }
