@@ -21,10 +21,17 @@ class Courses extends Component
 
     public $yearFilter = null;
 
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'yearFilter' => ['except' => null],
+    ];
+
     public function mount()
     {
-        $ongoing = $this->academicYearRepository->getAcademicOngoingNow();
-        $this->yearFilter = $ongoing?->id;
+        if (! $this->yearFilter) {
+            $ongoing = $this->academicYearRepository->getAcademicOngoingNow();
+            $this->yearFilter = $ongoing?->id;
+        }
     }
 
 
@@ -79,7 +86,7 @@ class Courses extends Component
     {
         try {
             $success = $this->courseRepository->updateCourseOrdering($orderedIds, $academicYearId);
-            
+
             if ($success) {
                 session()->flash('success', 'Thứ tự lớp học đã được cập nhật.');
             } else {
@@ -88,6 +95,6 @@ class Courses extends Component
         } catch (\Exception $e) {
             session()->flash('error', 'Lỗi khi cập nhật thứ tự: ' . $e->getMessage());
         }
-        $this->redirectRoute('admin.management.courses', navigate: true);
+        $this->redirectRoute('admin.management.courses', ['yearFilter' => $this->yearFilter], navigate: true);
     }
 }

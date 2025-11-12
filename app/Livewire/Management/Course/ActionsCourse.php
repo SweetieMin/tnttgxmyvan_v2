@@ -27,10 +27,10 @@ class ActionsCourse extends Component
     public $isEditCourseMode = false;
 
     public string $course;
-    public int $academic_year_id;
-    public int $program_id;
+    public ?int $academic_year_id = null;
+    public ?int $program_id = null;
 
-    public $courseID;
+    public ?int $courseID = null;
 
 
     /**
@@ -93,12 +93,20 @@ class ActionsCourse extends Component
 
             $this->courseRepository->create($data);
 
-            session()->flash('success', 'Lớp giáo lý tạo thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Lớp giáo lý mới đã được tạo.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Tạo lớp giáo lý thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không thể tạo lớp giáo lý. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
-        $this->redirectRoute('admin.management.courses', navigate: true);
+        $this->redirectRoute('admin.management.courses', ['yearFilter' => $this->academic_year_id], navigate: true);
     }
 
     #[On('editCourse')]
@@ -121,8 +129,12 @@ class ActionsCourse extends Component
             Flux::modal('action-course')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy course');
-            return $this->redirectRoute('admin.management.courses', navigate: true);
+            Flux::toast(
+                heading: 'Không tìm thấy!',
+                text: 'Không tìm thấy lớp giáo lý.',
+                variant: 'error',
+            );
+            return $this->redirectRoute('admin.management.courses', ['yearFilter' => $this->academic_year_id], navigate: true);
         }
     }
 
@@ -145,12 +157,20 @@ class ActionsCourse extends Component
 
             $this->courseRepository->update($this->courseID, $data);
 
-            session()->flash('success', 'Course cập nhật thành công.');
+            Flux::toast(
+                heading: 'Đã lưu thay đổi.',
+                text: 'Lớp giáo lý cập nhật thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật course thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Cập nhật thất bại!',
+                text: 'Không thể cập nhật lớp giáo lý. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
-        $this->redirectRoute('admin.management.courses', navigate: true);
+        $this->redirectRoute('admin.management.courses', ['yearFilter' => $this->academic_year_id], navigate: true);
     }
 
     #[On('deleteCourse')]
@@ -168,8 +188,12 @@ class ActionsCourse extends Component
             Flux::modal('delete-course')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy course');
-            return $this->redirectRoute('admin.management.courses', navigate: true);
+            Flux::toast(
+                heading: 'Không tìm thấy!',
+                text: 'Không tìm thấy lớp giáo lý.',
+                variant: 'error',
+            );
+            return $this->redirectRoute('admin.management.courses', ['yearFilter' => $this->academic_year_id], navigate: true);
         }
     }
 
@@ -178,12 +202,20 @@ class ActionsCourse extends Component
         try {
             $this->courseRepository->delete($this->courseID);
 
-            session()->flash('success', 'Course xoá thành công.');
+            Flux::toast(
+                heading: 'Thành công!',
+                text: 'Lớp giáo lý đã được xoá.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá course thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Xoá thất bại!',
+                text: 'Không thể xoá lớp giáo lý. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
-        $this->redirectRoute('admin.management.courses', navigate: true);
+        $this->redirectRoute('admin.management.courses', ['yearFilter' => $this->academic_year_id], navigate: true);
     }
 
 }

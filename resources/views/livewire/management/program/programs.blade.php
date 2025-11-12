@@ -45,7 +45,7 @@
                 {{-- Desktop Table View --}}
                 <div class="hidden md:block ">
                     <flux:card class="overflow-hidden border border-accent/20 rounded-xl shadow-sm">
-                        <flux:table container:class="max-h-[67vh] overflow-y-auto custom-scrollbar"
+                        <flux:table container:class="max-h-[calc(76vh-90px)] overflow-y-auto custom-scrollbar"
                             class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
                             <flux:table.columns sticky class="bg-white dark:bg-zinc-700">
                                 <flux:table.column class="w-12">STT</flux:table.column>
@@ -111,7 +111,7 @@
                                         <div class="flex items-start justify-between gap-3">
                                             <div class="flex-1">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="drag-handle cursor-move inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent/10 text-sm font-semibold">
+                                                    <span class="drag-handle cursor-move inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent text-sm font-semibold">
                                                         {{ $program->ordering }}
                                                     </span>
                                                     <div class="grid grid-cols-2 flex-1">

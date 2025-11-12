@@ -14,7 +14,7 @@
         <div class="hidden md:block ">
             <flux:card class="overflow-hidden border border-accent/20 rounded-xl shadow-sm">
                
-                    <flux:table
+                    <flux:table container:class="max-h-[calc(65vh-105px)] overflow-y-auto custom-scrollbar"
                     class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
                         {{-- ===== HEADER ===== --}}
                         <flux:table.columns >
@@ -81,8 +81,13 @@
                     <flux:card class="space-y-6">
                         <flux:accordion.item >
                             <flux:accordion.heading>
-                                <div class="flex flex-col">
-                                    <span class="font-semibold text-accent-text">{{ $year->name }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center justify-center min-w-8 min-h-8 rounded-full bg-accent text-sm font-semibold">
+                                        {{ $loop->iteration }}
+                                    </span>
+                                    <div class="flex flex-col text-left">
+                                        <span class="font-semibold text-accent-text">{{ $year->name}}</span>
+                                    </div>
                                 </div>
                             </flux:accordion.heading>
 

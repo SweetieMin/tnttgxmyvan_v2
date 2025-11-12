@@ -2,9 +2,7 @@
 
 namespace App\Traits\Management;
 
-use App\Models\Course;
-use App\Models\Program;
-
+use App\Services\CourseSectorNameService;
 
 trait HandlesCourseForm
 {
@@ -21,9 +19,8 @@ trait HandlesCourseForm
         $this->resetErrorBag();
     }
 
-
     /**
-     * Khi chọn niên khoá hoặc chương trình → thử sinh tên lớp tự động
+     * Khi chọn niên khoá → kiểm tra lại tên lớp.
      */
     public function updatedAcademicYearId($value)
     {
@@ -32,48 +29,62 @@ trait HandlesCourseForm
         } else {
             $this->resetErrorBag('academic_year_id');
         }
+
         $this->checkCourseName();
     }
 
     public function updatedProgramId($value)
     {
-
-        $course = $this->courseRepository->find($value);
-
         if (empty($value)) {
             $this->addError('program_id', 'Vui lòng chọn chương trình.');
         } else {
             $this->resetErrorBag('program_id');
+
+            $service = $this->courseNameService();
+            $baseName = $service->generateCourseName($this->program_id);
+
+            if (! empty($baseName)) {
+                $this->course = $service->generateUniqueCourseName(
+                    $baseName,
+                    $this->academic_year_id,
+                    $this->program_id,
+                    $this->courseID ?? null
+                );
+            }
         }
 
-        $this->course = $course->course;
         $this->checkCourseName();
     }
 
     public function updatedCourse($value)
     {
-
         $this->checkCourseName();
     }
 
     protected function checkCourseName()
     {
-
-        if (empty($this->academic_year_id) || empty($this->program_id) ||  empty($this->course)) {
+        if (empty($this->academic_year_id) || empty($this->program_id) || empty($this->course)) {
             return;
         }
-        $existingCourses = Course::where('academic_year_id', $this->academic_year_id)
-            ->where('program_id', $this->program_id)
-            ->where('course', $this->course)
-            ->exists();
 
-        // Nếu chưa có lớp nào => dùng tên gốc
-        if ($existingCourses) {
+        $service = $this->courseNameService();
 
-            $this->addError('course', 'Lớp này đã tồn tại trong niên khoá.');
-            return;
+        $uniqueName = $service->generateUniqueCourseName(
+            $this->course,
+            $this->academic_year_id,
+            $this->program_id,
+            $this->courseID ?? null
+        );
+
+        if ($uniqueName !== $this->course) {
+            $this->course = $uniqueName;
         } else {
             $this->resetErrorBag('course');
         }
+    }
+
+    protected function courseNameService(): CourseSectorNameService
+    {
+        return app(CourseSectorNameService::class);
     }
 }

@@ -9,8 +9,7 @@
 
             <label for="perPage" class="block text-sm font-medium mb-1 "> Niên khoá
             </label>
-            <flux:select wire:model.lazy="academic_year_id" placeholder="Chọn niên khoá">
-                <flux:select.option value=""></flux:select.option>
+            <flux:select wire:model="academic_year_id" placeholder="Chọn niên khoá" variant="listbox" >
                 @foreach ($years as $year)
                     <flux:select.option value="{{ $year->id }}">{{ $year->name }}</flux:select.option>
                 @endforeach
@@ -23,8 +22,7 @@
 
             <label for="perPage" class="block text-sm font-medium mb-1 "> Chương trình học
             </label>
-            <flux:select wire:model.lazy="program_id" placeholder="Chọn lớp">
-                <flux:select.option value=""></flux:select.option>
+            <flux:select wire:model.lazy="program_id" placeholder="Chọn lớp" variant="listbox" searchable>
                 @foreach ($programs as $program)
                     <flux:select.option value="{{ $program->id }}">{{ $program->course }}</flux:select.option>
                 @endforeach

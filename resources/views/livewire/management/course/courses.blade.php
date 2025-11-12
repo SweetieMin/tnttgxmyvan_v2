@@ -13,7 +13,7 @@
 
 
         {{-- Main content area --}}
-        <div class="mt-2">
+
             <div x-data="{
                 initSortable() {
                     // Desktop sortable
@@ -57,99 +57,114 @@
             }" x-init="initSortable()">
                 <div class="theme-table">
                     {{-- Desktop Table View --}}
-                    <div class="hidden md:block">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th class="text-center w-12">STT</th>
-                                    <th class="text-center">Tên lớp</th>
-                                    <th class="text-center">Niên khoá</th>
-                                    <th class="text-center">Chương trình</th>
-                                    <th class="text-center">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sortable-courses" data-academic-year-id="{{ $selectedYear ?? null }}">
-                                @forelse ($courses as $course)
-                                <tr wire:key="course-desktop-{{ $course->id }}" data-id="{{ $course->id }}">
-                                    <td class="text-center w-12 drag-handle cursor-move">{{ $course->ordering }}</td>
-                                    <td class="text-center">{{ $course->course }}</td>
-                                    <td class="text-center">
+                    <div class="hidden md:block ">
+                        <flux:card class="overflow-hidden border border-accent/20 rounded-xl shadow-sm">
+                            <flux:table container:class="max-h-[calc(65vh-105px)] overflow-y-auto custom-scrollbar"
+                                class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
+                                <flux:table.columns sticky class="bg-white dark:bg-zinc-700">
+                                    <flux:table.column class="w-16 text-center">STT</flux:table.column>
+                                    <flux:table.column align="center">Tên lớp</flux:table.column>
+                                    <flux:table.column align="center">Niên khoá</flux:table.column>
+                                    <flux:table.column align="center">Chương trình</flux:table.column>
+                                    <flux:table.column class="w-20"></flux:table.column>
+                                </flux:table.columns>
 
-                                        <flux:badge variant="solid" color="green">{{ $course->academicYear->name ?? 'N/A' }}</flux:badge>
-                                    </td>
-                                    <td class="text-center">
-
-                                        <flux:badge variant="solid" color="green"> {{ $course->program->course ?? 'N/A' }}</flux:badge>
-                                    </td>
-                                    <td>
-                                        <flux:dropdown position="bottom" align="end">
-                                            <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
-                                                variant="subtle" />
-                                            <flux:menu>
-                                                <flux:menu.item class="cursor-pointer" icon="pencil-square"
-                                                    wire:click='editCourse({{ $course->id }})'>
-                                                    Sửa
-                                                </flux:menu.item>
-
-                                                <flux:menu.item class="cursor-pointer" icon="trash" variant="danger"
-                                                    wire:click='deleteCourse({{ $course->id }})'>
-                                                    Xoá
-                                                </flux:menu.item>
-
-                                            </flux:menu>
-                                        </flux:dropdown>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="5">
-                                        <div class="empty-state flex flex-col items-center">
-                                            <flux:icon.squares-plus class="w-8 h-8 mb-2" />
-                                            <div class="text-sm">Không có dữ liệu</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                <flux:table.rows id="sortable-courses" data-academic-year-id="{{ $selectedYear ?? null }}">
+                                    @forelse ($courses as $course)
+                                        <flux:table.row wire:key="course-desktop-{{ $course->id }}" data-id="{{ $course->id }}">
+                                            <flux:table.cell align="center" class="drag-handle cursor-move">
+                                                {{ $course->ordering }}
+                                            </flux:table.cell>
+                                            <flux:table.cell align="center">
+                                                {{ $course->course }}
+                                            </flux:table.cell>
+                                            <flux:table.cell align="center">
+                                                <flux:badge variant="solid" color="green">
+                                                    {{ $course->academicYear->name ?? 'N/A' }}
+                                                </flux:badge>
+                                            </flux:table.cell>
+                                            <flux:table.cell align="center">
+                                                <flux:badge variant="solid" color="green">
+                                                    {{ $course->program->course ?? 'N/A' }}
+                                                </flux:badge>
+                                            </flux:table.cell>
+                                            <flux:table.cell class="text-right">
+                                                <flux:dropdown position="bottom" align="end">
+                                                    <flux:button class="cursor-pointer" icon="ellipsis-horizontal" variant="subtle" />
+                                                    <flux:menu>
+                                                        <flux:menu.item class="cursor-pointer" icon="pencil-square"
+                                                            wire:click='editCourse({{ $course->id }})'>
+                                                            Sửa
+                                                        </flux:menu.item>
+                                                        <flux:menu.item class="cursor-pointer" icon="trash"
+                                                            variant="danger" wire:click='deleteCourse({{ $course->id }})'>
+                                                            Xoá
+                                                        </flux:menu.item>
+                                                    </flux:menu>
+                                                </flux:dropdown>
+                                            </flux:table.cell>
+                                        </flux:table.row>
+                                    @empty
+                                        <flux:table.row>
+                                            <flux:table.cell colspan="5">
+                                                <div class="empty-state flex flex-col items-center py-6">
+                                                    <flux:icon.squares-plus class="w-8 h-8 mb-2" />
+                                                    <div class="text-sm">Không có dữ liệu</div>
+                                                </div>
+                                            </flux:table.cell>
+                                        </flux:table.row>
+                                    @endforelse
+                                </flux:table.rows>
+                            </flux:table>
+                        </flux:card>
                     </div>
 
                     {{-- Mobile Card View --}}
-                    <div class="md:hidden space-y-3">
-                        <div id="sortable-courses-mobile" data-academic-year-id="{{ $selectedYear ?? null }}">
-                            @forelse ($courses as $course)
-                            <div class="sortable-row bg-white rounded-lg border border-gray-200 p-4 shadow-sm" 
-                                 wire:key="course-mobile-{{ $course->id }}"
-                                 data-id="{{ $course->id }}">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="drag-handle cursor-move">
-                                            <flux:icon.bars-3 class="w-5 h-5 text-gray-400" />
-                                        </div>
-                                        <div>
-                                            <div class="font-medium text-gray-900">{{ $course->course }}</div>
-                                            <div class="text-sm text-gray-500">
-                                                STT: {{ $course->ordering }} | 
-                                                Năm: {{ $course->academicYear->name ?? 'N/A' }} | 
-                                                Chương trình: {{ $course->program->course ?? 'N/A' }}
+                    <div class="md:hidden space-y-3" id="sortable-courses-mobile" data-academic-year-id="{{ $selectedYear ?? null }}">
+                        @forelse ($courses as $course)
+                            <flux:accordion wire:key="course-mobile-{{ $course->id }}" transition variant="reverse" data-id="{{ $course->id }}">
+                                <flux:card class="space-y-6">
+                                    <flux:accordion.item>
+                                        <flux:accordion.heading>
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="drag-handle cursor-move inline-flex items-center justify-center min-w-8 min-h-8 rounded-full bg-accent text-sm font-semibold">
+                                                        {{ $course->ordering }}
+                                                    </span>
+                                                    <div class="flex flex-col text-left">
+                                                        <span class="font-semibold text-accent-text">{{ $course->course }}</span>
+                                                        <span class="text-xs text-accent-text/70">Niên khoá: {{ $course->academicYear->name ?? 'N/A' }}</span>
+                                                    </div>
+                                                </div>
+                                                <flux:badge variant="solid" color="green">
+                                                    {{ $course->program->course ?? 'N/A' }}
+                                                </flux:badge>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <flux:button size="sm" icon="pencil-square" variant="subtle"
-                                            wire:click='editCourse({{ $course->id }})' />
-                                        <flux:button size="sm" icon="trash" variant="danger"
-                                            wire:click='deleteCourse({{ $course->id }})' />
-                                    </div>
-                                </div>
-                            </div>
-                            @empty
-                            <div class="empty-state flex flex-col items-center py-8">
-                                <flux:icon.squares-plus class="w-8 h-8 mb-2 text-gray-400" />
-                                <div class="text-sm text-gray-500">Không có dữ liệu</div>
-                            </div>
-                            @endforelse
-                        </div>
+                                        </flux:accordion.heading>
+
+                                        <flux:accordion.content>
+                                            <div class="space-y-3 text-sm text-accent-text/90 mt-2">
+                                                <div class="pt-3 border-t border-accent/10 flex gap-2">
+                                                    <flux:button wire:click='editCourse({{ $course->id }})'
+                                                        icon="pencil-square" variant="filled" class="flex-1">
+                                                        Sửa
+                                                    </flux:button>
+                                                    <flux:button wire:click='deleteCourse({{ $course->id }})' icon="trash"
+                                                        variant="danger" class="flex-1">
+                                                        Xoá
+                                                    </flux:button>
+                                                </div>
+                                            </div>
+                                        </flux:accordion.content>
+                                    </flux:accordion.item>
+                                </flux:card>
+                            </flux:accordion>
+                        @empty
+                            <flux:card class="p-6 text-center">
+                                <flux:icon.squares-plus class="w-8 h-8 mb-2 text-muted-foreground" />
+                                <flux:text>Không có dữ liệu</flux:text>
+                            </flux:card>
+                        @endforelse
                     </div>
 
                     @if ($courses->hasPages())
@@ -159,7 +174,7 @@
                     @endif
                 </div>
             </div>
-        </div>
+
 
     </x-contents.layout>
 
