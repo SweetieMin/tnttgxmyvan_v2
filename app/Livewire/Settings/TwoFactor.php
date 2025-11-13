@@ -13,6 +13,10 @@ use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Symfony\Component\HttpFoundation\Response;
 
+use Livewire\Attributes\Title;
+
+#[Title('Xác minh 2 bước')]
+
 class TwoFactor extends Component
 {
     #[Locked]

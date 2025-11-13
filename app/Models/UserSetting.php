@@ -15,6 +15,7 @@ class UserSetting extends Model
     protected $fillable = [
         'user_id',
         'notification_sound',
+        'notification_volume',
     ];
 
     protected $casts = [

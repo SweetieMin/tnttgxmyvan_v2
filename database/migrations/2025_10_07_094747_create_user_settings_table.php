@@ -18,7 +18,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->boolean('notification_sound')->default(true);
-
+            $table->integer('notification_volume')->default(100);
             $table->timestamps();
         });
     }
