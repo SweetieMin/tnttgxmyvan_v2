@@ -22,7 +22,7 @@ class ActionsTransactionItem extends Component
 
     public $name;
 
-    public $is_system = false;
+    public $is_system = 0;
 
     public $description;
 

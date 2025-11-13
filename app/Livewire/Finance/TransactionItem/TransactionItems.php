@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Finance\TransactionItem;
 
+use Flux\Flux;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Repositories\Interfaces\TransactionItemRepositoryInterface;
@@ -45,12 +46,28 @@ class TransactionItems extends Component
 
     public function updateTransactionItemsOrdering($ids)
     {
-        $success = $this->transaction_itemRepository->updateOrdering($ids);
+        try {
+            $success = $this->transaction_itemRepository->updateOrdering($ids);
 
-        if ($success) {
-            session()->flash('success', 'Sắp xếp chương trình học thành công!');
-        } else {
-            session()->flash('error', 'Sắp xếp thất bại! Vui lòng thử lại.');
+            if ($success) {
+                Flux::toast(
+                    heading: 'Thành công',
+                    text: 'Thứ tự hạng mục chi đã được cập nhật.',
+                    variant: 'success',
+                );
+            } else {
+                Flux::toast(
+                    heading: 'Đã xảy ra lỗi!',
+                    text: 'Không thể cập nhật thứ tự hạng mục chi.',
+                    variant: 'error',
+                );
+            }
+        } catch (\Exception $e) {
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Lỗi khi cập nhật thứ tự: ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
         $this->redirectRoute('admin.finance.transaction-items', navigate: true);

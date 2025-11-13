@@ -15,7 +15,7 @@
                 {{-- Cộng / Trừ --}}
                 <div>
                     <label for="is_system" class="block text-sm font-medium mb-1">Loại</label>
-                    <flux:select wire:model.lazy="is_system" placeholder="Chọn loại">
+                    <flux:select wire:model.lazy="is_system" placeholder="Chọn loại" variant="listbox">
                         <flux:select.option value="0">Tùy chỉnh</flux:select.option>
                         <flux:select.option value="1">Hệ thống</flux:select.option>
                     </flux:select>
@@ -28,7 +28,7 @@
             </div>
 
             <flux:textarea label="Mô tả hạng mục" placeholder="Thi chi các hạng động...Tết/Giáng Sinh/Trại hè"
-                wire:model='description' />
+                wire:model='description' class="min-h-[120px]"/>
 
             <flux:separator />
             <div class="flex">
