@@ -28,20 +28,6 @@ class ActionsTransactionItem extends Component
 
     public $transaction_itemID = null;
 
-    public function resetForm()
-    {
-        $this->reset([
-            'name',
-            'transaction_itemID',
-            'description',
-        ]);
-
-        $this->isEditTransactionItemMode = false;
-        $this->is_system = false;
-
-        $this->resetErrorBag();
-    }
-
     /**
      * Quy tắc xác thực
      */
@@ -89,9 +75,17 @@ class ActionsTransactionItem extends Component
         try {
             $this->transaction_itemRepository->create($data);
 
-            session()->flash('success', 'Hạng mục thu chi tạo thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Hạng mục chi đã được tạo thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Tạo transaction_item thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không thể tạo hạng mục chi. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
         $this->redirectRoute('admin.finance.transaction-items', navigate: true);
@@ -118,7 +112,11 @@ class ActionsTransactionItem extends Component
             Flux::modal('action-transaction-item')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy transaction_item');
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không tìm thấy hạng mục chi.',
+                variant: 'error',
+            );
             return $this->redirectRoute('admin.finance.transaction-items', navigate: true);
         }
     }
@@ -137,9 +135,17 @@ class ActionsTransactionItem extends Component
         try {
             $this->transaction_itemRepository->update($this->transaction_itemID, $data);
 
-            session()->flash('success', 'Hạng mục thu chi cập nhật thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Hạng mục chi đã được cập nhật thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật transaction_item thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không thể cập nhật hạng mục chi. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
         $this->redirectRoute('admin.finance.transaction-items', navigate: true);
@@ -161,7 +167,11 @@ class ActionsTransactionItem extends Component
             Flux::modal('delete-transaction-item')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy transaction_item');
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không tìm thấy hạng mục chi.',
+                variant: 'error',
+            );
             return $this->redirectRoute('admin.finance.transaction-items', navigate: true);
         }
     }
@@ -171,9 +181,17 @@ class ActionsTransactionItem extends Component
         try {
             $this->transaction_itemRepository->delete($this->transaction_itemID);
 
-            session()->flash('success', 'Hạng mục thu chi xoá thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Hạng mục chi đã được xóa thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá transaction_item thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không thể xóa hạng mục chi. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
         $this->redirectRoute('admin.finance.transaction-items', navigate: true);
