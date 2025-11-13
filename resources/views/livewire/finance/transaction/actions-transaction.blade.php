@@ -9,8 +9,8 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label for="transaction_item_id" class="block text-sm font-medium mb-1">Hạng mục</label>
-                    <flux:select wire:model.lazy="transaction_item_id" placeholder="Chọn hạng mục">
+                    <flux:select wire:model.lazy="transaction_item_id" placeholder="Chọn hạng mục" variant="listbox"
+                        label="Hạng mục chi" searchable>
                         @foreach ($items as $item)
                             <flux:select.option value="{{ $item->id }}">{{ $item->name }}</flux:select.option>
                         @endforeach
@@ -21,17 +21,18 @@
                     @enderror
                 </div>
                 <div>
-                    <flux:input type="date" max="2999-12-31" label="Ngày" wire:model.lazy='transaction_date' />
+                        <flux:date-picker type="date" :max="now()->toDateString()" label="Ngày"
+                        wire:model.lazy='transaction_date' placeholder="Chọn ngày" locale="vi-VN" selectable-header clearable/>
                 </div>
             </div>
 
-            <flux:textarea label="Mô tả chi tiết" placeholder="Chi tiền Tết 2026" wire:model='description' />
+            <flux:textarea label="Mô tả chi tiết" placeholder="Chi tiền Tết 2026" wire:model='description'
+                class="min-h-[120px]" />
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {{-- Cộng / Trừ --}}
                 <div>
-                    <label for="type" class="block text-sm font-medium mb-1">Thu / Chi</label>
-                    <flux:select wire:model.lazy="type" placeholder="Chọn loại">
+                    <flux:select wire:model.lazy="type" placeholder="Chọn loại" variant="listbox" label="Thu / Chi">
                         <flux:select.option value="expense">Chi</flux:select.option>
                         <flux:select.option value="income">Thu</flux:select.option>
                     </flux:select>
@@ -42,8 +43,8 @@
 
 
                 <div>
-                    <label for="amount" class="block text-sm font-medium mb-1">Tổng số tiền</label>
-                    <flux:input mask:dynamic="$money($input)" wire:model="amount" placeholder="Nhập số tiền" autocomplete="off"/>
+                    <flux:input mask:dynamic="$money($input)" wire:model="amount" placeholder="Nhập số tiền"
+                        autocomplete="off" label="Tổng số tiền" />
                     @error('amount')
                         <x-app-error-message :message="$message" />
                     @enderror
@@ -53,8 +54,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {{-- Cộng / Trừ --}}
                 <div>
-                    <label for="status" class="block text-sm font-medium mb-1">Thu / Chi</label>
-                    <flux:select wire:model.lazy="status" placeholder="Chọn loại">
+                    <flux:select wire:model.lazy="status" variant="listbox" label="Trạng thái">
                         <flux:select.option value="paid">Đã chi</flux:select.option>
                         <flux:select.option value="pending">Chưa chi</flux:select.option>
                     </flux:select>
@@ -65,30 +65,47 @@
 
 
                 <div>
-                    <label for="in_charge" class="block text-sm font-medium mb-1">Người phụ trách</label>
-                    <flux:input wire:model="in_charge" placeholder="Tên người phụ trách" autocomplete="off"/>
+                    <flux:input wire:model="in_charge" placeholder="Tên người phụ trách" autocomplete="off"
+                        label="Người phụ trách" />
                     @error('in_charge')
                         <x-app-error-message :message="$message" />
                     @enderror
                 </div>
             </div>
 
-            {{-- <flux:input type="file" wire:model="attachments" label="File PDF" multiple /> --}}
+            <flux:file-upload wire:model="file" label="Tải lên tập tin" accept=".pdf">
+                <flux:file-upload.dropzone heading="Kéo thả file vào đây hoặc nhấn để chọn"
+                    text="Chỉ hỗ trợ PDF (tối đa 10MB)" with-progress inline />
+            </flux:file-upload>
 
-            <livewire:dropzone wire:model="file" :rules="['mimes:pdf']" :multiple="false" :key="'dropzone-two'" />
 
-            @if ($existingFile)
-                <div
-                    class="mt-3 flex items-center justify-between rounded-lg border border-accent/20 bg-accent-card/10 p-3">
-                    <div class="flex items-center gap-3">
+            <div class="mt-3 flex flex-col gap-2">
 
-                        <a href="{{ $existingFile['url'] }}" target="_blank" class="text-accent hover:underline">
-                            {{ $existingFile['name'] }}
-                        </a>
-                    </div>
-                    <span class="text-xs text-accent-text/60">File đã lưu</span>
-                </div>
-            @endif
+                {{-- Nếu đang chỉnh sửa & có file cũ & chưa upload file mới --}}
+                @if ($isEditTransactionMode && $existingFile && !$file)
+                    <flux:file-item heading="File PDF" icon="document">
+                        <x-slot name="actions">
+                            <flux:link href="{{ $existingFile }}" target="_blank"
+                                variant="ghost">
+                                Xem
+                            </flux:link>
+
+                            <flux:file-item.remove wire:click="removeExistingFile" />
+                        </x-slot>
+                    </flux:file-item>
+                @endif
+
+                {{-- File mới được upload --}}
+                @if ($file)
+                    <flux:file-item :heading="$file->getClientOriginalName()" :size="$file->getSize()" icon="document">
+                        <x-slot name="actions">
+                            <flux:file-item.remove wire:click="removeFile" />
+                        </x-slot>
+                    </flux:file-item>
+                @endif
+            </div>
+
+
 
             <flux:separator />
             <div class="flex">

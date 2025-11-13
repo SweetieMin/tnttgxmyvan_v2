@@ -8,7 +8,9 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use Livewire\WithFileUploads;
 
+use Livewire\Attributes\Validate;
 use App\Services\TransactionService;
+use Illuminate\Support\Facades\Storage;
 use App\Validation\Finance\TransactionRules;
 use App\Traits\Finance\HandlesTransactionForm;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
@@ -40,7 +42,10 @@ class ActionsTransaction extends Component
 
     public $in_charge;
 
+    #[Validate('nullable|mimes:pdf|max:10240')]
     public $file;
+
+    public $file_name;
 
     public $transaction_date;
 
@@ -62,6 +67,12 @@ class ActionsTransaction extends Component
 
         $this->isEditTransactionMode = false;
         $this->resetErrorBag();
+    }
+
+    public function removeFile()
+    {
+        $this->file->delete();
+        $this->file = null;
     }
 
     /**
@@ -87,12 +98,6 @@ class ActionsTransaction extends Component
         $this->transactionItemRepository = $transactionItemRepository;
     }
 
-    public function removeFile($index)
-    {
-        unset($this->file[$index]);
-        $this->file = array_values($this->file);
-    }
-
     public function render()
     {
         $items = $this->transactionItemRepository
@@ -111,7 +116,17 @@ class ActionsTransaction extends Component
 
     public function createTransaction()
     {
+
         $this->validate();
+
+        if ($this->file) {
+            $storedPath = $this->file->store('transactions', 'public');
+            $this->file_name = basename($storedPath);
+
+            $this->file->delete();
+
+            $this->reset('file');
+        }
 
         $data = $this->only([
             'transaction_date',
@@ -126,15 +141,19 @@ class ActionsTransaction extends Component
 
         try {
 
-            if (!empty($this->file[0])) {
-                $data['file_name'] = $this->fileService->store($this->file[0]);
-            }
-
             $this->transactionRepository->create($data);
 
-            session()->flash('success', 'Transaction tạo thành công.');
+            Flux::toast(
+                heading: 'Thành công!',
+                text: 'Tiền quỹ đã được tạo thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Tạo transaction thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không thể tạo tiền quỹ. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
         $this->redirectRoute('admin.finance.transactions', navigate: true);
@@ -157,26 +176,54 @@ class ActionsTransaction extends Component
             $this->transaction_item_id = $transaction->transaction_item_id;
             $this->description = $transaction->description;
             $this->type = $transaction->type;
-            $this->existingFile = $transaction->file_name
-            ? [
-                'name' => basename($transaction->file_name),
-                'url'  => $transaction->file_name,
-            ]
-            : null;
+            $this->existingFile = $transaction->file_name;
 
             // Hiển thị modal
             Flux::modal('action-transaction')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy transaction');
+            Flux::toast(
+                heading: 'Không tìm thấy!',
+                text: 'Tiền quỹ không tồn tại.',
+                variant: 'error',
+            );
+
             return $this->redirectRoute('admin.finance.transactions', navigate: true);
         }
     }
-    
+
+    public function removeExistingFile()
+    {
+        $this->existingFile = null;
+    }
 
     public function updateTransaction()
     {
         $this->amount = (int) str_replace(['.', ','], '', $this->amount);
+
+        $transaction = $this->transactionRepository->find($this->transactionID);
+
+        if ($this->file) {
+
+            if ($transaction && $transaction->file_name) {
+                Storage::disk('public')->delete('transactions/' . $transaction->file_name);
+            }
+
+            $storedPath = $this->file->store('transactions', 'public');
+            $this->file_name = basename($storedPath);
+
+            $this->file->delete();
+            $this->reset('file');
+        } elseif (!$this->existingFile) {
+
+            $this->file_name = null;
+
+            if ($transaction && $transaction->file_name) {
+                Storage::disk('public')->delete('transactions/' . $transaction->file_name);
+            }
+        } else {
+            $this->file_name = $this->existingFile;
+        }
 
         $this->validate();
 
@@ -192,24 +239,26 @@ class ActionsTransaction extends Component
         ]);
 
         try {
-
-            if ($this->file) {
-                // Upload file mới
-                $data['file_name'] = $this->fileService->store($this->file);
-            } elseif ($this->existingFile) {
-                // Không upload file mới → giữ file cũ
-                $data['file_name'] = basename($this->existingFile['name']);
-            }
-            
             $this->transactionRepository->update($this->transactionID, $data);
 
-            session()->flash('success', 'Transaction cập nhật thành công.');
+            Flux::toast(
+                heading: 'Đã lưu thay đổi',
+                text: 'Tiền quỹ cập nhật thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật transaction thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Cập nhật thất bại!',
+                text: app()->environment('local')
+                    ? $e->getMessage()
+                    : 'Không thể cập nhật tiền quỹ.',
+                variant: 'error',
+            );
         }
 
         $this->redirectRoute('admin.finance.transactions', navigate: true);
     }
+
 
     #[On('deleteTransaction')]
     public function deleteTransaction($id)
@@ -220,16 +269,16 @@ class ActionsTransaction extends Component
         $transaction = $this->transactionRepository->find($id);
 
         if ($transaction) {
-            // Gán dữ liệu vào form
             $this->transactionID = $transaction->id;
 
-
-
-            // Hiển thị modal
             Flux::modal('delete-transaction')->show();
         } else {
-            // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy transaction');
+
+            Flux::toast(
+                heading: 'Không tìm thấy!',
+                text: 'Tiền quỹ không tồn tại.',
+                variant: 'error',
+            );
             return $this->redirectRoute('admin.finance.transactions', navigate: true);
         }
     }
@@ -237,11 +286,31 @@ class ActionsTransaction extends Component
     public function deleteTransactionConfirm()
     {
         try {
+
+            $transaction = $this->transactionRepository->find($this->transactionID);
+
+            if ($transaction && $transaction->file_name) {
+
+                $filename = basename($transaction->file_name);
+
+                Storage::disk('public')->delete('transactions/' . $filename);
+            }
+
             $this->transactionRepository->delete($this->transactionID);
 
-            session()->flash('success', 'Transaction xoá thành công.');
+            Flux::toast(
+                heading: 'Đã xoá!',
+                text: 'Tiền quỹ đã được xoá thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá transaction thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Xoá thất bại!',
+                text: app()->environment('local')
+                    ? $e->getMessage()
+                    : 'Không thể xoá tiền quỹ. Vui lòng thử lại.',
+                variant: 'error',
+            );
         }
 
         $this->redirectRoute('admin.finance.transactions', navigate: true);

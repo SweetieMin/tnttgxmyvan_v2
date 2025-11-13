@@ -7,120 +7,256 @@
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <x-contents.search searchPlaceholder="Tìm kiếm Tiền Quỹ..." wire:model.live.debounce.500ms="search"
-                    :items="$items" :count="$transactions->total() ?? 0" :startDate=true :endDate=true :exportData="$transactions->total() > 0"/>
+                    :items="$items" :count="$transactions->total() ?? 0" :startDate=true :endDate=true :exportData="$transactions->total() > 0" />
             </div>
         </div>
 
 
         {{-- Main content area --}}
         <div class="mt-2">
+            {{-- Summary Cards --}}
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                {{-- Số tiền hiện tại --}}
+                <flux:tooltip content="">
+                    <flux:card class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground mb-1">Số tiền hiện tại</p>
+                                <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                    {{ number_format($balance, 0, ',', '.') }} ₫
+                                </p>
+                            </div>
+                            <flux:icon.banknotes class="w-10 h-10 text-blue-500 " />
+                        </div>
+                    </flux:card>
+                </flux:tooltip>
+
+                {{-- Tổng thu --}}
+                <flux:card class="p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground mb-1">Tổng thu</p>
+                            <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+                                {{ number_format($totalIncome, 0, ',', '.') }} ₫
+                            </p>
+                        </div>
+                        <flux:icon.arrow-down-circle class="w-10 h-10 text-green-500 " />
+                    </div>
+                </flux:card>
+
+                {{-- Tổng chi --}}
+                <flux:card class="p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground mb-1">Tổng chi</p>
+                            <p class="text-2xl font-bold text-red-600 dark:text-red-400">
+                                {{ number_format($totalExpense, 0, ',', '.') }} ₫
+                            </p>
+                        </div>
+                        <flux:icon.arrow-up-circle class="w-10 h-10 text-red-500 " />
+                    </div>
+                </flux:card>
+
+                {{-- Tổng công nợ --}}
+                <flux:card class="p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground mb-1">Tổng công nợ</p>
+                            <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                                {{ number_format($totalDebt, 0, ',', '.') }} ₫
+                            </p>
+                        </div>
+                        <flux:icon.arrow-up-circle class="w-10 h-10 text-orange-500 " />
+                    </div>
+                </flux:card>
+            </div>
+
             <div class="theme-table">
                 {{-- Desktop Table View --}}
-                <div class="hidden md:block ">
-                    <table>
-                        <thead>
-                            <tr>
-                                <td colspan="9" class="font-black text-xl text-red-500">
-                                    Số tiền hiện tại: {{ number_format($balance, 0, ',', '.') }} ₫
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="text-center w-12">Ngày</th>
-                                <th class="text-center">Hạng mục</th>
-                                <th>Mô tả</th>
-                                <th class="text-center">Thu</th>
-                                <th class="text-center">Chi</th>
-                                <th class="text-center">Người phụ trách</th>
-                                <th class="text-center">Trạng thái</th>
-                                <th class="text-center">File đính kèm</th>
-                                <th class="text-center"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                <div class="hidden md:block">
+                    <flux:card class="overflow-hidden border border-accent/20 rounded-xl shadow-sm">
+                        <flux:table container:class="max-h-[calc(60vh-150px)] overflow-y-auto custom-scrollbar"
+                            class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
+                            <flux:table.columns sticky class="bg-white dark:bg-zinc-700">
+                                <flux:table.column class="w-32">Ngày</flux:table.column>
+                                <flux:table.column align="center" class="w-40">Hạng mục</flux:table.column>
+                                <flux:table.column align="left">Mô tả</flux:table.column>
+                                <flux:table.column align="center" class="w-32 ">Thu</flux:table.column>
+                                <flux:table.column align="center" class="w-32">Chi</flux:table.column>
+                                <flux:table.column align="center" class="w-40">Người phụ trách</flux:table.column>
+                                <flux:table.column align="center" class="w-32">Trạng thái</flux:table.column>
+                                <flux:table.column align="center" class="w-32">File đính kèm</flux:table.column>
+                                <flux:table.column class="w-20"></flux:table.column>
+                            </flux:table.columns>
 
-                            <tr class="bg-green-100 ">
-                                <td colspan="3" class="text-right font-black text-xl dark:text-black">Tổng cộng:</td>
-                                <td class="text-center font-black text-xl text-green-500 ">{{ number_format($totalIncome, 0, ',', '.') }} ₫</td>
-                                <td class="text-center font-black text-xl text-red-500">{{ number_format($totalExpense, 0, ',', '.') }} ₫</td>
-                                <td colspan="4"></td>
-                            </tr>
-
-                            @forelse ($transactions as $transaction)
-                                <tr>
-
-                                    <td>{{ $transaction->formatted_transaction_date }}</td>
-                                    <td class="text-center">
-                                        <flux:badge color="{{ $transaction->item->is_system  ?  'amber' : 'zinc' }}">{{ $transaction->item->name ?? '—' }}</flux:badge>
-                                    </td>
-                                    <td>{{ $transaction->description }}</td>
-                                    <td class="text-center {{ $transaction->type === 'income' ? 'text-green-500' : 'text-muted' }}">
-                                        {{ $transaction->type === 'income' ? $transaction->formatted_amount : '-' }}
-                                    </td>
-                                    <td class="text-center {{ $transaction->type === 'expense' ? 'text-red-500' : 'text-muted' }}">
-                                        {{ $transaction->type === 'expense' ? $transaction->formatted_amount : '-' }}
-                                    </td>
-
-                                    <td class="text-center">{{ $transaction->in_charge }}</td>
-
-                                    <td class="text-center">
-                                        <flux:badge color="{{ $transaction->status === 'pending' ?  'red' : 'green' }}">{{ $transaction->status === 'pending' ?  'Chưa chi' : 'Đã chi' }}</flux:badge>
-                                    </td>
-                                    
-                                    <td class="text-center">
-                                        @if ($transaction->file_name)
-                                            <flux:link href="{{ $transaction->file_name }}" target="_blank" variant="ghost">Xem file</flux:link>
-                                        @else
-                                            -
-                                        @endif
-                                        
-                                    </td>
-                                    <td>
-                                        <flux:dropdown position="bottom" align="end">
-                                            <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
-                                                variant="subtle" />
-                                            <flux:menu>
-                                                <flux:menu.item class="cursor-pointer" icon="pencil-square"
-                                                    wire:click='editTransaction({{ $transaction->id }})'>
-                                                    Sửa
-                                                </flux:menu.item>
-
-                                                <flux:menu.item class="cursor-pointer" icon="trash" variant="danger"
-                                                    wire:click='deleteTransaction({{ $transaction->id }})'>
-                                                    Xoá
-                                                </flux:menu.item>
-
-                                            </flux:menu>
-                                        </flux:dropdown>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7">
-                                        <div class="empty-state flex flex-col items-center">
-                                            <flux:icon.squares-plus class="w-8 h-8 mb-2" />
-                                            <div class="text-sm">Không có dữ liệu</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-
-                    </table>
-
+                            <flux:table.rows>
+                                @forelse ($transactions as $transaction)
+                                    <flux:table.row wire:key="transaction-desktop-{{ $transaction->id }}">
+                                        <flux:table.cell>
+                                            {{ $transaction->formatted_transaction_date }}
+                                        </flux:table.cell>
+                                        <flux:table.cell align="center">
+                                            <flux:badge color="{{ $transaction->item->is_system ? 'amber' : 'zinc' }}">
+                                                {{ $transaction->item->name ?? '—' }}
+                                            </flux:badge>
+                                        </flux:table.cell>
+                                        <flux:table.cell align="left">
+                                            {{ $transaction->description }}
+                                        </flux:table.cell>
+                                        <flux:table.cell align="center"
+                                            class="{{ $transaction->type === 'income' ? 'text-green-500 font-semibold' : 'text-muted' }}">
+                                            {{ $transaction->type === 'income' ? $transaction->formatted_amount : '-' }}
+                                        </flux:table.cell>
+                                        <flux:table.cell align="center"
+                                            class="{{ $transaction->type === 'expense' ? 'text-red-500 font-semibold' : 'text-muted' }}">
+                                            {{ $transaction->type === 'expense' ? $transaction->formatted_amount : '-' }}
+                                        </flux:table.cell>
+                                        <flux:table.cell align="center">
+                                            {{ $transaction->in_charge }}
+                                        </flux:table.cell>
+                                        <flux:table.cell align="center">
+                                            <flux:badge
+                                                color="{{ $transaction->status === 'pending' ? 'red' : 'green' }}">
+                                                {{ $transaction->status === 'pending' ? 'Chưa chi' : 'Đã chi' }}
+                                            </flux:badge>
+                                        </flux:table.cell>
+                                        <flux:table.cell align="center">
+                                            @if ($transaction->file_name)
+                                                <flux:link href="{{ $transaction->file_name }}" target="_blank"
+                                                    variant="ghost">
+                                                    Xem file
+                                                </flux:link>
+                                            @else
+                                                -
+                                            @endif
+                                        </flux:table.cell>
+                                        <flux:table.cell class="text-right">
+                                            <flux:dropdown position="bottom" align="end">
+                                                <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
+                                                    variant="subtle" />
+                                                <flux:menu>
+                                                    <flux:menu.item class="cursor-pointer" icon="pencil-square"
+                                                        wire:click='editTransaction({{ $transaction->id }})'>
+                                                        Sửa
+                                                    </flux:menu.item>
+                                                    <flux:menu.item class="cursor-pointer" icon="trash"
+                                                        variant="danger"
+                                                        wire:click='deleteTransaction({{ $transaction->id }})'>
+                                                        Xoá
+                                                    </flux:menu.item>
+                                                </flux:menu>
+                                            </flux:dropdown>
+                                        </flux:table.cell>
+                                    </flux:table.row>
+                                @empty
+                                    <flux:table.row>
+                                        <flux:table.cell colspan="9">
+                                            <div class="empty-state flex flex-col items-center py-6">
+                                                <flux:icon.squares-plus class="w-8 h-8 mb-2" />
+                                                <div class="text-sm">Không có dữ liệu</div>
+                                            </div>
+                                        </flux:table.cell>
+                                    </flux:table.row>
+                                @endforelse
+                            </flux:table.rows>
+                        </flux:table>
+                    </flux:card>
                 </div>
 
                 {{-- Mobile Card View --}}
                 <div class="md:hidden space-y-3">
+                    @forelse ($transactions as $transaction)
+                        <flux:accordion wire:key="transaction-{{ $transaction->id }}" transition variant="reverse">
+                            <flux:card class="space-y-6">
+                                <flux:accordion.item>
+                                    <flux:accordion.heading>
+                                        <div class="flex items-center gap-2">
+                                            <span
+                                                class="inline-flex items-center justify-center min-w-8 min-h-8 rounded-full bg-accent text-sm font-semibold">
+                                                {{ $loop->iteration }}
+                                            </span>
+                                            <div class="flex flex-col text-left flex-1">
+                                                <span
+                                                    class="font-semibold text-accent-text">{{ $transaction->description }}</span>
+                                                <span
+                                                    class="text-xs text-accent-text/70">{{ $transaction->formatted_transaction_date }}</span>
+                                            </div>
+                                            <div class="flex flex-col items-end gap-1">
+                                                <flux:badge
+                                                    color="{{ $transaction->item->is_system ? 'amber' : 'zinc' }}"
+                                                    class="text-xs">
+                                                    {{ $transaction->item->name ?? '—' }}
+                                                </flux:badge>
+                                                <flux:badge
+                                                    color="{{ $transaction->status === 'pending' ? 'red' : 'green' }}"
+                                                    class="text-xs">
+                                                    {{ $transaction->status === 'pending' ? 'Chưa chi' : 'Đã chi' }}
+                                                </flux:badge>
+                                            </div>
+                                        </div>
+                                    </flux:accordion.heading>
 
+                                    <flux:accordion.content>
+                                        <div class="space-y-3 text-sm text-accent-text/90 mt-2">
+                                            <div class="flex justify-between">
+                                                <span>Thu:</span>
+                                                <span
+                                                    class="{{ $transaction->type === 'income' ? 'text-green-500 font-semibold' : 'text-muted' }}">
+                                                    {{ $transaction->type === 'income' ? $transaction->formatted_amount : '-' }}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex justify-between">
+                                                <span>Chi:</span>
+                                                <span
+                                                    class="{{ $transaction->type === 'expense' ? 'text-red-500 font-semibold' : 'text-muted' }}">
+                                                    {{ $transaction->type === 'expense' ? $transaction->formatted_amount : '-' }}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex justify-between">
+                                                <span>Người phụ trách:</span>
+                                                <span>{{ $transaction->in_charge }}</span>
+                                            </div>
+
+                                            @if ($transaction->file_name)
+                                                <div class="flex justify-between">
+                                                    <span>File đính kèm:</span>
+                                                    <flux:link href="{{ $transaction->file_name }}" target="_blank"
+                                                        variant="ghost" class="text-xs">
+                                                        Xem file
+                                                    </flux:link>
+                                                </div>
+                                            @endif
+
+                                            <div class="pt-3 border-t border-accent/10 flex gap-2">
+                                                <flux:button wire:click="editTransaction({{ $transaction->id }})"
+                                                    icon="pencil-square" variant="filled" class="flex-1">
+                                                    Sửa
+                                                </flux:button>
+                                                <flux:button wire:click="deleteTransaction({{ $transaction->id }})"
+                                                    icon="trash" variant="danger" class="flex-1">
+                                                    Xóa
+                                                </flux:button>
+                                            </div>
+                                        </div>
+                                    </flux:accordion.content>
+                                </flux:accordion.item>
+                            </flux:card>
+                        </flux:accordion>
+                    @empty
+                        <flux:card class="p-6 text-center">
+                            <flux:icon.squares-plus class="w-8 h-8 mb-2 text-muted-foreground" />
+                            <flux:text>Không có dữ liệu</flux:text>
+                        </flux:card>
+                    @endforelse
                 </div>
-
 
                 @if ($transactions->hasPages())
                     <div class="py-4 px-5">
                         {{ $transactions->links('vendor.pagination.tailwind') }}
                     </div>
                 @endif
-
             </div>
         </div>
 

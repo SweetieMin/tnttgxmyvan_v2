@@ -2,60 +2,72 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use App\Models\TransactionItem;
+
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-
-use Carbon\Carbon;
-use App\Models\TransactionItem;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class TransactionService
 {
     /**
-     * Lưu file PDF giao dịch vào storage
-     *
-     * @param  \Illuminate\Http\UploadedFile  $file
-     * @return string|null  Đường dẫn file đã lưu (ví dụ: transactions/uniquename.pdf)
+     * Lưu file mới vào thư mục storage/app/public/transactions
+     * và xoá file tạm của Livewire
      */
-    public function store($file): ?string
+    public function storeFile(?TemporaryUploadedFile $file): ?string
     {
-        // 🎯 Xác định đường dẫn gốc
-        if (is_array($file)) {
-            if (isset($file[0]['path'])) {
-                // Dropzone upload
-                $sourcePath = $file[0]['path'];
-            } elseif (isset($file['path'])) {
-                // Một mảng đơn
-                $sourcePath = $file['path'];
-            } else {
-                throw new \InvalidArgumentException('File không hợp lệ (thiếu path).');
-            }
-        } elseif ($file instanceof UploadedFile) {
-            // Input type="file"
-            $sourcePath = $file->getRealPath();
-        } else {
-            throw new \InvalidArgumentException('File không hợp lệ.');
+        if (!$file) {
+            return null;
         }
-    
-        // 🔒 Chỉ cho phép PDF
-        if (strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION)) !== 'pdf') {
-            throw new \InvalidArgumentException('Chỉ cho phép file PDF.');
-        }
-    
-        // ✅ Tạo tên file duy nhất và lưu
-        $uniqueName = (string) Str::uuid() . '.pdf';
-        $destination = 'transactions/' . $uniqueName;
-    
-        Storage::disk('public')->put($destination, file_get_contents($sourcePath));
-    
-        // ✅ Xóa file tạm nếu tồn tại (để dọn livewire-tmp)
-        if (file_exists($sourcePath)) {
-            @unlink($sourcePath);
-        }
-    
-        return $uniqueName;
+
+        // Lưu vào storage/app/public/transactions
+        $storedPath = $file->store('transactions', 'public');
+
+        // Xoá file tạm của livewire-tmp
+        $file->delete();
+
+        // Trả về tên file
+        return basename($storedPath);
     }
-    
+
+    /**
+     * Xoá file cũ khỏi storage/app/public/transactions
+     */
+    public function deleteFile(?string $fileName): void
+    {
+        if ($fileName) {
+            Storage::disk('public')->delete('transactions/' . $fileName);
+        }
+    }
+
+    /**
+     * Xử lý upload file khi UPDATE:
+     * - Nếu có file mới → xoá file cũ + lưu file mới
+     * - Nếu user xoá file → xoá file cũ
+     * - Nếu giữ nguyên → trả về file cũ
+     */
+    public function handleUpdateFile($file, $existingFile, $transaction): ?string
+    {
+        // Nếu upload file mới
+        if ($file) {
+            // Xoá file cũ nếu có
+            $this->deleteFile($transaction->file_name);
+
+            // Lưu file mới
+            return $this->storeFile($file);
+        }
+
+        // Nếu người dùng xoá file cũ
+        if (!$existingFile) {
+            $this->deleteFile($transaction->file_name);
+            return null;
+        }
+
+        // Nếu giữ nguyên file
+        return $existingFile;
+    }
 
 
     /**
@@ -68,23 +80,29 @@ class TransactionService
         }
     }
 
-    public function generateName(?string $itemId = null): string
+    public function generateName(string|array|null $itemId = null): string
     {
-        // 🔹 Lấy tên hạng mục (nếu có)
-        $itemName = 'Tat-ca'; // mặc định
+        // Nếu không có filter → mặc định
+        if (empty($itemId)) {
+            $itemName = 'Tat-ca';
+        } else {
+            // Convert về array
+            $itemIds = (array) $itemId;
 
-        if (!empty($itemId)) {
-            $item = TransactionItem::find($itemId);
-            if ($item) {
-                // Chuyển tiếng Việt có dấu → không dấu, snake-case
-                $itemName = $this->slugify($item->name);
+            // Lấy tất cả tên item
+            $items = TransactionItem::whereIn('id', $itemIds)->pluck('name')->toArray();
+
+            // Nếu tìm được → ghép lại thành slug
+            if (!empty($items)) {
+                $itemName = $this->slugify(implode('-', $items));
+            } else {
+                $itemName = 'Tat-ca';
             }
         }
 
-        // 🔹 Ngày hiện tại
-        $date = Carbon::now()->format('dmY');
+        // Ngày hiện tại
+        $date = now()->format('dmY');
 
-        // 🔹 Ghép tên chuẩn
         return "Thong-ke-tien-quy-{$itemName}-{$date}.xlsx";
     }
 
@@ -92,20 +110,146 @@ class TransactionService
     {
         $text = strtolower($text);
         $text = str_replace(
-            ['à','á','ạ','ả','ã','â','ầ','ấ','ậ','ẩ','ẫ','ă','ằ','ắ','ặ','ẳ','ẵ',
-             'è','é','ẹ','ẻ','ẽ','ê','ề','ế','ệ','ể','ễ',
-             'ì','í','ị','ỉ','ĩ',
-             'ò','ó','ọ','ỏ','õ','ô','ồ','ố','ộ','ổ','ỗ','ơ','ờ','ớ','ợ','ở','ỡ',
-             'ù','ú','ụ','ủ','ũ','ư','ừ','ứ','ự','ử','ữ',
-             'ỳ','ý','ỵ','ỷ','ỹ',
-             'đ'],
-            ['a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a',
-             'e','e','e','e','e','e','e','e','e','e','e',
-             'i','i','i','i','i',
-             'o','o','o','o','o','o','o','o','o','o','o','o','o','o','o','o','o','o',
-             'u','u','u','u','u','u','u','u','u','u','u',
-             'y','y','y','y','y',
-             'd'],
+            [
+                'à',
+                'á',
+                'ạ',
+                'ả',
+                'ã',
+                'â',
+                'ầ',
+                'ấ',
+                'ậ',
+                'ẩ',
+                'ẫ',
+                'ă',
+                'ằ',
+                'ắ',
+                'ặ',
+                'ẳ',
+                'ẵ',
+                'è',
+                'é',
+                'ẹ',
+                'ẻ',
+                'ẽ',
+                'ê',
+                'ề',
+                'ế',
+                'ệ',
+                'ể',
+                'ễ',
+                'ì',
+                'í',
+                'ị',
+                'ỉ',
+                'ĩ',
+                'ò',
+                'ó',
+                'ọ',
+                'ỏ',
+                'õ',
+                'ô',
+                'ồ',
+                'ố',
+                'ộ',
+                'ổ',
+                'ỗ',
+                'ơ',
+                'ờ',
+                'ớ',
+                'ợ',
+                'ở',
+                'ỡ',
+                'ù',
+                'ú',
+                'ụ',
+                'ủ',
+                'ũ',
+                'ư',
+                'ừ',
+                'ứ',
+                'ự',
+                'ử',
+                'ữ',
+                'ỳ',
+                'ý',
+                'ỵ',
+                'ỷ',
+                'ỹ',
+                'đ'
+            ],
+            [
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'a',
+                'e',
+                'e',
+                'e',
+                'e',
+                'e',
+                'e',
+                'e',
+                'e',
+                'e',
+                'e',
+                'e',
+                'i',
+                'i',
+                'i',
+                'i',
+                'i',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'o',
+                'u',
+                'u',
+                'u',
+                'u',
+                'u',
+                'u',
+                'u',
+                'u',
+                'u',
+                'u',
+                'u',
+                'y',
+                'y',
+                'y',
+                'y',
+                'y',
+                'd'
+            ],
             $text
         );
         $text = preg_replace('/[^a-z0-9]+/i', '-', $text);

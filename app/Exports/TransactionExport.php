@@ -23,21 +23,22 @@ class TransactionExport implements
     WithEvents
 {
     protected ?string $search;
-    protected ?string $item;
+    protected ?array $item;
     protected ?string $startDate;
     protected ?string $endDate;
 
     public function __construct(
-        ?string $search = null,
-        ?string $item = null,
-        ?string $startDate = null,
-        ?string $endDate = null
+        ?string $search,
+        array|string|null $item,
+        ?string $startDate,
+        ?string $endDate
     ) {
         $this->search = $search;
-        $this->item = $item;
+        $this->item = (array) $item; // Convert luôn về array
         $this->startDate = $startDate;
         $this->endDate = $endDate;
     }
+    
 
     /**
      * 🔍 Lấy dữ liệu có filter
@@ -55,7 +56,7 @@ class TransactionExport implements
 
         // Nếu có chọn hạng mục cụ thể
         if (!empty($this->item)) {
-            $query->where('transaction_item_id', $this->item);
+            $query->whereIn('transaction_item_id', $this->item);
         }
 
         // 📅 Nếu có khoảng ngày

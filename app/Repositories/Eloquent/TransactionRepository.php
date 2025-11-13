@@ -23,7 +23,7 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
         }, 'Không thể tạo bản ghi mới.');
     }
 
-    public function paginateWithSearch(?string $search = null, int $perPage = 10, $item = null, ?string $startDate = null, ?string $endDate = null)
+    public function paginateWithSearch(?string $search = null, int $perPage = 10, $item = [], ?string $startDate = null, ?string $endDate = null)
     {
         $query = $this->model->with(['item']);
 
@@ -36,7 +36,7 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
 
         // 🎯 Nếu chọn 1 item cụ thể (ví dụ transaction_item_id = 3)
         $query->when($item, function ($q) use ($item) {
-            $q->where('transaction_item_id', $item);
+            $q->whereIn('transaction_item_id', (array) $item);
         });
 
         // 📅 Lọc theo ngày bắt đầu / kết thúc
@@ -55,23 +55,27 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
             ->paginate($perPage);
     }
 
-    public function getTotals(?string $search = null, $item = null): array
+    public function getTotals(?string $search = null, $item = []): array
     {
         $query = $this->model->query();
 
         // Nếu lọc theo hạng mục
-        $query->when($item, fn($q) => $q->where('transaction_item_id', $item));
+        $query->when($item, function ($q) use ($item) {
+            $q->whereIn('transaction_item_id', (array) $item);
+        });
 
         // Nếu có search
         $query->when($search, fn($q) => $q->where('description', 'like', "%{$search}%"));
 
         // Tổng thu và chi
         $totalIncome = (clone $query)->where('type', 'income')->sum('amount');
-        $totalExpense = (clone $query)->where('type', 'expense')->sum('amount');
+        $totalExpense = (clone $query)->where('type', 'expense')->where('status','paid')->sum('amount');
+        $totalDebt = (clone $query)->where('type', 'expense')->where('status','pending')->sum('amount');
 
         return [
             'income'  => $totalIncome,
             'expense' => $totalExpense,
+            'debt' => $totalDebt,
             'balance' => $totalIncome - $totalExpense,
         ];
     }

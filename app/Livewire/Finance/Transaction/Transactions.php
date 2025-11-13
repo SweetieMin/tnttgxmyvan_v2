@@ -23,7 +23,7 @@ class Transactions extends Component
 
     public $search;
 
-    public $itemFilter = null;
+    public $itemFilter = [];
 
     public $startDate;
 
@@ -34,6 +34,8 @@ class Transactions extends Component
     public $totalIncome;
 
     public $totalExpense;
+
+    public $totalDebt;
 
     public $balance;
 
@@ -61,6 +63,7 @@ class Transactions extends Component
 
         $this->totalIncome  = $totals['income'];
         $this->totalExpense = $totals['expense'];
+        $this->totalDebt    = $totals['debt'];
         $this->balance      = $totals['balance'];
 
         return view('livewire.finance.transaction.transactions', [
