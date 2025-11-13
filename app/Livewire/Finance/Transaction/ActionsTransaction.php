@@ -63,6 +63,7 @@ class ActionsTransaction extends Component
             'amount',
             'status',
             'in_charge',
+            'existingFile',
         ]);
 
         $this->isEditTransactionMode = false;
