@@ -23,23 +23,32 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
         }, 'Không thể tạo bản ghi mới.');
     }
 
-    public function paginateWithSearch(?string $search = null, int $perPage = 10, $item = [], ?string $startDate = null, ?string $endDate = null)
-    {
+    public function paginateWithSearch(
+        ?string $search = null,
+        int $perPage = 10,
+        $item = [],
+        $status = [],
+        ?string $startDate = null,
+        ?string $endDate = null,
+        string $sortBy = 'status',
+        string $sortDirection = 'desc'
+    ) {
         $query = $this->model->with(['item']);
 
-        // 🔍 Nếu có từ khóa tìm kiếm (mô tả)
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('description', 'like', "%{$search}%");
             });
         }
 
-        // 🎯 Nếu chọn 1 item cụ thể (ví dụ transaction_item_id = 3)
         $query->when($item, function ($q) use ($item) {
             $q->whereIn('transaction_item_id', (array) $item);
         });
 
-        // 📅 Lọc theo ngày bắt đầu / kết thúc
+        $query->when($status, function ($q) use ($status) {
+            $q->whereIn('status', (array) $status);
+        });
+
         if ($startDate && $endDate) {
             $query->whereBetween('transaction_date', [$startDate, $endDate]);
         } elseif ($startDate) {
@@ -48,20 +57,31 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
             $query->whereDate('transaction_date', '<=', $endDate);
         }
 
-        // 🔽 Sắp xếp mới nhất trước
-        return $query
-            ->orderByDesc('transaction_date')
-            ->orderByDesc('created_at')
-            ->paginate($perPage);
+        // ⭐ Nếu sortBy được truyền, ưu tiên sort theo nó trước
+        $query->orderBy($sortBy, $sortDirection);
+
+        // ⭐ Sau đó mới sort thêm theo ngày cho ổn định
+        if ($sortBy !== 'transaction_date') {
+            $query->orderByDesc('transaction_date');
+        }
+
+        $query->orderByDesc('created_at');
+
+        return $query->paginate($perPage);
     }
 
-    public function getTotals(?string $search = null, $item = [],?string $startDate = null, ?string $endDate = null): array
+
+    public function getTotals(?string $search = null, $item = [], $status = [], ?string $startDate = null, ?string $endDate = null): array
     {
         $query = $this->model->query();
 
         // Nếu lọc theo hạng mục
         $query->when($item, function ($q) use ($item) {
             $q->whereIn('transaction_item_id', (array) $item);
+        });
+
+        $query->when($status, function ($q) use ($status) {
+            $q->whereIn('status', (array) $status);
         });
 
         // Nếu lọc theo ngày
@@ -78,8 +98,8 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
 
         // Tổng thu và chi
         $totalIncome = (clone $query)->where('type', 'income')->sum('amount');
-        $totalExpense = (clone $query)->where('type', 'expense')->where('status','paid')->sum('amount');
-        $totalDebt = (clone $query)->where('type', 'expense')->where('status','pending')->sum('amount');
+        $totalExpense = (clone $query)->where('type', 'expense')->where('status', 'paid')->sum('amount');
+        $totalDebt = (clone $query)->where('type', 'expense')->where('status', 'pending')->sum('amount');
 
         return [
             'income'  => $totalIncome,

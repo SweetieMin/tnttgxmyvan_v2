@@ -1,6 +1,7 @@
 @props([
     'years' => [],
-    'items' => [], // Hạng mục cho tiền quỹ
+    'items' => [],
+    'status' => [],
     'searchPlaceholder' => 'Tìm kiếm...',
     'bulkActions' => false,
     'fillDate' => false,
@@ -18,7 +19,7 @@
                 {{-- Search --}}
                 <div class="flex flex-col w-full md:max-w-75">
                     <flux:input icon="magnifying-glass" wire:model.live.debounce.500ms="search" type="text"
-                        placeholder="{{ $searchPlaceholder }}" label="Tìm kiếm" clearable/>
+                        placeholder="{{ $searchPlaceholder }}" label="Tìm kiếm" clearable />
                 </div>
 
 
@@ -37,10 +38,10 @@
                 @if (!empty($years) && count($years) > 0)
                     <div class="flex flex-col md:max-w-60">
 
-                        <flux:select wire:model.live="yearFilter" variant="listbox" searchable  indicator="checkbox" clear="close"
-                            placeholder="Chọn niên khoá..." label="Niên khoá" class="max-w-sm">
+                        <flux:select wire:model.live="yearFilter" variant="listbox" searchable indicator="checkbox"
+                            clear="close" placeholder="Chọn niên khoá..." label="Niên khoá" class="max-w-sm">
                             @foreach ($years as $year)
-                                <flux:select.option value="{{ $year->id }}">{{ $year->name }}</flux:select.option>
+                                <flux:select.option value="{{ $year->id }}" >{{ $year->name }}</flux:select.option>
                             @endforeach
                         </flux:select>
                     </div>
@@ -53,6 +54,20 @@
                     </div>
                 @endif
 
+                @if (!empty($status) && count($status) > 0)
+                    <div class="flex flex-col md:max-w-60">
+                        <flux:select  wire:model.live="statusFilter" variant="listbox" indicator="checkbox" multiple placeholder="Trạng thái..."
+                            label="Lọc theo trạng thái" selected-suffix=" mục được chọn">
+                            @foreach ($status as $item)
+                                <flux:select.option value="{{ $item['value'] }}">{{ $item['name'] }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </div>
+                @endif
+
+
+
                 @if ($bulkActions)
                     <div class="flex flex-col md:max-w-70">
                         <flux:field>
@@ -60,13 +75,15 @@
                             <flux:dropdown>
                                 <flux:button icon:trailing="chevron-down">Chọn thao tác</flux:button>
                                 <flux:menu>
-                                    <flux:menu.item wire:click='bulkActionEdit()' icon="pencil-square">Chỉnh sửa</flux:menu.item>
+                                    <flux:menu.item wire:click='bulkActionEdit()' icon="pencil-square">Chỉnh sửa
+                                    </flux:menu.item>
                                     <flux:menu.separator />
-                                    <flux:menu.item wire:click='bulkActionDelete()' variant="danger" icon="trash">Xoá</flux:menu.item>
+                                    <flux:menu.item wire:click='bulkActionDelete()' variant="danger" icon="trash">Xoá
+                                    </flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>
                         </flux:field>
-                        
+
 
                     </div>
                 @endif
@@ -77,7 +94,7 @@
         {{-- RIGHT: Dòng/trang --}}
         @if ($count > 10)
             <div class="flex-shrink-0 md:w-40">
-                <flux:select wire:model.live="perPage" variant="listbox"  placeholder="Dòng/trang" label="Dòng/trang">
+                <flux:select wire:model.live="perPage" variant="listbox" placeholder="Dòng/trang" label="Dòng/trang">
                     <flux:select.option value="10">10</flux:select.option>
                     <flux:select.option value="25">25</flux:select.option>
                     <flux:select.option value="50">50</flux:select.option>

@@ -24,17 +24,20 @@ class TransactionExport implements
 {
     protected ?string $search;
     protected ?array $item;
+    protected ?array $status;
     protected ?string $startDate;
     protected ?string $endDate;
 
     public function __construct(
         ?string $search,
         array|string|null $item,
+        array|string|null $status,
         ?string $startDate,
         ?string $endDate
     ) {
         $this->search = $search;
         $this->item = (array) $item; // Convert luôn về array
+        $this->status = (array) $status;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
     }
@@ -57,6 +60,11 @@ class TransactionExport implements
         // Nếu có chọn hạng mục cụ thể
         if (!empty($this->item)) {
             $query->whereIn('transaction_item_id', $this->item);
+        }
+
+        // Nếu có chọn trạng thái cụ thể
+        if (!empty($this->status)) {
+            $query->whereIn('status', $this->status);
         }
 
         // 📅 Nếu có khoảng ngày

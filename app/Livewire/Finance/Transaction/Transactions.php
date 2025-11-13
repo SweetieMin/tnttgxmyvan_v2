@@ -39,7 +39,24 @@ class Transactions extends Component
 
     public $balance;
 
+    public $sortBy = 'status';
+
+    public $sortDirection = 'desc';
+
     public ?DateRange $range = null;
+
+    public $statusFilter = ['paid', 'pending'];
+
+    public $status = [
+        [
+            'value' => 'paid',
+            'name' => 'Đã chi',
+        ],
+        [
+            'value' => 'pending',
+            'name' => 'Chưa chi',
+        ],
+    ];
 
     public function boot(TransactionRepositoryInterface $transactionRepository, TransactionItemRepositoryInterface $transactionItemRepository)
     {
@@ -49,6 +66,17 @@ class Transactions extends Component
 
     public function mount() {
         $this->range = new DateRange();
+    }
+
+    public function sort($column) {
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
+
+        $this->resetPage();
     }
 
     public function render()
@@ -67,15 +95,18 @@ class Transactions extends Component
                 $this->search,
                 $this->perPage,
                 $this->itemFilter,
+                $this->statusFilter,
                 $this->startDate,
-                $this->endDate
+                $this->endDate,
+                $this->sortBy,
+                $this->sortDirection
             );
             
 
         $items = $this->transactionItemRepository
             ->all(['ordering' => 'asc']);
 
-        $totals = $this->transactionRepository->getTotals($this->search, $this->itemFilter, $this->startDate, $this->endDate);
+        $totals = $this->transactionRepository->getTotals($this->search, $this->itemFilter, $this->statusFilter, $this->startDate, $this->endDate);
 
         $this->totalIncome  = $totals['income'];
         $this->totalExpense = $totals['expense'];
@@ -111,6 +142,7 @@ class Transactions extends Component
             new TransactionExport(
                 $this->search,
                 $this->itemFilter,
+                $this->statusFilter,
                 $this->startDate,
                 $this->endDate
             ),
