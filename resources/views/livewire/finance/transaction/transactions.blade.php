@@ -7,7 +7,7 @@
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <x-contents.search searchPlaceholder="Tìm kiếm Tiền Quỹ..." wire:model.live.debounce.500ms="search"
-                    :items="$items" :count="$transactions->total() ?? 0" :fillDate=true :exportData="$transactions->total() > 0" :status=$status />
+                    :items="$items" :count="$transactions->total() ?? 0" :startDate=true :endDate=true :exportData="$transactions->total() > 0" :status="$status"/>
             </div>
         </div>
 
@@ -87,13 +87,13 @@
                         <flux:table container:class="max-h-[calc(60vh-150px)] overflow-y-auto custom-scrollbar"
                             class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
                             <flux:table.columns sticky class="bg-white dark:bg-zinc-700">
-                                <flux:table.column class="w-20" sortable :sorted="$sortBy === 'transaction_date'" :direction="$sortDirection" wire:click="sort('transaction_date')">Ngày</flux:table.column>
+                                <flux:table.column class="w-32">Ngày</flux:table.column>
                                 <flux:table.column align="center" class="w-40">Hạng mục</flux:table.column>
                                 <flux:table.column align="left">Mô tả</flux:table.column>
                                 <flux:table.column align="center" class="w-32 ">Thu</flux:table.column>
                                 <flux:table.column align="center" class="w-32">Chi</flux:table.column>
                                 <flux:table.column align="center" class="w-40">Người phụ trách</flux:table.column>
-                                <flux:table.column align="center" class="w-32" sortable :sorted="$sortBy === 'status'" :direction="$sortDirection" wire:click="sort('status')">Trạng thái</flux:table.column>
+                                <flux:table.column align="center" class="w-32">Trạng thái</flux:table.column>
                                 <flux:table.column align="center" class="w-32">File đính kèm</flux:table.column>
                                 <flux:table.column class="w-20"></flux:table.column>
                             </flux:table.columns>
