@@ -5,8 +5,53 @@
     @include('partials.head')
 </head>
 
-<body class="h-screen bg-white dark:bg-zinc-800 overflow-hidden" 
-    x-data="window.toastHandler?.createToastHandler(@js($userSettings)) || { userSettings: @js($userSettings), handleToast: () => {} }"
+<body class="h-screen bg-white dark:bg-zinc-800 overflow-hidden" x-data="{
+    userSettings: @js($userSettings),
+    playSound(variant) {
+        // Chỉ phát âm nếu notification_sound không phải false
+        const notificationSound = this.userSettings?.notification_sound;
+        
+        if (notificationSound === false) {
+            return;
+        }
+
+        const soundMap = {
+            'success': 'success.mp3',
+            'error': 'error.mp3',
+            'danger': 'error.mp3',
+            'warning': 'warning.mp3',
+            'info': 'info.mp3',
+        };
+
+        const soundFile = soundMap[variant] || soundMap['info'];
+        const soundPath = `/storage/sounds/${soundFile}`;
+        
+        try {
+            const audio = new Audio(soundPath);
+            audio.volume = 0.5;
+            audio.play().catch(error => {
+                console.warn('Không thể phát âm thanh:', error);
+            });
+        } catch (error) {
+            console.warn('Lỗi khi tạo Audio object:', error);
+        }
+    },
+    
+    handleToast(event) {
+        const detail = event.detail;
+        const heading = detail.slots?.heading || detail.dataset?.heading || '';
+        const text = detail.slots?.text || detail.dataset?.text || '';
+        const variant = detail.dataset?.variant || detail.variant || '';
+
+        const notificationSound = this.userSettings?.notification_sound;
+
+        if (notificationSound === false) {
+            console.log('Toast không xuất hiện:', { heading, text, variant, detail });
+            return;
+        }
+        this.playSound(variant);
+    }
+}"
     x-on:toast-show.document="handleToast($event)">
     <div class="flex h-full">
         {{-- Sidebar bên trái --}}

@@ -17,6 +17,10 @@ class UserSetting extends Model
         'notification_sound',
     ];
 
+    protected $casts = [
+        'notification_sound' => 'boolean',
+    ];
+
     /**
      * Relationship with User
      * 

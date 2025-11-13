@@ -8,6 +8,10 @@ window.Sortable = Sortable;
 
 import './echo';
 
+// Export toast handler để có thể sử dụng trong Blade templates
+import toastHandler from './toast-handler';
+window.toastHandler = toastHandler;
+
 
 /** window.Echo.channel('notifications')
   .listen('.new-notification', (e) => {
