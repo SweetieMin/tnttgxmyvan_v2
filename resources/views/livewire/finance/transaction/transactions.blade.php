@@ -7,7 +7,7 @@
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <x-contents.search searchPlaceholder="Tìm kiếm Tiền Quỹ..." wire:model.live.debounce.500ms="search"
-                    :items="$items" :count="$transactions->total() ?? 0" :startDate=true :endDate=true :exportData="$transactions->total() > 0" />
+                    :items="$items" :count="$transactions->total() ?? 0" :fillDate=true :exportData="$transactions->total() > 0" />
             </div>
         </div>
 
@@ -16,8 +16,9 @@
         <div class="mt-2">
             {{-- Summary Cards --}}
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+
                 {{-- Số tiền hiện tại --}}
-                <flux:tooltip content="">
+                <flux:tooltip content="Số tiền còn lại sau khi tính tổng thu, tổng chi.">
                     <flux:card class="p-6">
                         <div class="flex items-center justify-between">
                             <div>
@@ -26,50 +27,58 @@
                                     {{ number_format($balance, 0, ',', '.') }} ₫
                                 </p>
                             </div>
-                            <flux:icon.banknotes class="w-10 h-10 text-blue-500 " />
+                            <flux:icon.banknotes class="w-10 h-10 text-blue-500" />
                         </div>
                     </flux:card>
                 </flux:tooltip>
-
+            
                 {{-- Tổng thu --}}
-                <flux:card class="p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-muted-foreground mb-1">Tổng thu</p>
-                            <p class="text-2xl font-bold text-green-600 dark:text-green-400">
-                                {{ number_format($totalIncome, 0, ',', '.') }} ₫
-                            </p>
+                <flux:tooltip content="Tổng tất cả các khoản tiền thu vào trong kỳ.">
+                    <flux:card class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground mb-1">Tổng thu</p>
+                                <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+                                    {{ number_format($totalIncome, 0, ',', '.') }} ₫
+                                </p>
+                            </div>
+                            <flux:icon.arrow-down-circle class="w-10 h-10 text-green-500" />
                         </div>
-                        <flux:icon.arrow-down-circle class="w-10 h-10 text-green-500 " />
-                    </div>
-                </flux:card>
-
+                    </flux:card>
+                </flux:tooltip>
+            
                 {{-- Tổng chi --}}
-                <flux:card class="p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-muted-foreground mb-1">Tổng chi</p>
-                            <p class="text-2xl font-bold text-red-600 dark:text-red-400">
-                                {{ number_format($totalExpense, 0, ',', '.') }} ₫
-                            </p>
+                <flux:tooltip content="Tổng toàn bộ các khoản chi trong kỳ.">
+                    <flux:card class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground mb-1">Tổng chi</p>
+                                <p class="text-2xl font-bold text-red-600 dark:text-red-400">
+                                    {{ number_format($totalExpense, 0, ',', '.') }} ₫
+                                </p>
+                            </div>
+                            <flux:icon.arrow-up-circle class="w-10 h-10 text-red-500" />
                         </div>
-                        <flux:icon.arrow-up-circle class="w-10 h-10 text-red-500 " />
-                    </div>
-                </flux:card>
-
+                    </flux:card>
+                </flux:tooltip>
+            
                 {{-- Tổng công nợ --}}
-                <flux:card class="p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-muted-foreground mb-1">Tổng công nợ</p>
-                            <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                                {{ number_format($totalDebt, 0, ',', '.') }} ₫
-                            </p>
+                <flux:tooltip content="Tổng các khoản đang nợ hoặc chưa thanh toán.">
+                    <flux:card class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground mb-1">Tổng công nợ</p>
+                                <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                                    {{ number_format($totalDebt, 0, ',', '.') }} ₫
+                                </p>
+                            </div>
+                            <flux:icon.arrow-up-circle class="w-10 h-10 text-orange-500" />
                         </div>
-                        <flux:icon.arrow-up-circle class="w-10 h-10 text-orange-500 " />
-                    </div>
-                </flux:card>
+                    </flux:card>
+                </flux:tooltip>
+            
             </div>
+            
 
             <div class="theme-table">
                 {{-- Desktop Table View --}}
@@ -78,7 +87,7 @@
                         <flux:table container:class="max-h-[calc(60vh-150px)] overflow-y-auto custom-scrollbar"
                             class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
                             <flux:table.columns sticky class="bg-white dark:bg-zinc-700">
-                                <flux:table.column class="w-32">Ngày</flux:table.column>
+                                <flux:table.column class="w-20">Ngày</flux:table.column>
                                 <flux:table.column align="center" class="w-40">Hạng mục</flux:table.column>
                                 <flux:table.column align="left">Mô tả</flux:table.column>
                                 <flux:table.column align="center" class="w-32 ">Thu</flux:table.column>

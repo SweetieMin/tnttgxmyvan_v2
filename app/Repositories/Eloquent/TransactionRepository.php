@@ -55,7 +55,7 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
             ->paginate($perPage);
     }
 
-    public function getTotals(?string $search = null, $item = []): array
+    public function getTotals(?string $search = null, $item = [],?string $startDate = null, ?string $endDate = null): array
     {
         $query = $this->model->query();
 
@@ -63,6 +63,15 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
         $query->when($item, function ($q) use ($item) {
             $q->whereIn('transaction_item_id', (array) $item);
         });
+
+        // Nếu lọc theo ngày
+        if ($startDate && $endDate) {
+            $query->whereBetween('transaction_date', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->whereDate('transaction_date', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('transaction_date', '<=', $endDate);
+        }
 
         // Nếu có search
         $query->when($search, fn($q) => $q->where('description', 'like', "%{$search}%"));

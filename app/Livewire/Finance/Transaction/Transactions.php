@@ -6,7 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
 use App\Exports\TransactionExport;
-
+use Flux\DateRange;
 use App\Services\TransactionService;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Repositories\Interfaces\TransactionRepositoryInterface;
@@ -25,9 +25,9 @@ class Transactions extends Component
 
     public $itemFilter = [];
 
-    public $startDate;
+    public $startDate = null;
 
-    public $endDate;
+    public $endDate = null;
 
     public $perPage = 10;
 
@@ -39,14 +39,29 @@ class Transactions extends Component
 
     public $balance;
 
+    public ?DateRange $range = null;
+
     public function boot(TransactionRepositoryInterface $transactionRepository, TransactionItemRepositoryInterface $transactionItemRepository)
     {
         $this->transactionRepository = $transactionRepository;
         $this->transactionItemRepository = $transactionItemRepository;
     }
 
+    public function mount() {
+        $this->range = new DateRange();
+    }
+
     public function render()
     {
+
+        if ($this->range?->startDate && $this->range?->endDate) {
+            $this->startDate = $this->range->startDate?->format('Y-m-d');
+            $this->endDate   = $this->range->endDate?->format('Y-m-d');
+        }else{
+            $this->startDate = null;
+            $this->endDate = null;
+        }
+        
         $transactions = $this->transactionRepository
             ->paginateWithSearch(
                 $this->search,
@@ -55,11 +70,12 @@ class Transactions extends Component
                 $this->startDate,
                 $this->endDate
             );
+            
 
         $items = $this->transactionItemRepository
             ->all(['ordering' => 'asc']);
 
-        $totals = $this->transactionRepository->getTotals($this->search, $this->itemFilter);
+        $totals = $this->transactionRepository->getTotals($this->search, $this->itemFilter, $this->startDate, $this->endDate);
 
         $this->totalIncome  = $totals['income'];
         $this->totalExpense = $totals['expense'];
