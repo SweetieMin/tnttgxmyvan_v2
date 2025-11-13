@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repositories\Interfaces;
-//use Illuminate\Interfaces\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface RoleRepositoryInterface
 {
@@ -15,5 +15,7 @@ interface RoleRepositoryInterface
     public function updateOrdering(array $orderedIds): bool;
 
     public function getRoleExceptCurrentRole(?int $id = null );
+
+    public function roleWithSearchAndPage(?string $search = null, ?int $perPage = null) :LengthAwarePaginator;
 
 }

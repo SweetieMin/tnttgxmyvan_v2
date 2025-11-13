@@ -3,7 +3,7 @@
         :breadcrumb="[
             ['label' => 'Bảng điều khiển', 'url' => route('dashboard')],
             ['label' => 'Chức vụ', 'url' => route('admin.access.roles')],
-            ['label' => 'Thêm Chức vụ'],
+            ['label' => 'Thêm / Chỉnh sửa Chức vụ'],
         ]" buttonLabelBack="Quay lại" buttonBackAction="backRole">
 
         <form wire:submit.prevent='{{ $isEditRoleMode ? 'updateRole' : 'createRole' }}'
@@ -25,22 +25,22 @@
             </div>
             <flux:separator text="Quản lý các chức vụ" />
             <div class='mb-4'>
-                <flux:checkbox.group wire:model="hierarchies">
-                    <flux:checkbox.all label="Chọn tất cả" />
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-                        @foreach ($rolesExceptCurrentRole as $role)
-                            <label
-                                class="block p-2 bg-accent-card rounded-lg border border-accent/20 hover:border-accent cursor-pointer ">
-                                <flux:checkbox value="{{ $role->id }}" label="{{ $role->name }}"
-                                    description="{{ $role->description }}"   />
-                            </label>
-                        @endforeach
 
 
+                <flux:checkbox.group wire:model.live="hierarchies" variant="cards" class="max-sm:flex-col">
 
-                    </div>
-                </flux:checkbox.group>
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-h-[350px]  overflow-y-auto p-1 custom-scrollbar">
+
+                    <flux:checkbox.all label="Chọn tất cả" class="cursor-pointer" description="Đã chọn {{ count($hierarchies) ?? 0 }}"/>
+
+                    @foreach ($rolesExceptCurrentRole as $role)
+                        <flux:checkbox value="{{ $role->id }}" label="{{ $role->name }}"
+                            description="{{ $role->description }}" class="cursor-pointer" />
+                    @endforeach
+
+                </div>
+            </flux:checkbox.group>
             </div>
 
             <flux:separator />

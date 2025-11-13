@@ -17,7 +17,11 @@ class Roles extends Component
 
     public $roleID;
 
+    public $search = '';
+
     public $page = 1; // 🔹 Tên trùng với query string
+
+    public $perPage = 25;
 
     protected $queryString = [
         'page' => ['except' => 1, 'as' => 'page', 'keep' => true],
@@ -28,7 +32,6 @@ class Roles extends Component
         $this->page = request()->query('page', 1);
     }
 
-
     public function boot(RoleRepositoryInterface $roleRepository)
     {
         $this->roleRepository = $roleRepository;
@@ -37,7 +40,7 @@ class Roles extends Component
     public function render()
     {
         $roles = $this->roleRepository
-            ->paginate(15);
+            ->roleWithSearchAndPage($this->search, $this->perPage);
 
         return view('livewire.access.role.roles', [
             'roles' => $roles,
@@ -67,7 +70,11 @@ class Roles extends Component
             Flux::modal('delete-role')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy role');
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không tìm thấy chức vụ.',
+                variant: 'error',
+            );
             return $this->redirectRoute('admin.access.roles', navigate: true);
         }
     }
@@ -77,9 +84,17 @@ class Roles extends Component
         try {
             $this->roleRepository->delete($this->roleID);
 
-            session()->flash('success', 'Role xoá thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Chức vụ đã được xóa thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá role thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Không thể xóa chức vụ. ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
         $this->redirectRoute('admin.access.roles', navigate: true);
@@ -87,14 +102,30 @@ class Roles extends Component
 
     public function updateRolesOrdering($ids)
     {
-        $success = $this->roleRepository->updateOrdering($ids);
+        try {
+            $success = $this->roleRepository->updateOrdering($ids);
 
-        if ($success) {
-            session()->flash('success', 'Sắp xếp chương trình học thành công!');
-        } else {
-            session()->flash('error', 'Sắp xếp thất bại! Vui lòng thử lại.');
+            if ($success) {
+                Flux::toast(
+                    heading: 'Thành công',
+                    text: 'Thứ tự chức vụ đã được cập nhật.',
+                    variant: 'success',
+                );
+            } else {
+                Flux::toast(
+                    heading: 'Đã xảy ra lỗi!',
+                    text: 'Không thể cập nhật thứ tự chức vụ.',
+                    variant: 'error',
+                );
+            }
+        } catch (\Exception $e) {
+            Flux::toast(
+                heading: 'Đã xảy ra lỗi!',
+                text: 'Lỗi khi cập nhật thứ tự: ' . (app()->environment('local') ? $e->getMessage() : 'Vui lòng thử lại sau.'),
+                variant: 'error',
+            );
         }
 
-        $this->redirectRoute('admin.access.roles', navigate: true);
+        $this->redirectRoute('admin.access.roles', ['page' => $this->page], navigate: true);
     }
 }

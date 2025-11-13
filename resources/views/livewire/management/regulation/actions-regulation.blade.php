@@ -62,12 +62,12 @@
 
             <flux:separator text="Áp dụng các chức vụ" />
             <div class='my-4'>
-                <flux:checkbox.group wire:model="regulationApplyRole" variant="cards" class="max-sm:flex-col">
+                <flux:checkbox.group wire:model.live="regulationApplyRole" variant="cards" class="max-sm:flex-col">
 
                     <div
                         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-h-[350px]  overflow-y-auto p-1 custom-scrollbar">
 
-                        <flux:checkbox.all label="Chọn tất cả" class="cursor-pointer" />
+                        <flux:checkbox.all label="Chọn tất cả" class="cursor-pointer" description="Đã chọn {{ count($regulationApplyRole) ?? 0 }}"/>
 
                         @foreach ($roles as $role)
                             <flux:checkbox value="{{ $role->id }}" label="{{ $role->name }}"
