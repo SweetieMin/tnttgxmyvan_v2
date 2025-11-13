@@ -47,8 +47,6 @@ export function playSound(variant, userSettings) {
 export function handleToast(event, userSettings) {
     // Lấy dữ liệu từ event.detail
     const detail = event.detail;
-    const heading = detail.slots?.heading || detail.dataset?.heading || '';
-    const text = detail.slots?.text || detail.dataset?.text || '';
     const variant = detail.dataset?.variant || detail.variant || '';
 
     // Chỉ hiện console.log nếu notification_sound = true hoặc không có (null/undefined)
@@ -57,7 +55,6 @@ export function handleToast(event, userSettings) {
 
 
     if (notificationSound === false) {
-        console.log('Toast không xuất hiện:', { heading, text, variant, detail });
         return;
     }
 
