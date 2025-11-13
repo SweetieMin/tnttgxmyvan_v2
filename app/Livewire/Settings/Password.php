@@ -7,6 +7,10 @@ use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
+use Livewire\Attributes\Title;
+
+#[Title('Mật khẩu')]
+
 class Password extends Component
 {
     public string $current_password = '';

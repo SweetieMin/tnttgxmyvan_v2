@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
+use Livewire\Attributes\Title;
+
+#[Title('Hồ sơ')]
+
 class Profile extends Component
 {
     public string $name = '';
