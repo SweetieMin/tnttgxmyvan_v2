@@ -5,7 +5,16 @@
     @include('partials.head')
 </head>
 
-<body class="h-screen bg-white dark:bg-zinc-800 overflow-hidden">
+<body class="h-screen bg-white dark:bg-zinc-800 overflow-hidden" 
+    x-data="{ 
+        handleToast(event) {
+            const { heading, text, variant } = event.detail;
+            console.log('Toast xuất hiện:', { heading, text, variant });
+            // Thêm logic của bạn ở đây
+            // Ví dụ: cập nhật UI, gửi analytics, v.v.
+        }
+    }"
+    x-on:toast-show.document="handleToast($event)">
     <div class="flex h-full">
         {{-- Sidebar bên trái --}}
         <flux:sidebar collapsible

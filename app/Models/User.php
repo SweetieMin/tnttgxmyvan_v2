@@ -110,6 +110,16 @@ class User extends Authenticatable
         return trim($this->name);
     }
 
+    /**
+     * Relationship with User Setting
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function settings()
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
     /** 
      * Relationship with User Detail
      * 
