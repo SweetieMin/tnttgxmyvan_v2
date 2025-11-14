@@ -46,7 +46,7 @@ class AcademicYearRepository extends BaseRepository implements AcademicYearRepos
     }
 
 
-    public function paginateWithSearch(?string $search = null, int $perPage = 10)
+    public function paginateWithSearch(?string $search = null, ?int $perPage = null)
     {
         $query = $this->model->query();
 

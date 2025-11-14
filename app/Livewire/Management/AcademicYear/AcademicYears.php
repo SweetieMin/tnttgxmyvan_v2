@@ -26,8 +26,11 @@ class AcademicYears extends Component
     #[Computed]
     public function academicYears()
     {
+        // Convert chuỗi rỗng thành null để tránh lỗi type
+        $perPage = $this->perPage === '' || $this->perPage === null ? null : (int) $this->perPage;
+        
         return $this->academicYearRepository
-            ->paginateWithSearch($this->search, $this->perPage);
+            ->paginateWithSearch($this->search, $perPage);
     }
 
     public function addAcademicYear()

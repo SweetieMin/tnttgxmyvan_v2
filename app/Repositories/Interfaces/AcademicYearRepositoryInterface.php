@@ -16,5 +16,5 @@ interface AcademicYearRepositoryInterface
     public function getAcademicOngoingAndFinished();
     public function getAcademicOngoingNow();
 
-    public function paginateWithSearch(?string $search = null, int $perPage = 10);
+    public function paginateWithSearch(?string $search = null, ?int $perPage = null);
 }

@@ -94,7 +94,7 @@
         {{-- RIGHT: Dòng/trang --}}
         @if ($count > 10)
             <div class="flex-shrink-0 md:w-40">
-                <flux:select wire:model.live="perPage" variant="listbox" placeholder="Dòng/trang" label="Dòng/trang">
+                <flux:select wire:model.live="perPage" variant="listbox" placeholder="Dòng/trang" label="Dòng/trang" clearable>
                     <flux:select.option value="10">10</flux:select.option>
                     <flux:select.option value="25">25</flux:select.option>
                     <flux:select.option value="50">50</flux:select.option>

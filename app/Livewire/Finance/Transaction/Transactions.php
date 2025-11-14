@@ -58,6 +58,8 @@ class Transactions extends Component
         ],
     ];
 
+
+
     public function boot(TransactionRepositoryInterface $transactionRepository, TransactionItemRepositoryInterface $transactionItemRepository)
     {
         $this->transactionRepository = $transactionRepository;
@@ -90,10 +92,13 @@ class Transactions extends Component
             $this->endDate = null;
         }
         
+        // Convert chuỗi rỗng thành null để tránh lỗi type
+        $perPage = $this->perPage === '' || $this->perPage === null ? null : (int) $this->perPage;
+        
         $transactions = $this->transactionRepository
             ->paginateWithSearch(
                 $this->search,
-                $this->perPage,
+                $perPage,
                 $this->itemFilter,
                 $this->statusFilter,
                 $this->startDate,

@@ -39,8 +39,10 @@ class Roles extends Component
 
     public function render()
     {
+        $perPage = $this->perPage === '' || $this->perPage === null ? null : (int) $this->perPage;
+        
         $roles = $this->roleRepository
-            ->roleWithSearchAndPage($this->search, $this->perPage);
+            ->roleWithSearchAndPage($this->search, $perPage);
 
         return view('livewire.access.role.roles', [
             'roles' => $roles,

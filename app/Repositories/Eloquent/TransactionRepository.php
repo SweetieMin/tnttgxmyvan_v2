@@ -25,7 +25,7 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
 
     public function paginateWithSearch(
         ?string $search = null,
-        int $perPage = 10,
+        ?int $perPage = null,
         $item = [],
         $status = [],
         ?string $startDate = null,
