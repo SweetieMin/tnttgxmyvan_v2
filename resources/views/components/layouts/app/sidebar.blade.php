@@ -86,7 +86,15 @@
                 </flux:sidebar.item>
 
 
+                <flux:separator class="my-2 flex-shrink-0 " />
+
                 <flux:sidebar.spacer />
+
+                <flux:sidebar.item icon="cog" :href="route('admin.settings.general')"
+                    :current="request()->routeIs('admin.settings.general')" wire:navigate>Cài đặt trang web
+                </flux:sidebar.item>
+
+               
             </flux:sidebar.nav>
 
 
