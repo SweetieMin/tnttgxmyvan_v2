@@ -2,7 +2,7 @@
 
     <x-app-action-modal name="action-sector" :dismissible="false"
         title="{{ $isEditSectorMode ? 'Cập nhật Ngành Sinh Hoạt' : 'Tạo mới Ngành Sinh Hoạt' }}"
-        subheading="Quản lý thông tin Ngành Sinh Hoạt" icon="squares-plus" width="600px">
+        subheading="Quản lý thông tin Ngành Sinh Hoạt" icon="squares-plus" class="md:max-w-[550px]">
         {{-- Nội dung riêng của form --}}
         <form wire:submit.prevent='{{ $isEditSectorMode ? 'updateSector' : 'createSector' }}' class="space-y-6">
 

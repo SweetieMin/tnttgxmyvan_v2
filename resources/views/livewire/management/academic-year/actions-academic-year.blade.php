@@ -2,7 +2,7 @@
 
     <x-app-action-modal name="action-academic-year" :dismissible="false"
         title="{{ $isEditAcademicYearMode ? 'Cập nhật niên khoá' : 'Tạo mới niên khoá' }}"
-        subheading="Quản lý niên khoá, thời gian và điểm số" icon="squares-plus" width="700px">
+        subheading="Quản lý niên khoá, thời gian và điểm số" icon="squares-plus" class="md:max-w-[550px]">
         {{-- Nội dung riêng của form --}}
         <form wire:submit.prevent='{{ $isEditAcademicYearMode ? 'updateAcademicYear' : 'createAcademicYear' }}' class="space-y-6">
             <div class="flex gap-2">

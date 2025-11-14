@@ -2,7 +2,7 @@
 
     <x-app-action-modal name="action-program" :dismissible="false"
         title="{{ $isEditProgramMode ? 'Cập nhật Chương trình học' : 'Tạo mới Chương trình học' }}"
-        subheading="Quản lý thông tin Chương trình học" icon="squares-plus" width="600px">
+        subheading="Quản lý thông tin Chương trình học" icon="squares-plus" class="md:max-w-[550px]">
         {{-- Nội dung riêng của form --}}
         <form wire:submit.prevent='{{ $isEditProgramMode ? 'updateProgram' : 'createProgram' }}' class="space-y-6">
 

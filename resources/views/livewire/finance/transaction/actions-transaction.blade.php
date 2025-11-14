@@ -2,7 +2,7 @@
 
     <x-app-action-modal name="action-transaction" :dismissible="false"
         title="{{ $isEditTransactionMode ? 'Cập nhật Tiền Quỹ' : 'Tạo mới Tiền Quỹ' }}"
-        subheading="Quản lý thông tin Tiền Quỹ" icon="squares-plus" width="600px">
+        subheading="Quản lý thông tin Tiền Quỹ" icon="squares-plus" class="md:max-w-[550px]">
         {{-- Nội dung riêng của form --}}
         <form wire:submit.prevent='{{ $isEditTransactionMode ? 'updateTransaction' : 'createTransaction' }}'
             class="space-y-6">
@@ -22,7 +22,7 @@
                 </div>
                 <div>
                         <flux:date-picker type="date" :max="now()->toDateString()" label="Ngày"
-                        wire:model.lazy='transaction_date' placeholder="Chọn ngày" locale="vi-VN" selectable-header clearable/>
+                        wire:model.lazy='transaction_date' placeholder="Chọn ngày" locale="vi-VN" selectable-header clearable with-today/>
                 </div>
             </div>
 

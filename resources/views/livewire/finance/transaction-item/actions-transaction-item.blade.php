@@ -2,7 +2,7 @@
 
     <x-app-action-modal name="action-transaction-item" :dismissible="false"
         title="{{ $isEditTransactionItemMode ? 'Cập nhật Hạng mục chi' : 'Tạo mới Hạng mục chi' }}"
-        subheading="Quản lý thông tin Hạng mục chi" icon="squares-plus" width="600px">
+        subheading="Quản lý thông tin Hạng mục chi" icon="squares-plus" class="md:max-w-[550px]">
         {{-- Nội dung riêng của form --}}
         <form wire:submit.prevent='{{ $isEditTransactionItemMode ? 'updateTransactionItem' : 'createTransactionItem' }}'
             class="space-y-6">

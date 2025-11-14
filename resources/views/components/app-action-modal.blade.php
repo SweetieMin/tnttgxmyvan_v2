@@ -3,15 +3,14 @@
     'title' => 'Tiêu đề',           {{-- Tiêu đề modal --}}
     'subheading' => null,           {{-- Phụ đề --}}
     'icon' => null,                 {{-- Icon tên hoặc SVG path --}}
-    'width' => '700px',             {{-- Chiều rộng max --}}
     'dismissible' => true,          {{-- Có thể đóng bằng click outside hay không --}}
+    'class' => null,                {{-- Class tùy chọn --}}
 ])
 
 <flux:modal 
     :dismissible="$dismissible" 
     name="{{ $name }}" 
-    class="w-full max-w-[460px] md:max-w-[{{ $width }}]"
->
+    class="w-full max-w-[90vw] max-h-[90vh] overflow-y-auto {{ $class }}" >
     <div class="space-y-6">
         {{-- Header --}}
         <div class="flex items-center gap-3">

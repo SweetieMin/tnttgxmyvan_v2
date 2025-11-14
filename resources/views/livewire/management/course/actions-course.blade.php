@@ -2,7 +2,7 @@
 
     <x-app-action-modal name="action-course" :dismissible="false"
         title="{{ $isEditCourseMode ? 'Cập nhật Lớp Giáo Lý' : 'Tạo mới Lớp Giáo Lý' }}"
-        subheading="Quản lý thông tin Lớp Giáo Lý" icon="squares-plus" width="600px">
+        subheading="Quản lý thông tin Lớp Giáo Lý" icon="squares-plus" class="md:max-w-[550px]">
         {{-- Nội dung riêng của form --}}
         <form wire:submit.prevent='{{ $isEditCourseMode ? 'updateCourse' : 'createCourse' }}' class="space-y-6">
 

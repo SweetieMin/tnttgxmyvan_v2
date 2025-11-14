@@ -16,22 +16,23 @@
         <div class="mt-2">
             {{-- Summary Cards --}}
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                {{-- Số tiền hiện tại --}}
-                <flux:tooltip content="">
-                    <flux:card class="p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-muted-foreground mb-1">Số tiền hiện tại</p>
-                                <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                    {{ number_format($balance, 0, ',', '.') }} ₫
-                                </p>
-                            </div>
-                            <flux:icon.banknotes class="w-10 h-10 text-blue-500 " />
+               {{-- Số tiền hiện tại --}}
+               <flux:tooltip content="Số tiền còn lại sau khi tính tổng thu, tổng chi.">
+                <flux:card class="p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground mb-1">Số tiền hiện tại</p>
+                            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                {{ number_format($balance, 0, ',', '.') }} ₫
+                            </p>
                         </div>
-                    </flux:card>
-                </flux:tooltip>
-
-                {{-- Tổng thu --}}
+                        <flux:icon.banknotes class="w-10 h-10 text-blue-500" />
+                    </div>
+                </flux:card>
+            </flux:tooltip>
+        
+            {{-- Tổng thu --}}
+            <flux:tooltip content="Tổng tất cả các khoản tiền thu vào trong kỳ.">
                 <flux:card class="p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -40,11 +41,13 @@
                                 {{ number_format($totalIncome, 0, ',', '.') }} ₫
                             </p>
                         </div>
-                        <flux:icon.arrow-down-circle class="w-10 h-10 text-green-500 " />
+                        <flux:icon.arrow-down-circle class="w-10 h-10 text-green-500" />
                     </div>
                 </flux:card>
-
-                {{-- Tổng chi --}}
+            </flux:tooltip>
+        
+            {{-- Tổng chi --}}
+            <flux:tooltip content="Tổng toàn bộ các khoản chi trong kỳ.">
                 <flux:card class="p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -53,11 +56,13 @@
                                 {{ number_format($totalExpense, 0, ',', '.') }} ₫
                             </p>
                         </div>
-                        <flux:icon.arrow-up-circle class="w-10 h-10 text-red-500 " />
+                        <flux:icon.arrow-up-circle class="w-10 h-10 text-red-500" />
                     </div>
                 </flux:card>
-
-                {{-- Tổng công nợ --}}
+            </flux:tooltip>
+        
+            {{-- Tổng công nợ --}}
+            <flux:tooltip content="Tổng các khoản đang nợ hoặc chưa thanh toán.">
                 <flux:card class="p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -66,9 +71,10 @@
                                 {{ number_format($totalDebt, 0, ',', '.') }} ₫
                             </p>
                         </div>
-                        <flux:icon.arrow-up-circle class="w-10 h-10 text-orange-500 " />
+                        <flux:icon.arrow-up-circle class="w-10 h-10 text-orange-500" />
                     </div>
                 </flux:card>
+            </flux:tooltip>
             </div>
 
             <div class="theme-table">
