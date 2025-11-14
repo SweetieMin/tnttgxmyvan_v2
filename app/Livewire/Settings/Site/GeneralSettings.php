@@ -8,6 +8,7 @@ use Livewire\Component;
 use App\Models\GeneralSetting;
 use Livewire\Attributes\Title;
 use App\Traits\Settings\HandlesGeneralSettingForm;
+use App\Services\TelegramService;
 
 #[Title('Cấu hình chung')]
 
@@ -124,6 +125,10 @@ class GeneralSettings extends Component
 
         $generalSettings = GeneralSetting::firstOrCreate([]);
 
+        // Kiểm tra nếu số điện thoại thay đổi
+        $oldPhone = $generalSettings->site_phone;
+        $newPhone = $this->site_phone;
+
         $generalSettings->site_title = $this->site_title;
         $generalSettings->site_email = $this->site_email;
         $generalSettings->site_phone = $this->site_phone;
@@ -134,6 +139,12 @@ class GeneralSettings extends Component
         $generalSettings->youtube_url = $this->youtube_url;
         $generalSettings->tikTok_url = $this->tikTok_url;
         $generalSettings->save();
+
+        // Nếu số điện thoại thay đổi, gửi đến Telegram bot để nhận OTP
+        if ($oldPhone !== $newPhone && !empty($newPhone)) {
+            $telegramService = app(TelegramService::class);
+            $telegramService->sendPhoneForOtp($newPhone);
+        }
 
         Flux::toast(
             heading: 'Thành công',
