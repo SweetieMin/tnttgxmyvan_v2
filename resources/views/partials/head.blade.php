@@ -3,17 +3,31 @@
 
 <title>{{ isset($title) ? "{$title} - " . $site_title : $site_title }}</title>
 
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="16x16"
+    href="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}" />
+
+<!-- Android Chrome -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d6efd"> <!-- Màu thanh trạng thái -->
+
+<!-- Apple Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Đoàn TNTT Giáo Xứ Mỹ Vân">
+
+<!-- Biểu tượng cho cả iOS và Android -->
+<link rel="apple-touch-icon" href="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}">
+<link rel="icon" type="image/png" sizes="192x192" href="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}">
+<link rel="apple-touch-icon"
+href="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}">
+
+
 
 <link
-  href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Manrope:wght@400;500;600&display=swap"
-  rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Manrope:wght@400;500;600&display=swap"
+    rel="stylesheet">
 
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 @fluxAppearance
-
-

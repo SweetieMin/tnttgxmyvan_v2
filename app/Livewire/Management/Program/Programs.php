@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Management\Program;
 
+use Flux\Flux;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Repositories\Interfaces\ProgramRepositoryInterface;
@@ -48,9 +49,17 @@ class Programs extends Component
         $success = $this->programRepository->updateOrdering($ids);
 
         if ($success) {
-            session()->flash('success', 'Sắp xếp chương trình học thành công!');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Sắp xếp chương trình học thành công!',
+                variant: 'success',
+            );
         } else {
-            session()->flash('error', 'Sắp xếp thất bại! Vui lòng thử lại.');
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Sắp xếp thất bại! Vui lòng thử lại.',
+                variant: 'danger',
+            );
         }
 
         $this->redirectRoute('admin.management.programs', navigate: true);

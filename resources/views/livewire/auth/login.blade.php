@@ -42,6 +42,8 @@
                 {{ __('Đăng nhập') }}
             </flux:button>
         </div>
+
+        {{ $site_favicon }}
     </form>
 
 </div>

@@ -2,7 +2,7 @@
 
 @props([
     'name' => $attributes->whereStartsWith('wire:model')->first(),
-    'accept' => [],
+    'accept' => "*",
 ])
 
 @php

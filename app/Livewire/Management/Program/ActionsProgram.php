@@ -75,9 +75,17 @@ class ActionsProgram extends Component
         try {
             $this->programRepository->create($data);
 
-            session()->flash('success', 'Chương trình học tạo thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Chương trình học tạo thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Tạo chương trình học thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Tạo chương trình học thất bại. ' . $e->getMessage(),
+                variant: 'danger',
+            );
         }
 
         $this->redirectRoute('admin.management.programs', navigate: true);
@@ -103,7 +111,11 @@ class ActionsProgram extends Component
             Flux::modal('action-program')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy program');
+            Flux::toast(
+                heading: 'Lỗi',
+                text: 'Không tìm thấy chương trình học.',
+                variant: 'danger',
+            );
             return $this->redirectRoute('admin.management.programs', navigate: true);
         }
     }
@@ -121,9 +133,17 @@ class ActionsProgram extends Component
         try {
             $this->programRepository->update($this->programID, $data);
 
-            session()->flash('success', 'Chương trình học cập nhật thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Chương trình học cập nhật thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật chương trình học thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Cập nhật chương trình học thất bại. ' . $e->getMessage(),
+                variant: 'danger',
+            );
         }
 
         $this->redirectRoute('admin.management.programs', navigate: true);
@@ -145,7 +165,11 @@ class ActionsProgram extends Component
             Flux::modal('delete-program')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy chương trình học');
+            Flux::toast(
+                heading: 'Lỗi',
+                text: 'Không tìm thấy chương trình học.',
+                variant: 'danger',
+            );
             return $this->redirectRoute('admin.management.programs', navigate: true);
         }
     }
@@ -155,9 +179,17 @@ class ActionsProgram extends Component
         try {
             $this->programRepository->delete($this->programID);
 
-            session()->flash('success', 'Chương trình học xoá thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Chương trình học xoá thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá chương trình học thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Xoá chương trình học thất bại. ' . $e->getMessage(),
+                variant: 'danger',
+            );
         }
 
         $this->redirectRoute('admin.management.programs', navigate: true);

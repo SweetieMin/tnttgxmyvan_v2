@@ -5,17 +5,21 @@ namespace App\Livewire\Settings\Site;
 use Flux\Flux;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\GeneralSetting;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Validate;
 use App\Validation\Setting\GeneralRules;
 use App\Traits\Settings\HandlesGeneralSettingForm;
+use App\Traits\Settings\HandlesLogoFaviconSettingForm;
 
 #[Title('Cấu hình chung')]
 
 class GeneralSettings extends Component
 {
-
+    use WithFileUploads;
     //use HandlesGeneralSettingForm;
+    use HandlesLogoFaviconSettingForm;
 
     public function render()
     {
@@ -39,6 +43,7 @@ class GeneralSettings extends Component
 
     public $canSaveData = true;
 
+
     public function mount()
     {
 
@@ -57,6 +62,9 @@ class GeneralSettings extends Component
         $this->instagram_url = $generalSettings?->instagram_url;
         $this->youtube_url = $generalSettings?->youtube_url;
         $this->tikTok_url = $generalSettings?->tikTok_url;
+
+        $this->existLogo = $generalSettings?->site_logo;
+        $this->existFavicon = $generalSettings?->site_favicon;
     }
 
     public function rules()
