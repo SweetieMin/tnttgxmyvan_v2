@@ -8,12 +8,12 @@ use Livewire\Attributes\Validate;
 trait HandlesLogoFaviconSettingForm
 {
    
-    #[Validate('image|max:10240')] // 10MB Max
+    #[Validate('nullable|image|max:10240')] // 10MB Max
     public $logo;
 
     public $existLogo;
 
-    #[Validate('image|max:10240')] // 10MB Max
+    #[Validate('nullable|image|max:10240')] // 10MB Max
     public $favicon;
 
     public $existFavicon;
@@ -44,7 +44,7 @@ trait HandlesLogoFaviconSettingForm
             text: 'Tính năng đang được phát triển.',
             variant: 'warning',
         );
-        $this->redirectRoute('admin.settings.general', navigate: true);
+        $this->redirectRoute('admin.settings.general', ['tab' => 'logo-favicon'], navigate: true);
     }
 
     public function saveFavicon()
@@ -54,7 +54,7 @@ trait HandlesLogoFaviconSettingForm
             text: 'Tính năng đang được phát triển.',
             variant: 'warning',
         );
-        $this->redirectRoute('admin.settings.general', navigate: true);
+        $this->redirectRoute('admin.settings.general', ['tab' => 'logo-favicon'], navigate: true);
     }
 
     

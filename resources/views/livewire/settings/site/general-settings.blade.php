@@ -10,8 +10,8 @@
 
             <flux:tabs>
 
-                <flux:tab name="general" icon="cog-6-tooth">Chung</flux:tab>
-                <flux:tab name="logo-favicon" icon="globe-alt" selected>Logo & Favicon</flux:tab>
+                <flux:tab wire:click="selectTab('general')" name="general" icon="cog-6-tooth" :selected="$tab == 'general'">Chung</flux:tab>
+                <flux:tab wire:click="selectTab('logo-favicon')" name="logo-favicon" icon="globe-alt" :selected="$tab == 'logo-favicon'">Logo & Favicon</flux:tab>
 
             </flux:tabs>
 

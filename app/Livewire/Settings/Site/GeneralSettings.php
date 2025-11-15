@@ -8,9 +8,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\GeneralSetting;
 use Livewire\Attributes\Title;
-use Livewire\Attributes\Validate;
 use App\Validation\Setting\GeneralRules;
-use App\Traits\Settings\HandlesGeneralSettingForm;
 use App\Traits\Settings\HandlesLogoFaviconSettingForm;
 
 #[Title('Cấu hình chung')]
@@ -43,9 +41,22 @@ class GeneralSettings extends Component
 
     public $canSaveData = true;
 
+    public $tab = null;
+    public $tabName = 'general';
+    protected $queryString = ['tab'=>['keep'=>true]];
+
+    public function selectTab($tab)
+    {
+        $this->tab = $tab;
+        // Cập nhật URL với query parameter tab
+        $this->redirectRoute('admin.settings.general', ['tab' => $tab], navigate: true);
+    }
+
 
     public function mount()
     {
+
+        $this->tab = Request('tab') ? Request('tab') : $this->tabName;      
 
         $generalSettings = GeneralSetting::first();
 
@@ -133,6 +144,6 @@ class GeneralSettings extends Component
             variant: 'success',
         );
 
-        $this->redirectRoute('admin.settings.general', navigate: true);
+        $this->redirectRoute('admin.settings.general', ['tab' => $this->tab ?? 'general'], navigate: true);
     }
 }
