@@ -124,10 +124,6 @@ class GeneralSettings extends Component
 
         $generalSettings = GeneralSetting::firstOrCreate([]);
 
-        // Kiểm tra nếu số điện thoại thay đổi
-        $oldPhone = $generalSettings->site_phone;
-        $newPhone = $this->site_phone;
-
         $generalSettings->site_title = $this->site_title;
         $generalSettings->site_email = $this->site_email;
         $generalSettings->site_phone = $this->site_phone;
