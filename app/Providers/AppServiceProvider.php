@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use MailConfig;
-use PusherConfig;
+use App\Helpers\MailConfig;
+use App\Helpers\PusherConfig;
 use App\Models\User;
 use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Auth;
@@ -70,8 +70,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Blade::anonymousComponentNamespace('components.flux', 'flux');
         User::observe(UserObserver::class);
-        //MailConfig::apply();
-        //PusherConfig::apply(); 
+        
+        MailConfig::apply();
+        PusherConfig::apply(); 
 
         // View Composer cho sidebar - inject user_settings
         View::composer('components.layouts.app.sidebar', function ($view) {

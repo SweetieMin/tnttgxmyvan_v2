@@ -7,6 +7,7 @@ use Flux\Flux;
 use Livewire\Component;
 use App\Models\GeneralSetting;
 use Livewire\Attributes\Title;
+use App\Validation\Setting\GeneralRules;
 use App\Traits\Settings\HandlesGeneralSettingForm;
 
 #[Title('Cấu hình chung')]
@@ -14,7 +15,7 @@ use App\Traits\Settings\HandlesGeneralSettingForm;
 class GeneralSettings extends Component
 {
 
-    use HandlesGeneralSettingForm;
+    //use HandlesGeneralSettingForm;
 
     public function render()
     {
@@ -60,33 +61,12 @@ class GeneralSettings extends Component
 
     public function rules()
     {
-        return [
-            'site_title' => 'required|string|max:255',
-            'site_email' => 'required|email|max:255',
-            'site_phone' => 'required|string|max:255',
-            'site_meta_keywords' => 'required|string|max:255',
-            'site_meta_description' => 'required|string|max:65000',
-            'facebook_url' => 'nullable|url|string|max:255',
-            'instagram_url' => 'nullable|url|string|max:255',
-            'youtube_url' => 'nullable|url|string|max:255',
-            'tikTok_url' => 'nullable|url|string|max:255',
-        ];
+        return GeneralRules::rules();
     }
 
     public function messages()
     {
-        return [
-            'site_title.required' => 'Tiêu đề trang web là bắt buộc.',
-            'site_email.required' => 'Email là bắt buộc.',
-            'site_email.email' => 'Email không hợp lệ.',
-            'site_phone.required' => 'Số điện thoại là bắt buộc.',
-            'site_meta_keywords.required' => 'Từ khóa meta là bắt buộc.',
-            'site_meta_description.required' => 'Mô tả meta là bắt buộc.',
-            'facebook_url.url' => 'URL Facebook không hợp lệ.',
-            'instagram_url.url' => 'URL Instagram không hợp lệ.',
-            'youtube_url.url' => 'URL YouTube không hợp lệ.',
-            'tikTok_url.url' => 'URL TikTok không hợp lệ.',
-        ];
+        return GeneralRules::messages();
     }
 
     public function updateGeneralSettings()
@@ -122,7 +102,11 @@ class GeneralSettings extends Component
             return;
         }
 
-        $generalSettings = GeneralSetting::firstOrCreate([]);
+        $generalSettings = GeneralSetting::first();
+
+        if (!$generalSettings) {
+            $generalSettings = new GeneralSetting();
+        }
 
         $generalSettings->site_title = $this->site_title;
         $generalSettings->site_email = $this->site_email;
@@ -141,6 +125,6 @@ class GeneralSettings extends Component
             variant: 'success',
         );
 
-        
+        $this->redirectRoute('admin.settings.general', navigate: true);
     }
 }
