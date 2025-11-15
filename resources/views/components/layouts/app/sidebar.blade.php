@@ -91,7 +91,7 @@
                 <flux:sidebar.spacer />
 
                 <flux:sidebar.item icon="cog" :href="route('admin.settings.general')"
-                    :current="request()->routeIs('admin.settings.general')" wire:navigate>Cài đặt trang web
+                    :current="request()->routeIs('admin.settings.*')" wire:navigate>Cài đặt trang web
                 </flux:sidebar.item>
 
                
@@ -120,7 +120,7 @@
                         <flux:menu.separator />
 
                         <flux:menu.radio.group>
-                            <flux:menu.item :href="route('admin.settings.profile')" icon="cog" wire:navigate>
+                            <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
                                 Cài đặt</flux:menu.item>
                         </flux:menu.radio.group>
 
@@ -163,7 +163,7 @@
                         <flux:menu.separator />
 
                         <flux:menu.radio.group>
-                            <flux:menu.item :href="route('admin.settings.profile')" icon="cog" wire:navigate>
+                            <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
                                 Cài đặt</flux:menu.item>
                         </flux:menu.radio.group>
 

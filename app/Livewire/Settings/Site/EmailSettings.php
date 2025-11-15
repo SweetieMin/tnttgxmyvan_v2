@@ -5,8 +5,11 @@ namespace App\Livewire\Settings\Site;
 use Flux\Flux;
 use Livewire\Component;
 use App\Models\MailSetting;
+use Livewire\Attributes\Title;
 use App\Validation\Setting\EmailRules;
 use App\Traits\Settings\HandlesEmailSettingForm;
+
+#[Title('Cấu hình Email')]
 
 class EmailSettings extends Component
 {

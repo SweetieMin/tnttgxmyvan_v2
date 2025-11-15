@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use App\Helpers\MailConfig;
 use App\Helpers\PusherConfig;
-use App\Models\User;
+use App\Models\GeneralSetting;
 use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -70,19 +71,35 @@ class AppServiceProvider extends ServiceProvider
     {
         Blade::anonymousComponentNamespace('components.flux', 'flux');
         User::observe(UserObserver::class);
-        
+
         MailConfig::apply();
-        PusherConfig::apply(); 
+        PusherConfig::apply();
 
         // View Composer cho sidebar - inject user_settings
         View::composer('components.layouts.app.sidebar', function ($view) {
             $userSettings = null;
-            
+
             if (Auth::check()) {
                 $userSettings = Auth::user()->settings;
             }
-            
+
             $view->with('userSettings', $userSettings);
         });
+
+        $generalSettings = GeneralSetting::first();
+
+        View::share([
+            'site_title'        => $generalSettings->site_title ?? config('app.name'),
+            'site_email'        => $generalSettings->site_email ?? null,
+            'site_phone'        => $generalSettings->site_phone ?? null,
+            'site_meta_keywords' => $generalSettings->site_meta_keywords ?? null,
+            'site_meta_description' => $generalSettings->site_meta_description ?? null,
+            'site_logo'         => $generalSettings->site_logo ?? null,
+            'site_favicon'      => $generalSettings->site_favicon ?? null,
+            'facebook_url'      => $generalSettings->facebook_url ?? null,
+            'instagram_url'     => $generalSettings->instagram_url ?? null,
+            'youtube_url'       => $generalSettings->youtube_url ?? null,
+            'tiktok_url'        => $generalSettings->tikTok_url ?? null,
+        ]);
     }
 }

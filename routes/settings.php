@@ -11,7 +11,7 @@ use App\Livewire\Settings\Site\PusherSettings;
 use App\Livewire\Settings\Site\GeneralSettings;
 
 
-Route::middleware(['auth'])->name('admin.')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('settings.profile');
