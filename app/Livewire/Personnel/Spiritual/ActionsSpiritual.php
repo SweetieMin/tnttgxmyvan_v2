@@ -50,6 +50,11 @@ class ActionsSpiritual extends Component
         return view('livewire.personnel.spiritual.actions-spiritual');
     }
 
+    public function backSpiritual()
+    {
+        $this->redirectRoute('admin.personnel.spirituals', navigate: true);
+    }
+
     #[On('addSpiritual')]
     public function addSpiritual()
     {

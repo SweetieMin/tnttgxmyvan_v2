@@ -66,7 +66,7 @@
                 <flux:separator class="my-2 flex-shrink-0 " />
 
                 <flux:sidebar.item icon="church" :href="route('admin.personnel.spirituals')"
-                    :current="request()->routeIs('admin.personnel.spirituals')" wire:navigate>Linh hướng
+                    :current="request()->routeIs('admin.personnel.spirituals*')" wire:navigate>Linh hướng
                 </flux:sidebar.item>
 
                 <flux:sidebar.item icon="book-plus" :href="route('admin.personnel.catechists')"

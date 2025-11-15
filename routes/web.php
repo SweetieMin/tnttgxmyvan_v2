@@ -64,7 +64,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     Route::prefix('personnel')->name('personnel.')->group(function () {
         Route::get('spirituals', Spirituals::class)->name('spirituals');
 
-        Route::get('spiritual/action', ActionsSpiritual::class)->name('spiritual.action');
+        Route::get('spirituals/action', ActionsSpiritual::class)->name('spirituals.action');
 
         Route::get('catechists', Catechists::class)->name('catechists');
         Route::get('scouters', Scouters::class)->name('scouters');

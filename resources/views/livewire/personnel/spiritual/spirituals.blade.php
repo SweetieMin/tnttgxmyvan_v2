@@ -1,13 +1,12 @@
 <div>
-    <x-contents.layout heading="Linh hướng" subheading="Quản lý danh sách và thông tin Linh hướng" icon="squares-plus"
-        :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Linh hướng']]"  buttonLabel="Thêm Linh hướng" buttonAction="addSpiritual">
+    <x-contents.layout heading="Người linh hướng" subheading="Quản lý danh sách và thông tin Người linh hướng"
+        icon="squares-plus" :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Người linh hướng']]" buttonLabel="Thêm Linh hướng" buttonAction="addSpiritual">
 
         {{-- Component Search & Filter --}}
 
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
-                <x-contents.search searchPlaceholder="Tìm kiếm Linh hướng..." wire:model.live.debounce.300ms="search"
-                     />
+                <x-contents.search searchPlaceholder="Tìm kiếm người linh hướng..." />
             </div>
         </div>
 
@@ -20,32 +19,32 @@
                     <table>
                         <thead>
                             <tr>
-                                
+
                                 <th class="text-center"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($spirituals as $spiritual)
-                            <tr>
-                                <td>
-                                    <flux:dropdown position="bottom" align="end">
-                                        <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
-                                            variant="subtle" />
-                                        <flux:menu>
-                                            <flux:menu.item class="cursor-pointer" icon="pencil-square"
-                                                wire:click='editSpiritual({{ $spiritual->id }})'>
-                                                Sửa
-                                            </flux:menu.item>
+                                <tr>
+                                    <td>
+                                        <flux:dropdown position="bottom" align="end">
+                                            <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
+                                                variant="subtle" />
+                                            <flux:menu>
+                                                <flux:menu.item class="cursor-pointer" icon="pencil-square"
+                                                    wire:click='editSpiritual({{ $spiritual->id }})'>
+                                                    Sửa
+                                                </flux:menu.item>
 
-                                            <flux:menu.item class="cursor-pointer" icon="trash" variant="danger"
-                                                wire:click='deleteSpiritual({{ $spiritual->id }})'>
-                                                Xoá
-                                            </flux:menu.item>
+                                                <flux:menu.item class="cursor-pointer" icon="trash" variant="danger"
+                                                    wire:click='deleteSpiritual({{ $spiritual->id }})'>
+                                                    Xoá
+                                                </flux:menu.item>
 
-                                        </flux:menu>
-                                    </flux:dropdown>
-                                </td>
-                            </tr>
+                                            </flux:menu>
+                                        </flux:dropdown>
+                                    </td>
+                                </tr>
                             @empty
                                 <tr>
                                     <td colspan="6">
@@ -64,7 +63,7 @@
 
                 {{-- Mobile Card View --}}
                 <div class="md:hidden space-y-3">
-                    
+
                 </div>
 
 

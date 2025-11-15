@@ -32,7 +32,7 @@ class Spirituals extends Component
 
     public function addSpiritual()
     {
-        $this->redirectRoute('admin.personnel.spiritual.action', ['parameter' => 'addUser'], navigate: true);
+        $this->redirectRoute('admin.personnel.spirituals.action', ['parameter' => 'addUser'], navigate: true);
     }
 
     public function editSpiritual($id){
