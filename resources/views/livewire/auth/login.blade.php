@@ -43,7 +43,6 @@
             </flux:button>
         </div>
 
-        {{ $site_favicon }}
     </form>
 
 </div>
