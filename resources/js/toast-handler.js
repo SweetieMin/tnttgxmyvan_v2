@@ -14,6 +14,12 @@ export function playSound(variant, userSettings) {
     if (notificationSound === false) {
         return;
     }
+
+    const notification_volume = userSettings?.notification_volume ?? 50;
+
+    const volume = Math.min(Math.max(notification_volume / 100, 0), 1);
+
+    console.log(volume);
     
     // Map variant với file âm thanh
     const soundMap = {
@@ -30,7 +36,7 @@ export function playSound(variant, userSettings) {
     
     try {
         const audio = new Audio(soundPath);
-        audio.volume = 0.5; // Điều chỉnh âm lượng (0.0 - 1.0)
+        audio.volume = volume; // Điều chỉnh âm lượng (0.0 - 1.0)
         audio.play().catch(error => {
             console.warn('Không thể phát âm thanh:', error);
         });
