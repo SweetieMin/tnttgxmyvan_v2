@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\Settings\Site\EmailSettings;
 use App\Livewire\Settings\Site\PusherSettings;
 use App\Livewire\Settings\Site\GeneralSettings;
+use App\Livewire\Settings\Site\MaintenanceSettings;
 
 
 Route::middleware(['auth'])->group(function () {
@@ -36,4 +37,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('settings/email', EmailSettings::class)->name('settings.email');
 
     Route::get('settings/pusher', PusherSettings::class)->name('settings.pusher');
+
+    Route::get('settings/maintenance', MaintenanceSettings::class)->name('settings.maintenance');
 });

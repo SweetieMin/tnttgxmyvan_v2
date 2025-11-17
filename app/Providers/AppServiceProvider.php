@@ -10,7 +10,9 @@ use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\Middleware\Authenticate;
 use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\CourseRepository;
 use App\Repositories\Eloquent\SectorRepository;
@@ -22,6 +24,7 @@ use App\Repositories\Eloquent\SpiritualRepository;
 use App\Repositories\Eloquent\RegulationRepository;
 use App\Repositories\Eloquent\TransactionRepository;
 use App\Repositories\Eloquent\AcademicYearRepository;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Repositories\Eloquent\TransactionItemRepository;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Repositories\Eloquent\ChildrenInactiveRepository;
@@ -69,6 +72,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+        RedirectIfAuthenticated::redirectUsing(function () {
+            return route('dashboard');
+        });
+
+        Authenticate::redirectUsing(function () {
+            Session::flash('status', 'Bạn cần đăng nhập để tiếp tục');
+            return route('login');
+        });
+
         Blade::anonymousComponentNamespace('components.flux', 'flux');
         User::observe(UserObserver::class);
 

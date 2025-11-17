@@ -13,7 +13,7 @@
         <flux:sidebar collapsible
             class="w-[300px] border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-700 h-full flex flex-col">
             <flux:sidebar.header>
-                <flux:sidebar.brand logo="/storage/images/sites/logo.png" name="TNTT Giáo xứ Mỹ Vân"
+                <flux:sidebar.brand logo="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}" name="TNTT Giáo xứ Mỹ Vân"
                     class="text-pink-500" />
                 <flux:sidebar.collapse tooltip="Nút sidebar" />
             </flux:sidebar.header>
@@ -100,14 +100,14 @@
 
             <div class="flex-shrink-0  border-t border-zinc-200 dark:border-zinc-700 max-lg:hidden">
                 <flux:dropdown position="top" align="start" class="max-lg:hidden">
-                    <flux:sidebar.profile avatar="{{ auth()->user()->details?->picture }}"
+                    <flux:sidebar.profile avatar="{{ auth()->user()?->details?->picture }}"
                         name="{{ auth()->user()->full_name }}" />
 
                     <flux:menu>
                         <flux:menu.radio.group>
                             <div class="p-0 text-sm font-normal">
                                 <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                    <flux:avatar src="{{ auth()->user()->details?->picture }}" />
+                                    <flux:avatar src="{{ auth()->user()?->details?->picture }}" />
                                     <div class="grid flex-1 text-start text-sm leading-tight">
                                         <span
                                             class="truncate font-semibold">{{ auth()->user()->christian_full_name }}</span>
@@ -144,13 +144,13 @@
                 <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
                 <flux:spacer />
                 <flux:dropdown position="top" align="end">
-                    <flux:profile avatar="{{ auth()->user()->details?->picture }}" icon-trailing="chevron-down" />
+                    <flux:profile avatar="{{ auth()->user()?->details?->picture }}" icon-trailing="chevron-down" />
 
                     <flux:menu>
                         <flux:menu.radio.group>
                             <div class="p-0 text-sm font-normal">
                                 <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                    <flux:avatar src="{{ auth()->user()->details?->picture }}" />
+                                    <flux:avatar src="{{ auth()->user()?->details?->picture }}" />
                                     <div class="grid flex-1 text-start text-sm leading-tight">
                                         <span
                                             class="truncate font-semibold">{{ auth()->user()->christian_full_name }}</span>

@@ -75,3 +75,35 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/settings.php';
+
+Route::get('401', function () {
+    return view('errors.401');
+})->name('401');
+
+Route::get('403', function () {
+    return view('errors.403');
+})->name('403');
+
+Route::get('404', function () {
+    return view('errors.404');
+})->name('404');
+
+Route::get('419', function () {
+    return view('errors.419');
+})->name('419');
+
+Route::get('422', function () {
+    return view('errors.422');
+})->name('422');
+
+Route::get('429', function () {
+    return view('errors.429');
+})->name('429');
+
+Route::get('500', function () {
+    return view('errors.500');
+})->name('500');
+
+Route::get('503', function () {
+    return view('errors.503');
+})->name('503');

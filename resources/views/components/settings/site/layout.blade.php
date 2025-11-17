@@ -2,7 +2,7 @@
 
     <div class="me-10 w-full pb-4 md:w-sm">
         <flux:card class="space-y-6">
-            <flux:navlist>
+            <flux:navlist wire:ignore>
                 <flux:navlist.item :href="route('admin.settings.general')"
                     :current="request()->routeIs('admin.settings.general')" wire:navigate>Cấu hình chung
                 </flux:navlist.item>
@@ -11,6 +11,10 @@
                 </flux:navlist.item>
                 <flux:navlist.item :href="route('admin.settings.pusher')"
                     :current="request()->routeIs('admin.settings.pusher')" wire:navigate>Cấu hình Pusher
+                </flux:navlist.item>
+
+                <flux:navlist.item :href="route('admin.settings.maintenance')"
+                    :current="request()->routeIs('admin.settings.maintenance')" wire:navigate>Cấu hình bảo trì
                 </flux:navlist.item>
             </flux:navlist>
         </flux:card>
@@ -27,5 +31,5 @@
                 {{ $slot }}
             </div>
         </flux:card>
-    </div>  
+    </div>
 </div>
