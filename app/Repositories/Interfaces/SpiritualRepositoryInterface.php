@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Interfaces;
 //use Illuminate\Interfaces\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface SpiritualRepositoryInterface
 {
@@ -11,5 +12,9 @@ interface SpiritualRepositoryInterface
     public function create(array $data);
     public function update(int|string $id, array $data);
     public function delete(int|string $id);
+
+    public function getSpiritualWithSearchAndPage(?string $search = null, ?int $perPage = null) :LengthAwarePaginator;
+
+    public function findSpiritualWithRelations(int|string $id);
 
 }

@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <flux:file-upload wire:model="file" label="Tải lên tập tin" accept=".pdf">
+            <flux:file-upload wire:ignore wire:model="file" label="Tải lên tập tin" accept=".pdf">
                 <flux:file-upload.dropzone heading="Kéo thả file vào đây hoặc nhấn để chọn"
                     text="Chỉ hỗ trợ PDF (tối đa 10MB)" with-progress inline />
             </flux:file-upload>

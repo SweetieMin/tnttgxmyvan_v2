@@ -17,12 +17,12 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
     public function getRoleExceptCurrentRole(?int $id = null)
     {
         return $this->model->with('subRoles')
-        ->when($id, fn($query) => $query->where('id', '!=', $id))
-        ->orderBy('ordering')
-        ->get();
+            ->when($id, fn($query) => $query->where('id', '!=', $id))
+            ->orderBy('ordering')
+            ->get();
     }
 
-    public function roleWithSearchAndPage(?string $search = null, ?int $perPage = null) :LengthAwarePaginator
+    public function roleWithSearchAndPage(?string $search = null, ?int $perPage = null): LengthAwarePaginator
     {
         return $this->safeExecute(function () use ($perPage, $search) {
             $query = $this->model->newQuery();
@@ -33,9 +33,13 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
                 });
             }
 
-            return $query->paginate($perPage);
+            return $query->orderBy('ordering')->paginate($perPage);
         }, 'Không thể tải dữ liệu phân trang.');
     }
 
-    
+    public function  getRoleSpiritual()
+    {
+        return $this->model->where('type', 'spiritual')->get();
+    }
+
 }

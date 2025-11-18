@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('ordering')->default(1000);
             $table->string('name');
             $table->string('description')->nullable();
+            $table->enum('type', ['system','spiritual','catechist','scouter','children'])->default('children');
             $table->timestamps();
         });
     }

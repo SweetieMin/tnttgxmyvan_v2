@@ -83,7 +83,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::anonymousComponentNamespace('components.flux', 'flux');
-        User::observe(UserObserver::class);
 
         MailConfig::apply();
         PusherConfig::apply();

@@ -10,6 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use BaconQrCode\Renderer\Color\Rgb;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\Fill;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -29,6 +36,7 @@ class User extends Authenticatable
         'email',
         'password',
         'status_login',
+        'token',
     ];
 
     /**
@@ -71,6 +79,34 @@ class User extends Authenticatable
         ];
     }
 
+    public function scopeOrderByRole($query)
+    {
+        return $query->orderBy(
+            Role::select('ordering')
+                ->join('role_user', 'roles.id', '=', 'role_user.role_id')
+                ->whereColumn('role_user.user_id', 'users.id')
+                ->orderBy('roles.ordering')
+        );
+    }
+    
+    public function getStatusLabelAttribute()
+    {
+        return match ($this->status_login) {
+            'active' => 'Hoạt động',
+            'locked' => 'Đã khoá',
+            'inactive' => 'Đã khoá',
+        };
+    }    
+
+    public function getStatusColorAttribute()
+    {
+        return match ($this->status_login) {
+            'active' => 'emerald',
+            'locked' => 'red',
+            'inactive' => 'zinc',
+        };
+    }  
+
     /**
      * Get the user's initials
      */
@@ -81,6 +117,18 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function getTokenQrCode()
+    {
+        $svg = (new Writer(
+            new ImageRenderer(
+                new RendererStyle(250, 1, null, null, Fill::uniformColor(new Rgb(255, 255, 255), new Rgb(0, 0, 0))),
+                new SvgImageBackEnd
+            )
+        ))->writeString(url('/profile/' . $this->token));
+
+        return $svg;
     }
 
     /**
@@ -138,6 +186,16 @@ class User extends Authenticatable
     public function parents()
     {
         return $this->hasOne(UserParent::class);
+    }
+
+    /**
+     * Relationship with User Religious Profile
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function religious_profile()
+    {
+        return $this->hasOne(UserReligiousProfile::class);
     }
 
     public function courses()

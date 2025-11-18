@@ -24,6 +24,10 @@ return new class extends Migration
             $table->string('name_mother')->nullable();
             $table->string('phone_mother')->nullable();
 
+            $table->string('christian_name_god_parent')->nullable();
+            $table->string('name_god_parent')->nullable();
+            $table->string('phone_god_parent')->nullable();
+
             $table->timestamps();
         });
     }

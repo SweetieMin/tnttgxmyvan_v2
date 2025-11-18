@@ -16,15 +16,14 @@ class UserReligiousProfile extends Model
 
     protected $fillable = [
         'user_id',
+
         'baptism_date',
         'baptism_place',
         'baptismal_sponsor',
 
-        'christian_name_god_parent',
-        'name_god_parent',
-
-        'first_communion',
+        'first_communion_date',
         'first_communion_place',
+        'first_communion_sponsor',
 
         'confirmation_date',
         'confirmation_place',
@@ -32,6 +31,7 @@ class UserReligiousProfile extends Model
 
         'pledge_date',
         'pledge_place',
+        'pledge_sponsor',
 
         'status_religious',
         'is_attendance',
@@ -39,7 +39,7 @@ class UserReligiousProfile extends Model
 
     protected $casts = [
         'baptism_date' => 'date',
-        'first_communion' => 'date',
+        'first_communion_date' => 'date',
         'confirmation_date' => 'date',
         'pledge_date' => 'date',
         'is_attendance' => 'boolean',

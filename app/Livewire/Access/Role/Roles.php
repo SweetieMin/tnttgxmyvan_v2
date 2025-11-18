@@ -40,7 +40,7 @@ class Roles extends Component
     public function render()
     {
         $perPage = $this->perPage === '' || $this->perPage === null ? null : (int) $this->perPage;
-        
+
         $roles = $this->roleRepository
             ->roleWithSearchAndPage($this->search, $perPage);
 
@@ -104,22 +104,18 @@ class Roles extends Component
 
     public function updateRolesOrdering($ids)
     {
-        try {
-            $success = $this->roleRepository->updateOrdering($ids);
 
-            if ($success) {
-                Flux::toast(
-                    heading: 'Thành công',
-                    text: 'Thứ tự chức vụ đã được cập nhật.',
-                    variant: 'success',
-                );
-            } else {
-                Flux::toast(
-                    heading: 'Đã xảy ra lỗi!',
-                    text: 'Không thể cập nhật thứ tự chức vụ.',
-                    variant: 'error',
-                );
-            }
+
+
+        try {
+            $this->roleRepository->updateOrdering($ids);
+
+
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Thứ tự chức vụ đã được cập nhật.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
             Flux::toast(
                 heading: 'Đã xảy ra lỗi!',

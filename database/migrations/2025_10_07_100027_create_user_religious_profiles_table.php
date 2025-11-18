@@ -21,11 +21,9 @@ return new class extends Migration
             $table->string('baptism_place')->nullable();
             $table->string('baptismal_sponsor')->nullable();
 
-            $table->string('christian_name_god_parent')->nullable();
-            $table->string('name_god_parent')->nullable();
-
-            $table->date('first_communion')->nullable();
+            $table->date('first_communion_date')->nullable();
             $table->string('first_communion_place')->nullable();
+            $table->string('first_communion_sponsor')->nullable();
 
             $table->date('confirmation_date')->nullable();
             $table->string('confirmation_place')->nullable();
@@ -33,8 +31,9 @@ return new class extends Migration
 
             $table->date('pledge_date')->nullable();
             $table->string('pledge_place')->nullable();
+            $table->string('pledge_sponsor')->nullable();
 
-            $table->enum('status_religious', ['in_course','graduated']);
+            $table->enum('status_religious', ['in_course','graduated'])->default('in_course');
             $table->boolean('is_attendance')->default(true);
 
             $table->timestamps();

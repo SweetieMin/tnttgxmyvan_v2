@@ -62,6 +62,7 @@
                                 <flux:table.columns sticky class="bg-white dark:bg-zinc-700">
                                     <flux:table.column class="w-16">STT</flux:table.column>
                                     <flux:table.column align="center" class="w-40">Tên chức vụ</flux:table.column>
+                                    <flux:table.column align="center" class="w-50">Loại chức vụ</flux:table.column>
                                     <flux:table.column align="left">Mô tả</flux:table.column>
                                     <flux:table.column class="w-20"></flux:table.column>
                                 </flux:table.columns>
@@ -74,6 +75,9 @@
                                             </flux:table.cell>
                                             <flux:table.cell align="center">
                                                 {{ $role->name }}
+                                            </flux:table.cell>
+                                            <flux:table.cell align="center">
+                                                <flux:badge color="{{ $role->type_color }}">{{ $role->type_label }}</flux:badge>
                                             </flux:table.cell>
                                             <flux:table.cell align="left">
                                                 {{ $role->description }}
@@ -131,6 +135,12 @@
 
                                         <flux:accordion.content>
                                             <div class="space-y-3 text-sm text-accent-text/90 mt-2">
+
+                                                <div class="flex justify-between">
+                                                    <span>Loại chức vụ:</span>
+                                                    <span><flux:badge color="{{ $role->type_color }}">{{ $role->type_label }}</flux:badge></span>
+                                                </div>
+
                                                 <div class="pt-3 border-t border-accent/10 flex gap-2">
                                                     <flux:button wire:click='editRole({{ $role->id }})'
                                                         icon="pencil-square" variant="filled" class="flex-1">

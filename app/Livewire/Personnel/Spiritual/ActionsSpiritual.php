@@ -5,23 +5,57 @@ namespace App\Livewire\Personnel\Spiritual;
 use Flux\Flux;
 
 use Livewire\Component;
-use Livewire\Attributes\On;
 
+use Livewire\Attributes\On;
+use Livewire\Attributes\Title;
+use App\Support\User\UserHelper;
 use App\Validation\Personnel\SpiritualRules;
 use App\Traits\Personnel\HandlesSpiritualForm;
+use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Repositories\Interfaces\SpiritualRepositoryInterface;
 
 
+#[Title('Thao tác linh hướng')]
 class ActionsSpiritual extends Component
 {
     use HandlesSpiritualForm;
 
     protected SpiritualRepositoryInterface $spiritualRepository;
+    protected RoleRepositoryInterface $roleRepository;
 
     public $isEditSpiritualMode = false;
 
+    public $tokenQrCode, $christian_name, $name, $last_name, $full_name,  $position, $birthday, $account_code, $phone, $address, $email, $bio, $password, $token;
+
+    public $gender = 'male';
+
+    public $status_login = 'active';
+
+    public $roles = [];
 
     public $spiritualID;
+
+    public $picture;
+
+    public $tab = 'profile';
+    public $isShowTabParent = false;
+    public $isShowTabCatechism = false;
+    public $isShowTabAchievement = false;
+    protected $queryString = ['tab'=>['keep'=>true]];
+
+    public function selectTab($tab)
+    {
+        $this->tab = $tab;
+        // Cập nhật URL với query parameter tab
+        $url = route('admin.personnel.spirituals.action', [
+            'parameter'   => 'editSpiritual',
+            'spiritualID' => $this->spiritualID,
+            'tab'         => $tab,
+        ]) . '#section';
+        
+        $this->redirect($url, navigate: true);
+        
+    }
 
     /**
      * Quy tắc xác thực
@@ -39,9 +73,40 @@ class ActionsSpiritual extends Component
         return SpiritualRules::messages();
     }
 
-    public function boot(SpiritualRepositoryInterface $spiritualRepository)
+    public function boot(SpiritualRepositoryInterface $spiritualRepository, RoleRepositoryInterface $roleRepository)
     {
         $this->spiritualRepository = $spiritualRepository;
+        $this->roleRepository = $roleRepository;
+    }
+
+    public function loadData()
+    {
+
+        $this->roles = $this->roleRepository->getRoleSpiritual();
+    }
+
+    public function mount()
+    {
+
+        $parameter = request()->input('parameter');
+        $spiritualID    = request()->input('spiritualID');
+        $tab = request()->input('tab');
+
+        if (!$parameter) {
+            return;
+        }
+
+        $this->isEditSpiritualMode = $parameter === 'editSpiritual';
+        $this->spiritualID = $this->isEditSpiritualMode ? $spiritualID : null;
+        $this->tab = $tab;
+
+        if ($this->isEditSpiritualMode) {
+            $this->editSpiritual($this->spiritualID);
+        } else {
+            $this->addSpiritual();
+        }
+
+        $this->loadData();
     }
 
 
@@ -59,28 +124,67 @@ class ActionsSpiritual extends Component
     public function addSpiritual()
     {
         $this->resetForm();
-        Flux::modal('action-spiritual')->show();
+
+        $tokenQrCode = UserHelper::generateTokenQrCode();
+        $this->tokenQrCode = $tokenQrCode['svg'];
+        $this->token = $tokenQrCode['token'];
+        $this->picture = "/storage/images/users/default-avatar.png";
     }
 
     public function createSpiritual()
     {
+
         $this->validate();
 
         $data = $this->only([
-            
+            'christian_name',
+            'name',
+            'last_name',
+            'token',
+            'account_code',
+            'gender',
+            'birthday',
+            'status_login',
+            'phone',
+            'picture',
+            'address',
+            'email',
+            'bio',
+            'password',
         ]);
 
         try {
-            $this->spiritualRepository->create($data);
+            $spiritual = $this->spiritualRepository->create($data);
 
-            session()->flash('success', 'Spiritual tạo thành công.');
+            $spiritual->details()->create([
+                'bio' => $data['bio'],
+                'phone' => $data['phone'],
+                'address' => $data['address'],
+                'gender' => $data['gender'],
+            ]);
 
-            
+            $spiritual->roles()->sync($this->position);
+
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Người linh hướng được tạo thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Tạo spiritual thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Tạo người linh hướng thất bại. ' . $e->getMessage(),
+                variant: 'danger',
+            );
         }
+
+        $url = route('admin.personnel.spirituals.action', [
+            'parameter'   => 'editSpiritual',
+            'spiritualID' => $this->spiritualID,
+            'tab'         => $this->tab,
+        ]) . '#section';
         
-        $this->redirectRoute('admin.personnel.spirituals', navigate: true);
+        $this->redirect($url, navigate: true);
     }
 
     #[On('editSpiritual')]
@@ -88,44 +192,102 @@ class ActionsSpiritual extends Component
     {
         $this->resetForm();
 
-        $spiritual = $this->spiritualRepository->find($id);
+        $spiritual = $this->spiritualRepository->findSpiritualWithRelations($id);
 
         if ($spiritual) {
             // Gán dữ liệu vào form
             $this->spiritualID = $spiritual->id;
             $this->isEditSpiritualMode = true;
-    
-            
+
+            $this->tokenQrCode = $spiritual->getTokenQrCode();
+            $this->christian_name = $spiritual->christian_name;
+            $this->full_name = $spiritual->full_name;
+            $this->account_code = $spiritual->account_code;
+            $this->gender = $spiritual->gender;
+            $this->birthday = $spiritual->birthday;
+            $this->status_login = $spiritual->status_login;
+            $this->phone = $spiritual->details?->phone;
+            $this->email = $spiritual->email;
+            $this->bio = $spiritual->details?->bio;
+            $this->password = $spiritual->password;
+            $this->position = $spiritual->roles?->first()?->id;
+
+            $this->roles = $spiritual->roles;
+            $this->gender = $spiritual->details?->gender;
+            $this->address = $spiritual->details?->address;
+            $this->picture = $spiritual->details?->picture;
 
             // Hiển thị modal
-            Flux::modal('action-spiritual')->show();
+             $this->isShowTabParent = true;
+             $this->isShowTabCatechism = true;
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy spiritual');
-            return $this->redirectRoute('admin.personnel.spirituals', navigate: true);
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Không tìm thấy spiritual',
+                variant: 'danger',
+            );
+            return $this->redirectRoute('admin.personnel.spirituals.action', navigate: true);
         }
-
     }
 
     public function updateSpiritual()
     {
+
+        $parts = UserHelper::separateFullName($this->full_name);
+        $this->name = $parts['name'];
+        $this->last_name = $parts['last_name'];
+
         $this->validate();
 
         $data = $this->only([
-            
+            'christian_name',
+            'name',
+            'last_name',
+            'gender',
+            'status_login',
+            'phone',
+            'picture',
+            'address',
+            'email',
+            'bio',
         ]);
 
         try {
-            $this->spiritualRepository->update($this->spiritualID,$data);
+            $spiritual = $this->spiritualRepository->update($this->spiritualID, $data);
 
-            session()->flash('success', 'Spiritual cập nhật thành công.');
+            $spiritual->details()->updateOrCreate(
+                ['user_id' => $spiritual->id], // điều kiện để tìm
+                [
+                    'bio'     => $data['bio'],
+                    'phone'   => $data['phone'],
+                    'address' => $data['address'],
+                    'gender'  => $data['gender'],
+                ]
+            );
 
-            
+            $spiritual->roles()->sync($this->position);
+
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Spiritual cập nhật thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật spiritual thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Cập nhật spiritual thất bại. ' . $e->getMessage(),
+                variant: 'danger',
+            );
         }
+
+        $url = route('admin.personnel.spirituals.action', [
+            'parameter'   => 'editSpiritual',
+            'spiritualID' => $this->spiritualID,
+            'tab'         => $this->tab,
+        ]) . '#section';
         
-        $this->redirectRoute('admin.personnel.spirituals', navigate: true);
+        $this->redirect($url, navigate: true);
     }
 
     #[On('deleteSpiritual')]
@@ -139,15 +301,18 @@ class ActionsSpiritual extends Component
         if ($spiritual) {
             // Gán dữ liệu vào form
             $this->spiritualID = $spiritual->id;
-                
+
             // Hiển thị modal
             Flux::modal('delete-spiritual')->show();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy spiritual');
-            return $this->redirectRoute('admin.personnel.spirituals', navigate: true);
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Không tìm thấy spiritual',
+                variant: 'danger',
+            );
+            return $this->redirectRoute('admin.personnel.spirituals.action', navigate: true);
         }
-
     }
 
     public function deleteSpiritualConfirm()
@@ -155,13 +320,19 @@ class ActionsSpiritual extends Component
         try {
             $this->spiritualRepository->delete($this->spiritualID);
 
-            session()->flash('success', 'Spiritual xoá thành công.');
-
-            
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Spiritual xoá thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Xoá spiritual thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Xoá spiritual thất bại. ' . $e->getMessage(),
+                variant: 'danger',
+            );
         }
-        
-        $this->redirectRoute('admin.personnel.spirituals', navigate: true);
+
+        $this->redirectRoute('admin.personnel.spirituals.action', navigate: true);
     }
 }

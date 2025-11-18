@@ -22,6 +22,7 @@ class ActionsRole extends Component
 
     public $name;
     public $description;
+    public $type;
     public array $hierarchies = [];
 
     public $roleID;
@@ -106,9 +107,17 @@ class ActionsRole extends Component
                 $role->roleHierarchies()->sync($this->hierarchies);
             }
     
-            session()->flash('success', 'Role tạo thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Role tạo thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Tạo role thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Tạo role thất bại. ' . $e->getMessage(),
+                variant: 'danger',
+            );
         }
     
         $this->redirectRoute('admin.access.roles', ['page' => $this->page], navigate: true);
@@ -131,7 +140,11 @@ class ActionsRole extends Component
             $this->hierarchies = $role->subRoles()->pluck('roles.id')->toArray();
         } else {
             // Nếu không tìm thấy
-            session()->flash('error', 'Không tìm thấy role');
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Không tìm thấy role',
+                variant: 'danger',
+            );
             return $this->redirectRoute('admin.access.roles', navigate: true);
         }
     }
@@ -154,9 +167,17 @@ class ActionsRole extends Component
                 $role->roleHierarchies()->sync($this->hierarchies);
             }
 
-            session()->flash('success', 'Role cập nhật thành công.');
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Role cập nhật thành công.',
+                variant: 'success',
+            );
         } catch (\Exception $e) {
-            session()->flash('error', 'Cập nhật role thất bại.' . $e->getMessage());
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Cập nhật role thất bại. ' . $e->getMessage(),
+                variant: 'danger',
+            );
         }
 
         $this->redirectRoute('admin.access.roles', ['page' => $this->page], navigate: true);

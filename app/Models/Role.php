@@ -10,11 +10,34 @@ class Role extends Model
         'name',
         'description',
         'ordering',
+        'type'
     ];
 
     protected $casts = [
         'ordering' => 'integer',
     ];
+
+    public function getTypeLabelAttribute()
+    {
+        return match ($this->type) {
+            'system' => 'Hệ thống',
+            'spiritual' => 'Linh Hướng',
+            'catechist' => 'Giáo Lý Viên',
+            'scouter' => 'Huynh Dự Đội Trưởng',
+            'children' => 'Thiếu Nhi',
+        };
+    }
+
+    public function getTypeColorAttribute()
+    {
+        return match ($this->type) {
+            'system' => 'zinc',
+            'spiritual' => 'purple',
+            'catechist' => 'orange',
+            'scouter' => 'rose',
+            'children' => 'emerald',
+        };
+    }
 
     /**
      * Những vai trò CẤP DƯỚI mà vai trò này quản lý.

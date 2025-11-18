@@ -5,16 +5,28 @@
     @include('partials.head')
 </head>
 
-<body class="h-screen bg-white dark:bg-zinc-800 overflow-hidden" 
-    x-data="window.toastHandler?.createToastHandler(@js($userSettings)) || { userSettings: @js($userSettings), handleToast: () => {} }"
+<body class="h-screen bg-white dark:bg-zinc-800 overflow-hidden" x-data="window.toastHandler?.createToastHandler(@js($userSettings)) || { userSettings: @js($userSettings), handleToast: () => {} }"
     x-on:toast-show.document="handleToast($event)">
+
     <div class="flex h-full">
         {{-- Sidebar bên trái --}}
         <flux:sidebar collapsible
             class="w-[300px] border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-700 h-full flex flex-col">
+            <div class="absolute bottom-2 right-4 z-50">
+                <flux:button variant="subtle" square aria-label="Toggle dark mode" x-data="{ dark: $flux.dark }"
+                    x-effect="dark = $flux.dark" x-on:click="$flux.dark = ! $flux.dark">
+                    {{-- Light mode → show moon --}}
+                    <flux:icon.moon x-show="!dark" variant="mini"
+                        class="text-zinc-600 dark:text-white transition duration-300" />
+
+                    {{-- Dark mode → show sun --}}
+                    <flux:icon.sun x-show="dark" variant="mini" class="text-zinc-300 transition duration-300" />
+                </flux:button>
+
+            </div>
             <flux:sidebar.header>
-                <flux:sidebar.brand logo="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}" name="TNTT Giáo xứ Mỹ Vân"
-                    class="text-pink-500" />
+                <flux:sidebar.brand logo="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}"
+                    name="TNTT Giáo xứ Mỹ Vân" class="text-pink-500" />
                 <flux:sidebar.collapse tooltip="Nút sidebar" />
             </flux:sidebar.header>
 
@@ -94,7 +106,7 @@
                     :current="request()->routeIs('admin.settings.*')" wire:navigate>Cài đặt trang web
                 </flux:sidebar.item>
 
-               
+
             </flux:sidebar.nav>
 
 
@@ -143,6 +155,18 @@
             <flux:header class="lg:hidden">
                 <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
                 <flux:spacer />
+
+                <flux:button class="mr-2" variant="subtle" square aria-label="Toggle dark mode" x-data="{ dark: $flux.dark }"
+                    x-effect="dark = $flux.dark" x-on:click="$flux.dark = ! $flux.dark">
+                    {{-- Light mode → show moon --}}
+                    <flux:icon.moon x-show="!dark" variant="mini"
+                        class="text-zinc-600 dark:text-white transition duration-300" />
+
+                    {{-- Dark mode → show sun --}}
+                    <flux:icon.sun x-show="dark" variant="mini" class="text-zinc-300 transition duration-300" />
+                </flux:button>
+
+
                 <flux:dropdown position="top" align="end">
                     <flux:profile avatar="{{ auth()->user()?->details?->picture }}" icon-trailing="chevron-down" />
 
@@ -183,9 +207,7 @@
             {{-- Nội dung --}}
             <main class="flex-grow overflow-auto">
 
-
                 {{ $slot }}
-
 
             </main>
 

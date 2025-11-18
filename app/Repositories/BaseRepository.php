@@ -120,19 +120,23 @@ abstract class BaseRepository
         }, 'Không thể tạo bản ghi mới.');
     }
 
-    public function update(int|string $id, array $data): bool
+    public function update(int|string $id, array $data)
     {
         return $this->safeExecute(function () use ($id, $data) {
             $data = $this->prepareData($data);
-
+    
             $record = $this->find($id);
+    
             if (! $record) {
                 throw new Exception("Không tìm thấy bản ghi để cập nhật (ID: {$id}).");
             }
-
-            return $record->update($data);
+    
+            $record->update($data);
+    
+            return $record;  // 🔥 Trả về Model, KHÔNG phải bool
         }, 'Không thể cập nhật bản ghi.');
     }
+    
 
     public function delete(int|string $id): bool
     {

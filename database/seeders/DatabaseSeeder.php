@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
             RoleHierarchySeeder::class,
             RegulationSeeder::class,
             TransactionItemSeeder::class,
+            GeneralSettingSeeder::class,
+            MailSettingSeeder::class,
+            PusherSettingSeeder::class,
         ]);
 
 

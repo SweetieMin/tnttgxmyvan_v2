@@ -18,4 +18,6 @@ interface RoleRepositoryInterface
 
     public function roleWithSearchAndPage(?string $search = null, ?int $perPage = null) :LengthAwarePaginator;
 
+    public function getRoleSpiritual();
+
 }
