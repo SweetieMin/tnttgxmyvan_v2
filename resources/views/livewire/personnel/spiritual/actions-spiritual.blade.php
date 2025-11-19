@@ -81,14 +81,14 @@
                             @if ($isShowTabParent)
                                 <flux:tab.panel name="parent">
 
-                                    <livewire:personnel.common.update-parent :spiritualID="$spiritualID" />
+                                    <livewire:personnel.common.update-parent :userID="$spiritualID" />
 
                                 </flux:tab.panel>
                             @endIf
                             @if ($isShowTabCatechism)
                                 <flux:tab.panel name="catechism">
 
-                                     <livewire:personnel.common.update-catechism :spiritualID="$spiritualID" /> 
+                                     <livewire:personnel.common.update-catechism :userID="$spiritualID" /> 
 
                                 </flux:tab.panel>
                             @endIf

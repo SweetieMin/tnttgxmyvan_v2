@@ -4,56 +4,81 @@ namespace App\Livewire\Personnel\Common;
 
 use Flux\Flux;
 use Livewire\Component;
+use Livewire\Attributes\On;
 use App\Repositories\Interfaces\SpiritualRepositoryInterface;
 
 class UpdateCatechism extends Component
 {
 
-    public $spiritualID;
+    public $userID;
 
     public $baptism_date, $baptismal_sponsor, $baptism_place, $first_communion_date, $confirmation_bishop, $first_communion_sponsor, $first_communion_place, $confirmation_date, $confirmation_sponsor, $confirmation_place, $pledge_date, $pledge_sponsor, $pledge_place;
     public $status_religious = 'in_course'; 
     public bool $is_attendance = true;
 
-    protected SpiritualRepositoryInterface $spiritualRepository;
+    protected SpiritualRepositoryInterface $userRepository;
 
     public function render()
     {
         return view('livewire.personnel.common.update-catechism');
     }
 
-    public function mount($spiritualID)
+    public function mount($userID = null)
     {
-        $this->spiritualID = $spiritualID;
+        // Nếu userID được truyền từ prop, sử dụng nó
+        if ($userID) {
+            $this->userID = $userID;
+        }
 
-        $spiritual = $this->spiritualRepository->findSpiritualWithRelations($this->spiritualID);
+        $this->loadData();
+    }
 
-        if (!$spiritual) {
+    #[On('loadCatechismData')]
+    public function loadData($userID = null)
+    {
+        // Nếu userID được truyền từ event, cập nhật
+        if ($userID) {
+            $this->userID = $userID;
+        }
+
+        // Nếu chưa có userID, không làm gì
+        if (!$this->userID) {
             return;
         }
 
-        $this->baptism_date = $spiritual->religious_profile?->baptism_date;
-        $this->baptismal_sponsor = $spiritual->religious_profile?->baptismal_sponsor;
-        $this->baptism_place = $spiritual->religious_profile?->baptism_place;
-        $this->first_communion_date = $spiritual->religious_profile?->first_communion_date;
-        $this->first_communion_sponsor = $spiritual->religious_profile?->first_communion_sponsor;
-        $this->first_communion_place = $spiritual->religious_profile?->first_communion_place;
-        $this->confirmation_date = $spiritual->religious_profile?->confirmation_date;
-        $this->confirmation_sponsor = $spiritual->religious_profile?->confirmation_sponsor;
-        $this->confirmation_place = $spiritual->religious_profile?->confirmation_place;
-        $this->pledge_date = $spiritual->religious_profile?->pledge_date;
-        $this->pledge_sponsor = $spiritual->religious_profile?->pledge_sponsor;
-        $this->pledge_place = $spiritual->religious_profile?->pledge_place;
-        $this->status_religious = $spiritual->religious_profile?->status_religious;
-        $this->is_attendance = (bool) $spiritual->religious_profile?->is_attendance;
+        $user = $this->userRepository->findSpiritualWithRelations($this->userID);
 
+        if (!$user) {
+            return;
+        }
+
+        $this->baptism_date = $user->religious_profile?->baptism_date;
+        $this->baptismal_sponsor = $user->religious_profile?->baptismal_sponsor;
+        $this->baptism_place = $user->religious_profile?->baptism_place;
+        $this->first_communion_date = $user->religious_profile?->first_communion_date;
+        $this->first_communion_sponsor = $user->religious_profile?->first_communion_sponsor;
+        $this->first_communion_place = $user->religious_profile?->first_communion_place;
+        $this->confirmation_date = $user->religious_profile?->confirmation_date;
+        $this->confirmation_sponsor = $user->religious_profile?->confirmation_sponsor;
+        $this->confirmation_place = $user->religious_profile?->confirmation_place;
+        $this->pledge_date = $user->religious_profile?->pledge_date;
+        $this->pledge_sponsor = $user->religious_profile?->pledge_sponsor;
+        $this->pledge_place = $user->religious_profile?->pledge_place;
+        $this->status_religious = $user->religious_profile?->status_religious;
+        $this->is_attendance = (bool) $user->religious_profile?->is_attendance;
+    }
+
+    // Hook để tự động load lại data khi userID thay đổi
+    public function updatedUserID()
+    {
+        $this->loadData();
     }
 
 
 
-    public function boot(SpiritualRepositoryInterface $spiritualRepository)
+    public function boot(SpiritualRepositoryInterface $userRepository)
     {
-        $this->spiritualRepository = $spiritualRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function rules()
@@ -122,10 +147,10 @@ class UpdateCatechism extends Component
         $this->validate();
 
         try {
-            $spiritual = $this->spiritualRepository->findSpiritualWithRelations($this->spiritualID);
+            $user = $this->userRepository->findSpiritualWithRelations($this->userID);
 
-            $spiritual->religious_profile()->updateOrCreate(
-                ['user_id' => $spiritual->id], // điều kiện để tìm
+            $user->religious_profile()->updateOrCreate(
+                ['user_id' => $user->id], // điều kiện để tìm
                 [
                     'baptism_date' => $this->baptism_date,
                     'baptismal_sponsor' => $this->baptismal_sponsor,
@@ -150,13 +175,8 @@ class UpdateCatechism extends Component
                 variant: 'success',
             );
             
-            $url = route('admin.personnel.spirituals.action', [
-                'parameter'   => 'editSpiritual',
-                'spiritualID' => $this->spiritualID,
-                'tab'         => 'catechism',
-            ]) . '#section';
-            
-            $this->redirect($url, navigate: true);
+            // Emit event để parent component cập nhật tab mà không cần truyền ID trên URL
+            $this->dispatch('switchTab', tab: 'catechism');
 
         } catch (\Exception $e) {
             Flux::toast(

@@ -43,11 +43,27 @@ class Spirituals extends Component
 
     public function addSpiritual()
     {
-        $this->redirectRoute('admin.personnel.spirituals.action', ['parameter' => 'addSpiritual'], navigate: true);
+        // Lưu tất cả vào session
+        session([
+            'spiritual_action_parameter' => 'addSpiritual',
+            'current_spiritual_id' => null,
+            'spiritual_action_tab' => 'profile',
+        ]);
+        
+        // Redirect không có tham số trên URL
+        $this->redirectRoute('admin.personnel.spirituals.action', [], navigate: true);
     }
 
     public function editSpiritual($id){
-        $this->redirectRoute('admin.personnel.spirituals.action', ['parameter' => 'editSpiritual', 'spiritualID' => $id, 'tab' => 'profile'], navigate: true);
+        // Lưu tất cả vào session
+        session([
+            'spiritual_action_parameter' => 'editSpiritual',
+            'current_spiritual_id' => $id,
+            'spiritual_action_tab' => 'profile',
+        ]);
+        
+        // Redirect không có tham số trên URL
+        $this->redirectRoute('admin.personnel.spirituals.action', [], navigate: true);
     }
 
     public function deleteSpiritual($id){

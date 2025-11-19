@@ -4,45 +4,68 @@ namespace App\Livewire\Personnel\Common;
 
 use Flux\Flux;
 use Livewire\Component;
+use Livewire\Attributes\On;
 use App\Repositories\Interfaces\SpiritualRepositoryInterface;
 
 class UpdateParent extends Component
 {
 
     
-    protected SpiritualRepositoryInterface $spiritualRepository;
+    protected SpiritualRepositoryInterface $userRepository;
 
     public $christian_name_father, $name_father, $phone_father, $christian_name_mother, $name_mother, $phone_mother, $christian_name_god_parent, $name_god_parent, $phone_god_parent;
 
-    public $spiritualID;
+    public $userID;
 
-    public function boot(SpiritualRepositoryInterface $spiritualRepository)
+    public function boot(SpiritualRepositoryInterface $userRepository)
     {
-        $this->spiritualRepository = $spiritualRepository;
+        $this->userRepository = $userRepository;
     }
 
-    public function mount($spiritualID)
+    public function mount($userID = null)
     {
-        $this->spiritualID = $spiritualID;
+        // Nếu userID được truyền từ prop, sử dụng nó
+        if ($userID) {
+            $this->userID = $userID;
+        }
 
-        $spiritual = $this->spiritualRepository->findSpiritualWithRelations($this->spiritualID);
+        $this->loadData();
+    }
 
-        if(!$spiritual ){
+    #[On('loadParentData')]
+    public function loadData($userID = null)
+    {
+        // Nếu userID được truyền từ event, cập nhật
+        if ($userID) {
+            $this->userID = $userID;
+        }
+
+        // Nếu chưa có userID, không làm gì
+        if (!$this->userID) {
             return;
         }
 
-        $this->christian_name_father = $spiritual->parents?->christian_name_father;
-        $this->name_father = $spiritual->parents?->name_father;
-        $this->phone_father = $spiritual->parents?->phone_father;
-        $this->christian_name_mother = $spiritual->parents?->christian_name_mother;
-        $this->name_mother = $spiritual->parents?->name_mother;
-        $this->phone_mother = $spiritual->parents?->phone_mother;
-        $this->christian_name_god_parent = $spiritual->parents?->christian_name_god_parent;
-        $this->name_god_parent = $spiritual->parents?->name_god_parent;
-        $this->phone_god_parent = $spiritual->parents?->phone_god_parent;
+        $user = $this->userRepository->findSpiritualWithRelations($this->userID);
 
+        if (!$user) {
+            return;
+        }
 
+        $this->christian_name_father = $user->parents?->christian_name_father;
+        $this->name_father = $user->parents?->name_father;
+        $this->phone_father = $user->parents?->phone_father;
+        $this->christian_name_mother = $user->parents?->christian_name_mother;
+        $this->name_mother = $user->parents?->name_mother;
+        $this->phone_mother = $user->parents?->phone_mother;
+        $this->christian_name_god_parent = $user->parents?->christian_name_god_parent;
+        $this->name_god_parent = $user->parents?->name_god_parent;
+        $this->phone_god_parent = $user->parents?->phone_god_parent;
+    }
 
+    // Hook để tự động load lại data khi userID thay đổi
+    public function updatedUserID()
+    {
+        $this->loadData();
     }
 
     public function rules()
@@ -115,10 +138,10 @@ class UpdateParent extends Component
         $this->validate();
 
         try {
-            $spiritual = $this->spiritualRepository->findSpiritualWithRelations($this->spiritualID);
+            $user = $this->userRepository->findSpiritualWithRelations($this->userID);
 
-            $spiritual->parents()->updateOrCreate(
-                ['user_id' => $spiritual->id], // điều kiện để tìm
+            $user->parents()->updateOrCreate(
+                ['user_id' => $user->id], // điều kiện để tìm
                 [
                     'christian_name_father' => $this->christian_name_father,
                     'name_father' => $this->name_father,
@@ -138,13 +161,8 @@ class UpdateParent extends Component
                 variant: 'success',
             );
             
-            $url = route('admin.personnel.spirituals.action', [
-                'parameter'   => 'editSpiritual',
-                'spiritualID' => $this->spiritualID,
-                'tab'         => 'parent',
-            ]) . '#section';
-            
-            $this->redirect($url, navigate: true);
+            // Emit event để parent component cập nhật tab mà không cần truyền ID trên URL
+            $this->dispatch('switchTab', tab: 'parent');
 
         } catch (\Exception $e) {
             Flux::toast(

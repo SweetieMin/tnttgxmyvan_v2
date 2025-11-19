@@ -41,20 +41,25 @@ class ActionsSpiritual extends Component
     public $isShowTabParent = false;
     public $isShowTabCatechism = false;
     public $isShowTabAchievement = false;
-    protected $queryString = ['tab'=>['keep'=>true]];
+
+    #[On('switchTab')]
+    public function handleSwitchTab($tab)
+    {
+        $this->tab = $tab;
+        // Lưu tab vào session
+        session(['spiritual_action_tab' => $tab]);
+    }
 
     public function selectTab($tab)
     {
         $this->tab = $tab;
-        // Cập nhật URL với query parameter tab
-        $url = route('admin.personnel.spirituals.action', [
-            'parameter'   => 'editSpiritual',
-            'spiritualID' => $this->spiritualID,
-            'tab'         => $tab,
-        ]) . '#section';
+        // Lưu tab vào session
+        session(['spiritual_action_tab' => $tab]);
+        
+        // Redirect không có tham số trên URL
+        $url = route('admin.personnel.spirituals.action', []) . '#section';
         
         $this->redirect($url, navigate: true);
-        
     }
 
     /**
@@ -85,29 +90,39 @@ class ActionsSpiritual extends Component
         $this->roles = $this->roleRepository->getRoleSpiritual();
     }
 
+
     public function mount()
     {
+        // Lấy tất cả từ session
+        $parameter = session('spiritual_action_parameter');
+        $sessionSpiritualID = session('current_spiritual_id');
+        $tab = session('spiritual_action_tab', 'profile');
 
-        $parameter = request()->input('parameter');
-        $spiritualID    = request()->input('spiritualID');
-        $tab = request()->input('tab');
-
-        if (!$parameter) {
-            return;
-        }
-
-        $this->isEditSpiritualMode = $parameter === 'editSpiritual';
-        $this->spiritualID = $this->isEditSpiritualMode ? $spiritualID : null;
-        $this->tab = $tab;
-
-        if ($this->isEditSpiritualMode) {
-            $this->editSpiritual($this->spiritualID);
-        } else {
+        if ($parameter === 'editSpiritual') {
+            if ($sessionSpiritualID) {
+                $this->spiritualID = $sessionSpiritualID;
+                $this->isEditSpiritualMode = true;
+                $this->tab = $tab;
+                $this->editSpiritual($this->spiritualID);
+            } else {
+                // Nếu không có ID trong session, redirect về danh sách
+                $this->redirectRoute('admin.personnel.spirituals', navigate: true);
+                return;
+            }
+        } elseif ($parameter === 'addSpiritual') {
+            $this->spiritualID = null;
+            $this->isEditSpiritualMode = false;
+            $this->tab = $tab;
             $this->addSpiritual();
+        } else {
+            // Nếu không có parameter trong session, redirect về danh sách
+            $this->redirectRoute('admin.personnel.spirituals', navigate: true);
+            return;
         }
 
         $this->loadData();
     }
+
 
 
     public function render()
@@ -117,6 +132,13 @@ class ActionsSpiritual extends Component
 
     public function backSpiritual()
     {
+        // Clear session khi quay lại
+        session()->forget([
+            'spiritual_action_parameter',
+            'current_spiritual_id',
+            'spiritual_action_tab',
+        ]);
+        
         $this->redirectRoute('admin.personnel.spirituals', navigate: true);
     }
 
@@ -165,6 +187,19 @@ class ActionsSpiritual extends Component
 
             $spiritual->roles()->sync($this->position);
 
+            // Lưu tất cả vào session và component state
+            $this->spiritualID = $spiritual->id;
+            session([
+                'spiritual_action_parameter' => 'editSpiritual',
+                'current_spiritual_id' => $spiritual->id,
+                'spiritual_action_tab' => $this->tab,
+            ]);
+            $this->isEditSpiritualMode = true;
+
+            // Emit event để child components load lại data
+            $this->dispatch('loadCatechismData', userID: $spiritual->id);
+            $this->dispatch('loadParentData', userID: $spiritual->id);
+
             Flux::toast(
                 heading: 'Thành công',
                 text: 'Người linh hướng được tạo thành công.',
@@ -178,16 +213,12 @@ class ActionsSpiritual extends Component
             );
         }
 
-        $url = route('admin.personnel.spirituals.action', [
-            'parameter'   => 'editSpiritual',
-            'spiritualID' => $this->spiritualID,
-            'tab'         => $this->tab,
-        ]) . '#section';
+        // Redirect không có tham số trên URL
+        $url = route('admin.personnel.spirituals.action', []) . '#section';
         
         $this->redirect($url, navigate: true);
     }
 
-    #[On('editSpiritual')]
     public function editSpiritual($id)
     {
         $this->resetForm();
@@ -220,6 +251,11 @@ class ActionsSpiritual extends Component
             // Hiển thị modal
              $this->isShowTabParent = true;
              $this->isShowTabCatechism = true;
+             
+            // Emit event để child components load lại data
+            $this->dispatch('loadCatechismData', userID: $id);
+            $this->dispatch('loadParentData', userID: $id);
+             
         } else {
             // Nếu không tìm thấy
             Flux::toast(
@@ -281,11 +317,11 @@ class ActionsSpiritual extends Component
             );
         }
 
-        $url = route('admin.personnel.spirituals.action', [
-            'parameter'   => 'editSpiritual',
-            'spiritualID' => $this->spiritualID,
-            'tab'         => $this->tab,
-        ]) . '#section';
+        // Lưu tab vào session
+        session(['spiritual_action_tab' => $this->tab]);
+        
+        // Redirect không có tham số trên URL
+        $url = route('admin.personnel.spirituals.action', []) . '#section';
         
         $this->redirect($url, navigate: true);
     }
@@ -333,6 +369,13 @@ class ActionsSpiritual extends Component
             );
         }
 
-        $this->redirectRoute('admin.personnel.spirituals.action', navigate: true);
+        // Clear session khi xóa
+        session()->forget([
+            'spiritual_action_parameter',
+            'current_spiritual_id',
+            'spiritual_action_tab',
+        ]);
+
+        $this->redirectRoute('admin.personnel.spirituals', navigate: true);
     }
 }
