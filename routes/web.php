@@ -113,3 +113,7 @@ Route::get('500', function () {
 Route::get('503', function () {
     return view('errors.503');
 })->name('503');
+
+Route::get('test', function () {
+    return view('test');
+})->name('test');

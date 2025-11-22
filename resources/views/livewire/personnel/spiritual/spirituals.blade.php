@@ -14,7 +14,7 @@
         {{-- Desktop Table View --}}
         <div class="hidden md:block mt-4">
             <flux:card class="overflow-hidden border border-accent/20 rounded-xl shadow-sm">
-                <flux:table container:class="max-h-[65vh] overflow-y-auto custom-scrollbar"
+                <flux:table 
                     class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr]:hover:bg-transparent">
                     <flux:table.columns>
                         <flux:table.column class="w-10 text-center">STT</flux:table.column>

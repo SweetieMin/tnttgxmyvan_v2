@@ -8,7 +8,7 @@
     'buttonBackAction' => null, {{-- Livewire action hoặc route --}}
 ])
 
-<flux:card class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 mb-4">
+<flux:card class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 mb-4 sticky top-0 z-10 bg-white dark:bg-zinc-700">
 
     {{-- LEFT: heading, subheading, breadcrumb --}}
     <div class="flex-1">

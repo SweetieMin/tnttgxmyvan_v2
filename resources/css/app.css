@@ -64,6 +64,12 @@ select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
+/* Scrollbar cho mọi element có class custom-scrollbar */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
+}
+
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */

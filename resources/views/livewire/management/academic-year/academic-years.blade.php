@@ -14,7 +14,7 @@
         <div class="hidden md:block ">
             <flux:card class="overflow-hidden border border-accent/20 rounded-xl shadow-sm">
                
-                    <flux:table container:class="max-h-[calc(65vh-105px)] overflow-y-auto custom-scrollbar"
+                    <flux:table 
                     class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
                         {{-- ===== HEADER ===== --}}
                         <flux:table.columns >
