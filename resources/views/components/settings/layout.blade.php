@@ -3,6 +3,7 @@
         <flux:navlist wire:ignore>
             <flux:navlist.item :href="route('settings.profile')" :current="request()->routeIs('settings.profile')" wire:navigate>{{ __('Hồ sơ') }}</flux:navlist.item>
             <flux:navlist.item :href="route('settings.password')" :current="request()->routeIs('settings.password')" wire:navigate>{{ __('Mật khẩu') }}</flux:navlist.item>
+            <flux:navlist.item :href="route('admin.settings.passkey')" :current="request()->routeIs('admin.settings.passkey')" wire:navigate>Passkey</flux:navlist.item>
             @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
                 <flux:navlist.item :href="route('two-factor.show')" :current="request()->routeIs('two-factor.show')" wire:navigate>{{ __('Xác minh 2 bước') }}</flux:navlist.item>
             @endif

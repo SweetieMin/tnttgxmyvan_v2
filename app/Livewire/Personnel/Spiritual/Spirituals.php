@@ -43,6 +43,9 @@ class Spirituals extends Component
 
     public function addSpiritual()
     {
+
+        return $this->dispatch('addSpiritual');
+
         // Lưu tất cả vào session
         session([
             'spiritual_action_parameter' => 'addSpiritual',
@@ -61,7 +64,7 @@ class Spirituals extends Component
             'current_spiritual_id' => $id,
             'spiritual_action_tab' => 'profile',
         ]);
-        
+
         // Redirect không có tham số trên URL
         $this->redirectRoute('admin.personnel.spirituals.action', [], navigate: true);
     }

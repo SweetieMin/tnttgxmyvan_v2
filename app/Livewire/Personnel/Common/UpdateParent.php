@@ -37,7 +37,7 @@ class UpdateParent extends Component
     {
         // Nếu userID được truyền từ event, cập nhật
         if ($userID) {
-            $this->userID = $userID;
+        $this->userID = $userID;
         }
 
         // Nếu chưa có userID, không làm gì

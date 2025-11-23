@@ -107,12 +107,12 @@ class ActionsSpiritual extends Component
             } else {
                 // Nếu không có ID trong session, redirect về danh sách
                 $this->redirectRoute('admin.personnel.spirituals', navigate: true);
-                return;
-            }
+            return;
+        }
         } elseif ($parameter === 'addSpiritual') {
             $this->spiritualID = null;
             $this->isEditSpiritualMode = false;
-            $this->tab = $tab;
+        $this->tab = $tab;
             $this->addSpiritual();
         } else {
             // Nếu không có parameter trong session, redirect về danh sách

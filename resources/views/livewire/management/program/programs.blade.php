@@ -1,7 +1,6 @@
 <div>
     <x-contents.layout heading="Chương trình học" subheading="Quản lý danh sách và thông tin chương trình học"
-        icon="squares-plus" :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Chương trình học']]"  buttonLabel="Thêm Chương trình học"
-        buttonAction="addProgram">
+        icon="squares-plus" :breadcrumb="[['label' => 'Bảng điều khiển', 'url' => route('dashboard')], ['label' => 'Chương trình học']]" buttonLabel="Thêm Chương trình học" buttonAction="addProgram">
         {{-- Main content area --}}
         <div class="mt-2">
             <div x-data="{
@@ -22,7 +21,7 @@
                             }
                         });
                     }
-
+            
                     const mobileEl = document.getElementById('sortable-programs-mobile');
                     if (mobileEl && !mobileEl.sortableInstance) {
                         mobileEl.sortableInstance = new Sortable(mobileEl, {
@@ -45,7 +44,8 @@
                 {{-- Desktop Table View --}}
                 <div class="hidden md:block ">
                     <flux:card class="overflow-hidden border border-accent/20 rounded-xl shadow-sm">
-                        <flux:table 
+                        <flux:table
+                            container:class=" {{ $programs->hasPages() ? 'max-h-[calc(100vh-425px)]' : 'max-h-[calc(100vh-339px)]' }}"
                             class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
                             <flux:table.columns sticky class="bg-white dark:bg-zinc-700">
                                 <flux:table.column class="w-12">STT</flux:table.column>
@@ -57,7 +57,8 @@
 
                             <flux:table.rows id="sortable-programs">
                                 @forelse ($programs as $program)
-                                    <flux:table.row wire:key="program-desktop-{{ $program->id }}" data-id="{{ $program->id }}">
+                                    <flux:table.row wire:key="program-desktop-{{ $program->id }}"
+                                        data-id="{{ $program->id }}">
                                         <flux:table.cell align="center" class="drag-handle cursor-move">
                                             {{ $program->ordering }}
                                         </flux:table.cell>
@@ -72,14 +73,16 @@
                                         </flux:table.cell>
                                         <flux:table.cell class="text-right">
                                             <flux:dropdown position="bottom" align="end">
-                                                <flux:button class="cursor-pointer" icon="ellipsis-horizontal" variant="subtle" />
+                                                <flux:button class="cursor-pointer" icon="ellipsis-horizontal"
+                                                    variant="subtle" />
                                                 <flux:menu>
                                                     <flux:menu.item class="cursor-pointer" icon="pencil-square"
                                                         wire:click='editProgram({{ $program->id }})'>
                                                         Sửa
                                                     </flux:menu.item>
                                                     <flux:menu.item class="cursor-pointer" icon="trash"
-                                                        variant="danger" wire:click='deleteProgram({{ $program->id }})'>
+                                                        variant="danger"
+                                                        wire:click='deleteProgram({{ $program->id }})'>
                                                         Xoá
                                                     </flux:menu.item>
                                                 </flux:menu>
@@ -104,19 +107,23 @@
                 {{-- Mobile Card View --}}
                 <div class="md:hidden space-y-3" id="sortable-programs-mobile">
                     @forelse ($programs as $program)
-                        <flux:accordion wire:key="program-mobile-{{ $program->id }}" transition variant="reverse" data-id="{{ $program->id }}">
+                        <flux:accordion wire:key="program-mobile-{{ $program->id }}" transition variant="reverse"
+                            data-id="{{ $program->id }}">
                             <flux:card class="space-y-6">
                                 <flux:accordion.item>
                                     <flux:accordion.heading>
                                         <div class="flex items-start justify-between gap-3">
                                             <div class="flex-1">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="drag-handle cursor-move inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent text-sm font-semibold">
+                                                    <span
+                                                        class="drag-handle cursor-move inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent text-sm font-semibold">
                                                         {{ $program->ordering }}
                                                     </span>
                                                     <div class="grid grid-cols-2 flex-1">
-                                                        <span class="font-semibold text-accent-text">{{ $program->course }}</span>
-                                                        <span class="font-semibold text-accent-text text-right">Ngành: {{ $program->sector }}</span>
+                                                        <span
+                                                            class="font-semibold text-accent-text">{{ $program->course }}</span>
+                                                        <span class="font-semibold text-accent-text text-right">Ngành:
+                                                            {{ $program->sector }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -132,8 +139,8 @@
                                                     icon="pencil-square" variant="filled" class="flex-1">
                                                     Sửa
                                                 </flux:button>
-                                                <flux:button wire:click='deleteProgram({{ $program->id }})' icon="trash"
-                                                    variant="danger" class="flex-1">
+                                                <flux:button wire:click='deleteProgram({{ $program->id }})'
+                                                    icon="trash" variant="danger" class="flex-1">
                                                     Xoá
                                                 </flux:button>
                                             </div>

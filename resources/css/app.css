@@ -64,10 +64,26 @@ select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
-/* Scrollbar cho mọi element có class custom-scrollbar */
-.custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
+/* Thanh cuộn tổng */
+::-webkit-scrollbar {
+    width: 6px;        /* độ rộng thanh cuộn dọc */
+    height: 6px;       /* độ cao thanh cuộn ngang */
+}
+
+/* Phần track (nền) */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Thanh kéo (thumb) */
+::-webkit-scrollbar-thumb {
+    background-color: var(--color-zinc-500);
+    border-radius: 15px;
+}
+
+/* Khi hover thanh kéo */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
 }
 
 /* \[:where(&)\]:size-4 {

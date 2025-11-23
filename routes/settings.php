@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Fortify\Features;
+use App\Livewire\Settings\Passkey;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\TwoFactor;
@@ -39,4 +40,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('settings/pusher', PusherSettings::class)->name('settings.pusher');
 
     Route::get('settings/maintenance', MaintenanceSettings::class)->name('settings.maintenance');
+
+    Route::get('settings/passkey', Passkey::class)->name('settings.passkey');
 });

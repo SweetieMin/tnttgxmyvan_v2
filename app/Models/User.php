@@ -16,11 +16,13 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\Fill;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
+use Spatie\LaravelPasskeys\Models\Concerns\HasPasskeys;
+use Spatie\LaravelPasskeys\Models\Concerns\InteractsWithPasskeys;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasPasskeys
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, SoftDeletes;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, SoftDeletes, InteractsWithPasskeys;
 
     /**
      * The attributes that are mass assignable.

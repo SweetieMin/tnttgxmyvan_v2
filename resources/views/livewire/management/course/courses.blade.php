@@ -59,7 +59,7 @@
                     {{-- Desktop Table View --}}
                     <div class="hidden md:block ">
                         <flux:card class="overflow-hidden border border-accent/20 rounded-xl shadow-sm">
-                            <flux:table 
+ <flux:table container:class=" {{ $courses->hasPages() ? 'max-h-[calc(100vh-541px)]' : 'max-h-[calc(100vh-455px)]' }}"
                                 class="w-full transition [&>tbody>tr]:transition-colors [&>tbody>tr:hover>td]:text-accent-content/70 [&>tbody>tr:hover]:scale-[0.998] [&>tbody>tr:hover]:bg-transparent">
                                 <flux:table.columns sticky class="bg-white dark:bg-zinc-700">
                                     <flux:table.column class="w-16 text-center">STT</flux:table.column>

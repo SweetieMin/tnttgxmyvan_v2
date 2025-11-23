@@ -44,5 +44,5 @@
         </div>
 
     </form>
-
+    <x-authenticate-passkey />
 </div>

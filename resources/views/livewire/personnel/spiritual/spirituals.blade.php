@@ -159,6 +159,6 @@
 
     </x-contents.layout>
 
-
+    <livewire:personnel.spiritual.action-spiritual />
 
 </div>

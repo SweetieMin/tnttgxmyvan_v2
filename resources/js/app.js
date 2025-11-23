@@ -20,3 +20,7 @@ window.toastHandler = toastHandler;
   })
  */
 
+  //Passkey
+
+  import './passkey';
+
