@@ -9,15 +9,14 @@ class PusherConfig
     public static function apply()
     {
         $s = PusherSetting::first();
-        if (!$s) return;
 
         config([
-            'broadcasting.connections.pusher.key' => $s->key,
-            'broadcasting.connections.pusher.secret' => $s->secret,
-            'broadcasting.connections.pusher.app_id' => $s->app_id,
-            'broadcasting.connections.pusher.options.cluster' => $s->cluster,
-            'broadcasting.connections.pusher.options.port' => $s->port,
-            'broadcasting.connections.pusher.options.scheme' => $s->scheme,
+            'broadcasting.connections.pusher.key' => $s ? $s->key : env('PUSHER_APP_KEY'),
+            'broadcasting.connections.pusher.secret' => $s ? $s->secret : env('PUSHER_APP_SECRET'),
+            'broadcasting.connections.pusher.app_id' => $s ? $s->app_id : env('PUSHER_APP_ID'),
+            'broadcasting.connections.pusher.options.cluster' => $s ? $s->cluster : env('PUSHER_APP_CLUSTER'),
+            'broadcasting.connections.pusher.options.port' => $s ? $s->port : env('PUSHER_PORT', 443),
+            'broadcasting.connections.pusher.options.scheme' => $s ? $s->scheme : env('PUSHER_SCHEME', 'https'),
         ]);
     }
 }

@@ -18,9 +18,54 @@
 
                     <flux:input wire:model="username" :label="__('Tên đăng nhập SMTP (Username)')" type="text"
                         placeholder="tntt.myvan@gmail.com" />
+                    <label class="block text-sm font-medium mb-1">
+                        {{ __('Mật khẩu SMTP (Password)') }}
+                    </label>
+                    {{-- Password section --}}
+                    <div class="space-y-2">
 
-                    <flux:input wire:model="password" :label="__('Mật khẩu SMTP (Password)')" type="password"
-                        placeholder="password" viewable/>
+                        {{-- Nếu đã có mật khẩu và không muốn thay đổi --}}
+                        @if ($isHavePassword && !$showPasswordInput)
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-green-600">
+                                    Mật khẩu đã được lưu.
+                                </span>
+
+                                <flux:button size="sm" wire:click="togglePasswordInput" class="cursor-pointer">
+                                    Thay đổi mật khẩu
+                                </flux:button>
+                            </div>
+                        @else
+                            <div class="flex gap-2 items-start">
+
+                                {{-- Label + Input --}}
+                                <div class="w-4/5">
+
+
+                                    <flux:input wire:model="password" type="password" placeholder="Nhập mật khẩu mới"
+                                        viewable />
+                                </div>
+
+                                {{-- Nếu đã có mật khẩu và đang mở input → hiện nút Huỷ --}}
+                                @if ($isHavePassword)
+                                    <div class="w-1/5 flex justify-end">
+
+                                        <flux:button size="sm" variant="danger" wire:click="togglePasswordInput"
+                                            class="cursor-pointer">
+                                            Huỷ
+                                        </flux:button>
+                                    </div>
+                                @endif
+
+                            </div>
+
+                        @endif
+
+                    </div>
+
+
+
                 </div>
 
                 {{-- Separator dọc --}}
@@ -43,7 +88,8 @@
                         placeholder="smtp.gmail.com" />
 
 
-                    <flux:select wire:model.lazy="encryption" variant="listbox" label="Mã hóa kết nối (Encryption: tls/ssl)"
+                    <flux:select wire:model.lazy="encryption" variant="listbox"
+                        label="Mã hóa kết nối (Encryption: tls/ssl)"
                         placeholder="__('Mã hóa kết nối (Encryption: tls/ssl)')">
                         <flux:select.option>tls</flux:select.option>
                         <flux:select.option>ssl</flux:select.option>

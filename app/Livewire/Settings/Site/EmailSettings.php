@@ -16,14 +16,28 @@ class EmailSettings extends Component
 
     use HandlesEmailSettingForm;
 
-    public $mailer= "smtp" ;
+    public $mailer = "smtp";
     public $host = "smtp.gmail.com";
     public $port = "587";
-    public $username ;
-    public $password ;
-    public $encryption = "tls" ;
-    public $from_address ;
-    public $from_name ;
+    public $username;
+    public $password;
+    public $encryption = "tls";
+    public $from_address;
+    public $from_name;
+
+    public $isHavePassword = false;
+    public $showPasswordInput = false;
+
+    public function togglePasswordInput()
+    {
+        $this->showPasswordInput = !$this->showPasswordInput;
+
+        // reset password mỗi lần mở input
+        if ($this->showPasswordInput) {
+            $this->password = null;
+        }
+    }
+
 
     public function mount()
     {
@@ -38,7 +52,9 @@ class EmailSettings extends Component
         $this->host = $emailSetting?->host;
         $this->port = $emailSetting?->port;
         $this->username = $emailSetting?->username;
-        $this->password = $emailSetting?->password;
+        $this->password = null;
+        $this->isHavePassword = !empty($emailSetting->password);
+        $this->showPasswordInput = !$this->isHavePassword;
         $this->encryption = $emailSetting?->encryption;
         $this->from_address = $emailSetting?->from_address;
         $this->from_name = $emailSetting?->from_name;
@@ -46,7 +62,7 @@ class EmailSettings extends Component
 
     public function rules()
     {
-        return EmailRules::rules();
+        return EmailRules::rules($this->isHavePassword);
     }
 
     public function messages()
@@ -74,7 +90,9 @@ class EmailSettings extends Component
         $emailSettings->host = $this->host;
         $emailSettings->port = (int) $this->port;
         $emailSettings->username = $this->username;
-        $emailSettings->password = $this->password;
+        if (!empty($this->password)) {
+            $emailSettings->password = encrypt($this->password);
+        }
         $emailSettings->encryption = $this->encryption;
         $emailSettings->from_address = $this->from_address;
         $emailSettings->from_name = $this->from_name;
@@ -87,6 +105,5 @@ class EmailSettings extends Component
         );
 
         $this->redirectRoute('admin.settings.email', navigate: true);
-
     }
 }

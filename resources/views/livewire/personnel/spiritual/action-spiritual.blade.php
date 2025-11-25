@@ -6,8 +6,6 @@
         <form wire:submit.prevent='{{ $isEditSpiritualMode ? 'updateSpiritual' : 'createSpiritual' }}' class="space-y-6">
 
 
-
-
             <flux:separator />
             <div class="flex">
                 <flux:spacer />

@@ -5,14 +5,14 @@ namespace App\Validation\Setting;
 
 class EmailRules
 {
-    public static function rules(): array
+    public static function rules($isHavePassword): array
     {
         return [
             'mailer' => 'required|string|in:smtp,sendmail,mailgun,ses,postmark,log',
             'host' => 'required|string|max:255',
             'port' => 'required|integer|min:1|max:65535',
             'username' => 'required|string|max:255',
-            'password' => 'required|string|max:255',
+            'password' => ($isHavePassword ? 'nullable' : 'required') . '|string|max:255',
             'encryption' => 'nullable|string|in:tls,ssl',
             'from_address' => 'required|email|max:255',
             'from_name' => 'required|string|max:255',
