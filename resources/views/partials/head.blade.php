@@ -4,7 +4,7 @@
 <title>{{ isset($title) ? "{$title} - " . $site_title : $site_title }}</title>
 
 <link rel="icon" type="image/png" sizes="16x16"
-    href="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}" />
+    href="/storage/{{ $site_favicon ?? '/storage/images/sites/FAVICON_default.png' }}" />
 
 <!-- Android Chrome -->
 <meta name="mobile-web-app-capable" content="yes">
@@ -16,10 +16,10 @@
 <meta name="apple-mobile-web-app-title" content="Đoàn TNTT Giáo Xứ Mỹ Vân">
 
 <!-- Biểu tượng cho cả iOS và Android -->
-<link rel="apple-touch-icon" href="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}">
-<link rel="icon" type="image/png" sizes="192x192" href="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}">
+<link rel="apple-touch-icon" href="/storage/{{ $site_favicon ?? '/storage/images/sites/FAVICON_default.png' }}">
+<link rel="icon" type="image/png" sizes="192x192" href="/storage/{{ $site_favicon ?? '/storage/images/sites/FAVICON_default.png' }}">
 <link rel="apple-touch-icon"
-href="/storage/images/sites/{{ $site_favicon ?? 'FAVICON_default.png' }}">
+href="/storage/{{ $site_favicon ?? '/storage/images/sites/FAVICON_default.png' }}">
 
 
 

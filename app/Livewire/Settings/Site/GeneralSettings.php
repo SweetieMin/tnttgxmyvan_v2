@@ -144,6 +144,6 @@ class GeneralSettings extends Component
             variant: 'success',
         );
 
-        $this->redirectRoute('admin.settings.general', ['tab' => $this->tab ?? 'general'], navigate: true);
+        $this->redirectRoute('admin.settings.general', ['tab' => $this->tab ?? 'general'], navigate: false);
     }
 }

@@ -10,8 +10,10 @@
 
             <flux:tabs>
 
-                <flux:tab wire:click="selectTab('general')" name="general" icon="cog-6-tooth" :selected="$tab == 'general'">Chung</flux:tab>
-                <flux:tab wire:click="selectTab('logo-favicon')" name="logo-favicon" icon="globe-alt" :selected="$tab == 'logo-favicon'">Logo & Favicon</flux:tab>
+                <flux:tab wire:click="selectTab('general')" name="general" icon="cog-6-tooth"
+                    :selected="$tab == 'general'">Chung</flux:tab>
+                <flux:tab wire:click="selectTab('logo-favicon')" name="logo-favicon" icon="globe-alt"
+                    :selected="$tab == 'logo-favicon'">Logo & Favicon</flux:tab>
 
             </flux:tabs>
 
@@ -66,7 +68,7 @@
 
                         {{-- Cột trái: Cài đặt chung --}}
                         <div class="space-y-6">
-                            <flux:separator text="Logo" class="my-6" />
+                            <flux:separator text="Open Graph (OG)" class="my-6" />
 
                             <!-- Blade view: -->
 
@@ -78,28 +80,26 @@
 
                                 <div class="mt-3 flex flex-col gap-2 ">
                                     @if ($logo)
-                                        <flux:file-item :heading="$logo->getClientOriginalName()"
-                                            :image="$logo->temporaryUrl()" :size="$logo->getSize()">
-                                            <x-slot name="actions">
-                                                <flux:file-item.remove wire:click="removeLogo"
-                                                    aria-label="{{ 'Remove file: ' . $logo->getClientOriginalName() }}" />
-                                            </x-slot>
-                                        </flux:file-item>
+                                        <div class="mb-2 mt-1 max-w-lg">
+                                            <img wire:ignore id="preview_side_logo" src="{{ $logo->temporaryUrl() }}"
+                                                alt="Site Logo"
+                                                class="w-full h-auto max-h-[300px] ">
+                                        </div>
                                     @endif
                                 </div>
 
-                                @if ($existLogo)
-                                    <div class="mb-2 mt-1 max-w-lg">
+                                @if ($existLogo && !$logo)
+                                    <div class="mb-2 ">
                                         <img wire:ignore id="preview_side_logo"
-                                            src="{{ $existLogo ? '/storage/images/sites/' . $existLogo : '' }}"
+                                            src="/storage/{{ $existLogo ?? '/storage/images/sites/LOGO_default.png' }}"
                                             alt="Site Logo"
-                                            class="w-full h-auto rounded-lg border border-gray-300 object-cover">
+                                            class="w-full h-auto max-h-[300px] ">
                                     </div>
                                 @endif
 
-                                <div class="mt-8 flex items-center gap-4">
-                                    <flux:button variant="primary" type="submit" class="cursor-pointer">
-                                        {{ __('Lưu Logo') }}
+                                <div class="mt-2 flex items-center gap-4">
+                                    <flux:button variant="primary" type="submit" class="cursor-pointer" :disabled="!$logo">
+                                        {{ $logo ? 'Lưu Open Graph (OG)' : 'Hãy chọn hình trước' }}
                                     </flux:button>
                                 </div>
 
@@ -123,28 +123,27 @@
 
                                 <div class="mt-3 flex flex-col gap-2 ">
                                     @if ($favicon)
-                                        <flux:file-item :heading="$favicon->getClientOriginalName()"
-                                            :image="$favicon->temporaryUrl()" :size="$favicon->getSize()">
-                                            <x-slot name="actions">
-                                                <flux:file-item.remove wire:click="removeFavicon"
-                                                    aria-label="{{ 'Remove file: ' . $favicon->getClientOriginalName() }}" />
-                                            </x-slot>
-                                        </flux:file-item>
+                                        <div class="mb-2 max-w-[300px]">
+                                            <img wire:ignore id="preview_side_favicon"
+                                                src="{{ $favicon->temporaryUrl() }}" alt="Site favicon"
+                                                class="w-full h-auto max-h-[300px]">
+                                        </div>
                                     @endif
                                 </div>
 
-                                @if ($existFavicon)
-                                    <div class="mb-2 mt-1 max-w-[200px]">
+                                @if ($existFavicon && !$favicon)
+                                    <div class="mb-2 max-w-[300px]">
                                         <img wire:ignore id="preview_side_favicon"
-                                            src="{{ $existFavicon ? '/storage/images/sites/' . $existFavicon : '' }}"
+                                            src="/storage/{{ $existFavicon ?? '/storage/images/sites/FAVICON_default.png' }}"
                                             alt="Site favicon"
-                                            class="w-full h-auto rounded-lg border border-gray-300 object-cover">
+                                            class="w-full h-auto max-h-[300px]">
                                     </div>
                                 @endif
 
-                                <div class="mt-8 flex items-center gap-4">
-                                    <flux:button variant="primary" type="submit" class="cursor-pointer">
-                                        {{ __('Lưu Favicon') }}
+                                <div class="mt-2 flex items-center gap-4">
+                                    <flux:button variant="primary" type="submit" class="cursor-pointer"
+                                        :disabled="!$favicon">
+                                        {{ $favicon ? 'Lưu Favicon' : 'Hãy chọn hình trước' }}
                                     </flux:button>
                                 </div>
 
