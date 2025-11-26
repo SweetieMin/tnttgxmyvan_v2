@@ -51,6 +51,10 @@
                     :current="request()->routeIs('admin.management.programs')" wire:navigate>Chương trình học
                 </flux:sidebar.item>
 
+                <flux:sidebar.item icon="bookmark-square" :href="route('admin.management.course-sector')"
+                    :current="request()->routeIs('admin.management.course-sector')" wire:navigate>Lớp GL & Ngành SH
+                </flux:sidebar.item>
+
                 <flux:sidebar.item icon="academic-cap" :href="route('admin.management.courses')"
                     :current="request()->routeIs('admin.management.courses')" wire:navigate>Lớp Giáo Lý
                 </flux:sidebar.item>

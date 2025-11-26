@@ -2,12 +2,13 @@
 
 namespace App\Livewire\Settings;
 
-use Illuminate\Support\Facades\Session;
+use Flux\Flux;
 
 use Livewire\Component;
 use App\Models\UserSetting;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 #[Title('Giao diện')]
 
@@ -17,6 +18,8 @@ class Appearance extends Component
     public $notification_sound = true;
 
     public $notification_volume = 100;
+
+    public $amount;
 
     public function mount()
     {
@@ -46,9 +49,26 @@ class Appearance extends Component
                 ]
             );
 
-            $this->dispatch('appearance-updated','Đã lưu');
+            
+            $this->redirectRoute('settings.appearance', navigate: true);
+
+            Flux::toast(
+                heading: 'Thành công',
+                text: 'Cấu hình giao diện đã được cập nhật thành công.',
+                variant: 'success',
+            );
+
+            //$this->dispatch('appearance-updated','Đã lưu');
         } catch (\Exception $e) {
-            $this->dispatch('appearance-updated','Đã bị lỗi');
+            
+            $this->redirectRoute('settings.appearance', navigate: true);
+            //$this->dispatch('appearance-updated','Đã bị lỗi');
+
+            Flux::toast(
+                heading: 'Thất bại',
+                text: 'Cấu hình giao diện đã được cập nhật thất bại.',
+                variant: 'danger',
+            );
         }
 
     }

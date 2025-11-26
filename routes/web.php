@@ -16,6 +16,7 @@ use App\Livewire\Personnel\Spiritual\ActionsSpiritual;
 use App\Livewire\Management\AcademicYear\AcademicYears;
 use App\Livewire\Management\Regulation\ActionsRegulation;
 use App\Livewire\Finance\TransactionItem\TransactionItems;
+use App\Livewire\Management\CourseSector\CourseSectorList;
 use App\Livewire\Personnel\ChildrenInactive\ChildrenInactive;
 
 
@@ -42,6 +43,8 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
         Route::get('regulations/action', ActionsRegulation::class)->name('regulations.action');
 
         Route::get('programs', Programs::class)->name('programs');
+
+        Route::get('course-sector', CourseSectorList::class)->name('course-sector');
 
         Route::get('courses', Courses::class)->name('courses');
 

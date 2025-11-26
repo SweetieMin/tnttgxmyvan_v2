@@ -31,15 +31,18 @@
 
                                     <flux:menu>
                                         <flux:menu.item icon="check"
-                                            onclick="playTestSound('/storage/sounds/success.mp3')">Thành công
+                                            @click="playTestSound('/storage/sounds/success.mp3', userSettings)">
+                                            Thành công
                                         </flux:menu.item>
 
                                         <flux:menu.item icon="information-circle"
-                                            onclick="playTestSound('/storage/sounds/info.mp3')">Thông tin
+                                            @click="playTestSound('/storage/sounds/warning.mp3', userSettings)">
+                                            Thông tin
                                         </flux:menu.item>
 
                                         <flux:menu.item icon="x-mark" variant="danger"
-                                            onclick="playTestSound('/storage/sounds/error.mp3')">Thất bại
+                                            @click="playTestSound('/storage/sounds/error.mp3', userSettings)">
+                                            Thất bại
                                         </flux:menu.item>
                                     </flux:menu>
                                 </flux:dropdown>
@@ -61,13 +64,18 @@
 
                 {{-- HÀNG 2: Slider âm lượng --}}
                 @if ($notification_sound)
-                    <div class="flex items-center gap-4 w-full">
-                        <input type="range" min="0" max="100" step="1"
-                            wire:model.live="notification_volume" class="w-full accent-accent">
-                        <span class="w-12 text-right font-medium">
-                            {{ $notification_volume }}%
-                        </span>
-                    </div>
+                    <flux:field>
+                        <flux:label>
+                            Âm lượng
+
+                            <x-slot name="trailing">
+                                <span wire:text="notification_volume" class="tabular-nums"></span>
+                            </x-slot>
+                        </flux:label>
+
+                        <flux:slider wire:model="notification_volume" track:class="h-5" thumb:class="size-5"
+                            min="0" max="100" step="10" big-step="10" />
+                    </flux:field>
                 @endif
 
             </flux:card>
@@ -76,7 +84,8 @@
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full cursor-pointer">{{ __('Lưu') }}</flux:button>
+                    <flux:button variant="primary" type="submit" class="w-full cursor-pointer">{{ __('Lưu') }}
+                    </flux:button>
                 </div>
 
                 <x-action-message class="me-3" on="appearance-updated">
