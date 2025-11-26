@@ -3,8 +3,6 @@
 use App\Livewire\Access\Role\Roles;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Access\Role\ActionsRole;
-use App\Livewire\Management\Course\Courses;
-use App\Livewire\Management\Sector\Sectors;
 use App\Livewire\Personnel\Scouter\Scouters;
 use App\Livewire\Management\Program\Programs;
 use App\Livewire\Personnel\Children\Children;
@@ -46,9 +44,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
 
         Route::get('course-sector', CourseSectorList::class)->name('course-sector');
 
-        Route::get('courses', Courses::class)->name('courses');
 
-        Route::get('sectors', Sectors::class)->name('sectors');
     });
 
     Route::prefix('access')->name('access.')->group(function () {

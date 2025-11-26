@@ -2,11 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\User;
 use App\Helpers\MailConfig;
 use App\Helpers\PusherConfig;
 use App\Models\GeneralSetting;
-use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Blade;
@@ -14,8 +12,6 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Middleware\Authenticate;
 use App\Repositories\Eloquent\RoleRepository;
-use App\Repositories\Eloquent\CourseRepository;
-use App\Repositories\Eloquent\SectorRepository;
 use App\Repositories\Eloquent\ProgramRepository;
 use App\Repositories\Eloquent\ScouterRepository;
 use App\Repositories\Eloquent\ChildrenRepository;
@@ -28,8 +24,6 @@ use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Repositories\Eloquent\TransactionItemRepository;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Repositories\Eloquent\ChildrenInactiveRepository;
-use App\Repositories\Interfaces\CourseRepositoryInterface;
-use App\Repositories\Interfaces\SectorRepositoryInterface;
 use App\Repositories\Interfaces\ProgramRepositoryInterface;
 use App\Repositories\Interfaces\ScouterRepositoryInterface;
 use App\Repositories\Interfaces\ChildrenRepositoryInterface;
@@ -52,8 +46,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AcademicYearRepositoryInterface::class, AcademicYearRepository::class);
         $this->app->bind(RegulationRepositoryInterface::class, RegulationRepository::class);
         $this->app->bind(ProgramRepositoryInterface::class, ProgramRepository::class);
-        $this->app->bind(CourseRepositoryInterface::class, CourseRepository::class);
-        $this->app->bind(SectorRepositoryInterface::class, SectorRepository::class);
 
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
 
