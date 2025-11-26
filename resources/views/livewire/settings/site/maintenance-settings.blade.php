@@ -60,20 +60,24 @@
     <flux:modal name="maintenance-confirm" class="min-w-[22rem]">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Delete project?</flux:heading>
+                <flux:heading size="lg">Bật chế độ bảo trì?</flux:heading>
                 <flux:text class="mt-2">
-                    You're about to delete this project.<br>
-                    This action cannot be reversed.
+                    Hệ thống sẽ chuyển sang chế độ bảo trì và người dùng không thể truy cập.<br>
+                    Bạn có chắc chắn muốn bật không?
                 </flux:text>
             </div>
-            <div class="flex gap-2">
-                <flux:spacer />
+
+            <div class="flex justify-end gap-2">
                 <flux:modal.close>
-                    <flux:button variant="ghost">Cancel</flux:button>
+                    <flux:button variant="ghost">Huỷ</flux:button>
                 </flux:modal.close>
-                <flux:button wire:click="enableMaintenanceConfirm" type="submit" variant="danger">Bật bảo trì</flux:button>
+
+                <flux:button variant="danger" wire:click="enableMaintenanceConfirm">
+                    Xác nhận
+                </flux:button>
             </div>
         </div>
     </flux:modal>
+
 
 </section>

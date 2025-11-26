@@ -77,13 +77,13 @@ select:focus[data-flux-control] {
 
 /* Thanh kéo (thumb) */
 ::-webkit-scrollbar-thumb {
-    background-color: var(--color-zinc-500);
+    background-color: var(--color-accent);
     border-radius: 15px;
 }
 
 /* Khi hover thanh kéo */
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-accent);
+    background: var(--color-zinc-500);
 }
 
 /* \[:where(&)\]:size-4 {
