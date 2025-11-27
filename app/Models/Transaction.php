@@ -22,17 +22,6 @@ class Transaction extends Model
         'amount' => 'integer',
     ];
 
-    public function getFileNameAttribute($value)
-    {
-        $path = public_path('storage/transactions/' . $value);
-        return $value && file_exists($path)
-        ? asset('storage/transactions/' . $value)
-        : null;
-
-    }
-    
-    
-
     // Format số tiền hiển thị
     public function getFormattedAmountAttribute(): string
     {

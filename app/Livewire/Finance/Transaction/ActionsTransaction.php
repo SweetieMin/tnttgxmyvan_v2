@@ -4,10 +4,12 @@ namespace App\Livewire\Finance\Transaction;
 
 use Flux\Flux;
 
+use Carbon\Carbon;
 use Livewire\Component;
+use Illuminate\Support\Str;
+
 use Livewire\Attributes\On;
 use Livewire\WithFileUploads;
-
 use Livewire\Attributes\Validate;
 use App\Services\TransactionService;
 use Illuminate\Support\Facades\Storage;
@@ -108,6 +110,13 @@ class ActionsTransaction extends Component
         ]);
     }
 
+    public function closeTransactionModal()
+    {
+        if ($this->file) {
+            $this->removeFile();
+        }
+    }
+
     #[On('addTransaction')]
     public function addTransaction()
     {
@@ -121,12 +130,13 @@ class ActionsTransaction extends Component
         $this->validate();
 
         if ($this->file) {
-            $storedPath = $this->file->store('transactions', 'public');
-            $this->file_name = basename($storedPath);
+            $slugDescription = Str::slug($this->description);
+            $newName = Carbon::parse($this->transaction_date)->format('Ymd') . '_' . $slugDescription . '_' . uniqid() . '.' . $this->file->getClientOriginalExtension();
 
-            $this->file->delete();
+            $storedPath = $this->file->storeAs('transactions', $newName, 'public');
+            $this->file_name = $storedPath;
 
-            $this->reset('file');
+            $this->removeFile();
         }
 
         $data = $this->only([
@@ -200,33 +210,65 @@ class ActionsTransaction extends Component
 
     public function updateTransaction()
     {
+
         $this->amount = (int) str_replace(['.', ','], '', $this->amount);
+
+        $this->validate();
 
         $transaction = $this->transactionRepository->find($this->transactionID);
 
         if ($this->file) {
 
             if ($transaction && $transaction->file_name) {
-                Storage::disk('public')->delete('transactions/' . $transaction->file_name);
+                Storage::disk('public')->delete($transaction->file_name);
             }
 
-            $storedPath = $this->file->store('transactions', 'public');
-            $this->file_name = basename($storedPath);
+            $slugDescription = Str::slug($this->description);
+            $newName = Carbon::parse($this->transaction_date)->format('Ymd') . '_' . $slugDescription . '_' . uniqid() . '.' . $this->file->getClientOriginalExtension();
 
-            $this->file->delete();
-            $this->reset('file');
+            $storedPath = $this->file->storeAs('transactions', $newName, 'public');
+            $this->file_name = $storedPath;
+
+            $this->removeFile();
         } elseif (!$this->existingFile) {
 
             $this->file_name = null;
 
             if ($transaction && $transaction->file_name) {
-                Storage::disk('public')->delete('transactions/' . $transaction->file_name);
+                Storage::disk('public')->delete($transaction->file_name);
             }
         } else {
-            $this->file_name = $this->existingFile;
+            if ($transaction && $transaction->file_name) {
+
+                $descriptionChanged = $this->description !== $transaction->description;
+                $dateChanged = $this->transaction_date !== $transaction->transaction_date->format('Y-m-d');
+
+                if ($descriptionChanged || $dateChanged) {
+
+                    // Tạo tên file mới
+                    $slugDescription = Str::slug($this->description);
+                    $newName = Carbon::parse($this->transaction_date)->format('Ymd')
+                        . '_' . $slugDescription . '_' . uniqid()
+                        . '.' . pathinfo($transaction->file_name, PATHINFO_EXTENSION);
+
+                    // Đổi tên file vật lý
+                    Storage::disk('public')->move(
+                        $transaction->file_name,
+                        'transactions/' . $newName
+                    );
+
+                    // Lưu lại file_name mới
+                    $this->file_name = 'transactions/' . $newName;
+                } else {
+                    // Không thay đổi ngày / mô tả → giữ nguyên file
+                    $this->file_name = $this->existingFile;
+                }
+            } else {
+                $this->file_name = null;
+            }
         }
 
-        $this->validate();
+
 
         $data = $this->only([
             'transaction_date',
@@ -291,10 +333,7 @@ class ActionsTransaction extends Component
             $transaction = $this->transactionRepository->find($this->transactionID);
 
             if ($transaction && $transaction->file_name) {
-
-                $filename = basename($transaction->file_name);
-
-                Storage::disk('public')->delete('transactions/' . $filename);
+                Storage::disk('public')->delete($transaction->file_name);
             }
 
             $this->transactionRepository->delete($this->transactionID);

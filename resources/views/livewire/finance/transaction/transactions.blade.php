@@ -128,7 +128,7 @@
                                         </flux:table.cell>
                                         <flux:table.cell align="center">
                                             @if ($transaction->file_name)
-                                                <flux:link href="{{ $transaction->file_name }}" target="_blank"
+                                                <flux:link href="/storage/{{ $transaction->file_name }}" target="_blank"
                                                     variant="ghost">
                                                     Xem file
                                                 </flux:link>

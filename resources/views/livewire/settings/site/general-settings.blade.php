@@ -82,8 +82,7 @@
                                     @if ($logo)
                                         <div class="mb-2 mt-1 max-w-lg">
                                             <img wire:ignore id="preview_side_logo" src="{{ $logo->temporaryUrl() }}"
-                                                alt="Site Logo"
-                                                class="w-full h-auto max-h-[300px] ">
+                                                alt="Site Logo" class="w-full h-auto max-h-[300px] ">
                                         </div>
                                     @endif
                                 </div>
@@ -91,14 +90,13 @@
                                 @if ($existLogo && !$logo)
                                     <div class="mb-2 ">
                                         <img wire:ignore id="preview_side_logo"
-                                            src="/storage/{{ $existLogo ?? '/storage/images/sites/LOGO_default.png' }}"
-                                            alt="Site Logo"
-                                            class="w-full h-auto max-h-[300px] ">
+                                            src="/storage/{{ $existLogo ?? '/images/sites/LOGO_default.png' }}"
+                                            alt="Site Logo" class="w-full h-auto max-h-[300px] ">
                                     </div>
                                 @endif
 
                                 <div class="mt-2 flex items-center gap-4">
-                                    <flux:button variant="primary" type="submit" class="cursor-pointer" :disabled="!$logo">
+                                    <flux:button variant="primary" type="submit" class="cursor-pointer">
                                         {{ $logo ? 'Lưu Open Graph (OG)' : 'Hãy chọn hình trước' }}
                                     </flux:button>
                                 </div>
@@ -115,7 +113,7 @@
                         <div class="space-y-6">
                             <flux:separator text="Favicon" class="my-6" />
 
-                            <form wire:submit="saveFavicon">
+                            <form wire:submit.prevent="saveFavicon">
                                 <flux:file-upload wire:model="favicon" label="Tải tập tin lên" accept=".jpg, .png">
                                     <flux:file-upload.dropzone heading="Thả tập tin vào đây hoặc nhấp để duyệt"
                                         text="JPG, PNG dung lượng 10MB" with-progress inline />
@@ -134,15 +132,13 @@
                                 @if ($existFavicon && !$favicon)
                                     <div class="mb-2 max-w-[300px]">
                                         <img wire:ignore id="preview_side_favicon"
-                                            src="/storage/{{ $existFavicon ?? '/storage/images/sites/FAVICON_default.png' }}"
-                                            alt="Site favicon"
-                                            class="w-full h-auto max-h-[300px]">
+                                            src="/storage/{{ $existFavicon ?? '/images/sites/FAVICON_default.png' }}"
+                                            alt="Site favicon" class="w-full h-auto max-h-[300px]">
                                     </div>
                                 @endif
 
                                 <div class="mt-2 flex items-center gap-4">
-                                    <flux:button variant="primary" type="submit" class="cursor-pointer"
-                                        :disabled="!$favicon">
+                                    <flux:button variant="primary" type="submit" class="cursor-pointer">
                                         {{ $favicon ? 'Lưu Favicon' : 'Hãy chọn hình trước' }}
                                     </flux:button>
                                 </div>

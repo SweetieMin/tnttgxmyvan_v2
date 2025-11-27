@@ -25,7 +25,7 @@
 
             </div>
             <flux:sidebar.header>
-                <flux:sidebar.brand logo="/storage/{{ $site_favicon ?? '/storage/images/sites/FAVICON_default.png' }}"
+                <flux:sidebar.brand logo="/storage/{{ $site_favicon ?? '/images/sites/FAVICON_default.png' }}"
                     name="TNTT Giáo xứ Mỹ Vân" class="text-pink-500" />
                 <flux:sidebar.collapse tooltip="Nút sidebar" />
             </flux:sidebar.header>

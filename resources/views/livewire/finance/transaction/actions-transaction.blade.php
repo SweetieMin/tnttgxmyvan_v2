@@ -2,7 +2,7 @@
 
     <x-app-action-modal name="action-transaction" :dismissible="false"
         title="{{ $isEditTransactionMode ? 'Cập nhật Tiền Quỹ' : 'Tạo mới Tiền Quỹ' }}"
-        subheading="Quản lý thông tin Tiền Quỹ" icon="squares-plus" class="md:max-w-[550px]">
+        subheading="Quản lý thông tin Tiền Quỹ" icon="squares-plus" class="md:max-w-[550px]" closeEvent="closeTransactionModal()" >
         {{-- Nội dung riêng của form --}}
         <form wire:submit.prevent='{{ $isEditTransactionMode ? 'updateTransaction' : 'createTransaction' }}'
             class="space-y-6">
@@ -85,7 +85,7 @@
                 @if ($isEditTransactionMode && $existingFile && !$file)
                     <flux:file-item heading="File PDF" icon="document">
                         <x-slot name="actions">
-                            <flux:link href="{{ $existingFile }}" target="_blank"
+                            <flux:link href="/storage/{{ $existingFile }}" target="_blank"
                                 variant="ghost">
                                 Xem
                             </flux:link>

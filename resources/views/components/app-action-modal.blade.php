@@ -5,12 +5,13 @@
     'icon' => null,                 {{-- Icon tên hoặc SVG path --}}
     'dismissible' => true,          {{-- Có thể đóng bằng click outside hay không --}}
     'class' => null,                {{-- Class tùy chọn --}}
+    'closeEvent' => null,
 ])
 
 <flux:modal 
     :dismissible="$dismissible" 
     name="{{ $name }}" 
-    class="w-full max-w-[90vw] max-h-[90vh] overflow-y-auto {{ $class }}" >
+    class="w-full max-w-[90vw] max-h-[90vh] overflow-y-auto {{ $class }}" @close="{{ $closeEvent }}">
     <div class="space-y-6">
         {{-- Header --}}
         <div class="flex items-center gap-3">
